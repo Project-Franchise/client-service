@@ -1,8 +1,10 @@
 from flask_restful import Resource
 from . import api_
 
-class indexClass(Resource):
-    def get(self):
-        return {'Project': 'Franchise'}
 
-api_.add_resource(indexClass, '/')
+class IndexClass(Resource):
+    def get(self):
+        return "Project Realty"
+
+
+api_.add_resource(IndexClass, "/")

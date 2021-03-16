@@ -1,5 +1,5 @@
 Flask==1.1.2
 flask_restful==0.3.8
-alembic==1.5.7
 sqlalchemy==1.4.0
 psycopg2==2.8.6
+alembic==1.5.7

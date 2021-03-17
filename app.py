@@ -1,4 +1,4 @@
-from client_api import flask_app
+from service_api import flask_app
 import os
 
 if __name__ == "__main__":

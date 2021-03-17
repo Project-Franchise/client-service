@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from . import api_
+from service_api import api_
 
 
 class IndexResource(Resource):

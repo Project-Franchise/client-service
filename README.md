@@ -29,19 +29,21 @@ CREATE USER username WITH PASSWORD password;
 ## Flask Application Structure 
 ```
 .
-├── client_api/
-│ ├────__init__.py
-│ ├────models.py
-│ ├────resources.py
-├── grabbing_api/
-│ ├────__init__.py
+├── service_api/
+│   ├─── __init__.py
+│   ├─── models.py
+│   └─── client_api/
+│        ├─── __init__.py
+│        └─── resources.py
+│   └─── grabbing_api/
+│        └─── __init__.py
 ├── alembic/
-│  ├── env.py
-│  ├── README
-│  ├── script.py.mako
-│  └── versions/
-│  │   ├── 0f0002bf91cc_initial_migration.py
-│  │   └── ...
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions/
+│        ├── 0f0002bf91cc_initial_migration.py
+│        └── ...
 ├── __init__.py
 ├── app.py
 ├── setup.py

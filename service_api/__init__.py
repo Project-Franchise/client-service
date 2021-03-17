@@ -13,4 +13,4 @@ engine = create_engine(os.environ["DATABASE_URL"])
 Base = declarative_base()
 Session = sessionmaker(bind=engine)
 
-from . import resources
+from service_api.client_api import resources

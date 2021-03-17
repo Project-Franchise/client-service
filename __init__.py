@@ -1,1 +1,1 @@
-__all__ = ['service_api']
+__all__ = ['client_api']

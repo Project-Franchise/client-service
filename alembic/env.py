@@ -10,7 +10,7 @@ from alembic import context
 
 sys.path.append("..")
 
-from service_api import Base
+from client_api import Base
 
 
 # this is the Alembic Config object, which provides

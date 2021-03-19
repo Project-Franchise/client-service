@@ -109,6 +109,7 @@ celerybeat.pid
 .idea/
 .env
 Venv.bat
+dependencies.ps1
 .venv
 env/
 venv/

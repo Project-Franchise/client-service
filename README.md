@@ -7,14 +7,41 @@ Install with pip:
 > pip install -r requirements.txt
 ```
 
-Before running shell commands, set the ```CS_HOST_PORT``` and ```CS_HOST_IP``` environment variablefrom ```.flask_env```
+Before running shell commands, set next environment variables:
+ - ```DATABASE_URL``` by template ```postgresql+psycopg2://<user>:<password>t@localhost/<DB_name>```
+ - ``` CS_HOST_PORT, CS_HOST_IP``` from [.flask_env](.flask_env)
+ 
+### How to set environment variables and activate venv:
+In bash:
+``` 
+# set environment variables
+export VARIABLE=value 
 
-```angular2html
-set CS_HOST_PORT=5000
-set CS_HOST_IP=0.0.0.0
+# set environment variables from file (exmpl. from [.flask_env](.flask_env))
+export $(xargs < .flask_env)
+
+# activate venv (considering you are at the same level as venv)
+source ./venv/bin/activate 
 ```
 
-After set ```DATABASE_URL``` by template ```postgresql+psycopg2://<user>:<password>t@localhost/<DB_name>```
+In CMD:
+``` 
+# set environment variables
+set VARIABLE=value 
+
+# activate venv (considering you are at the same level as venv)
+./venv/Scripts/activate.bat
+```
+
+In PowerShell:
+``` 
+# set environment variables
+$env:VARIABLE="value"
+
+# activate venv (considering you are at the same level as venv)
+./venv/Scripts/Activate.ps1
+```
+
 
 To create user run 
 ```
@@ -23,6 +50,21 @@ psql -U postgres
 Create your user and grant the necessary permissions
 ```angular2html
 CREATE USER username WITH PASSWORD password;
+```
+
+## Alembic
+To migrate, all what is needed is to run
+```
+alembic upgrade head
+```
+To make new migrations
+```
+alembic revision --autogenerate -m "Migration message"
+```
+## Run app
+Python version: 3.9.2
+```
+python app.py
 ```
 
 

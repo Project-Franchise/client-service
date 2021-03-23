@@ -1,5 +1,5 @@
 from service_api import Base
-from sqlalchemy import Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
+from sqlalchemy import INTEGER, Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
 
 

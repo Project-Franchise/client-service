@@ -2,6 +2,13 @@ from marshmallow import Schema, fields
 from pprint import pprint
 
 
+class OperationTypeSchema(Schema):
+
+    id = fields.Integer()
+    original_id = fields.Integer()
+    name = fields.String()
+
+
 class RealtySchema(Schema):
 
     id = fields.Integer()
@@ -15,15 +22,30 @@ class RealtySchema(Schema):
     original_id = fields.Integer()
     original_url = fields.Integer()
     realty_type_id = fields.Integer()
-    operation_type_id = fields.Integer()
+    operation_type = fields.Nested(OperationTypeSchema)
 
 
-class OperationTypeSchema(Schema):
+class StateSchema(Schema):
 
     id = fields.Integer()
-    original_id = fields.Integer()
     name = fields.String()
-    realty = fields.Integer()
+    original_id = fields.Integer()
+
+
+class CitySchema(Schema):
+
+    id = fields.Integer()
+    name = fields.String()
+    state = fields.Nested(StateSchema)
+    original_id = fields.Integer()
+
+
+class LocationSchema(Schema):
+
+    id = fields.Integer()
+    city = fields.Nested(CitySchema)
+    street_name = fields.String()
+    building_number = fields.Integer()
 
 
 class RealtyTypeSchema(Schema):
@@ -31,33 +53,4 @@ class RealtyTypeSchema(Schema):
     id = fields.Integer()
     original_id = fields.Integer()
     name = fields.String()
-    realty = fields.Integer()
-
-
-class LocationSchema(Schema):
-
-    id = fields.Integer()
-    city_id = fields.Integer()
-    street_name = fields.String()
-    building_number = fields.Integer()
-    realty = fields.Integer()
-
-
-class CitySchema(Schema):
-
-    id = fields.Integer()
-    name = fields.String()
-    state_id = fields.Integer()
-    original_id = fields.Integer()
-    location = fields.Integer()
-
-
-class StateSchema(Schema):
-
-    id = fields.Integer()
-    name = fields.String()
-    state_id = fields.Integer()
-    original_id = fields.Integer()
-    city = fields.Integer()
-
 

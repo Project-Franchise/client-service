@@ -3,3 +3,5 @@ flask_restful==0.3.8
 sqlalchemy==1.4.0
 psycopg2==2.8.6
 alembic==1.5.7
+setuptools~=54.1.2
+marshmallow~=3.10.0

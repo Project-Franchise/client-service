@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
+    env_file:
+      - .flask_env
+  
+  db:
+    image: postgres:13.2
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=lv-python-mc
+      - POSTGRES_PASSWORD=575
+      - POSTGRES_DB=Realty_DB
+    volumes:
+      - flask_db_volume:/var/lib/postgresql/data
+      
+
+volumes:
+  flask_db_volume:

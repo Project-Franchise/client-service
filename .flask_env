@@ -1,2 +1,3 @@
 CS_HOST_PORT=5000
-CS_HOST_IP=127.0.0.1
+CS_HOST_IP=0.0.0.0
+DATABASE_URL_DOCKER=postgresql://lv-python-mc:575@db:5432/Realty_DB

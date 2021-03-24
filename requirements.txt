@@ -3,4 +3,4 @@ flask_restful==0.3.8
 sqlalchemy==1.4.0
 redis==3.5.3
 psycopg2-binary==2.8.6
-
+marshmallow==3.10

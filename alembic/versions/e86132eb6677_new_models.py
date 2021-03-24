@@ -1,7 +1,7 @@
 """New models
 
 Revision ID: e86132eb6677
-Revises: 
+Revises:
 Create Date: 2021-03-17 21:49:26.159403
 
 """

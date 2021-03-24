@@ -10,31 +10,31 @@ Install with pip:
 Before running shell commands, set next environment variables:
  - ```DATABASE_URL``` by template ```postgresql+psycopg2://<user>:<password>t@localhost/<DB_name>```
  - ``` CS_HOST_PORT, CS_HOST_IP``` from [.flask_env](.flask_env)
- 
+
 ### How to set environment variables and activate venv:
 In bash:
-``` 
+```
 # set environment variables
-export VARIABLE=value 
+export VARIABLE=value
 
 # set environment variables from file (exmpl. from [.flask_env](.flask_env))
 export $(xargs < .flask_env)
 
 # activate venv (considering you are at the same level as venv)
-source ./venv/bin/activate 
+source ./venv/bin/activate
 ```
 
 In CMD:
-``` 
+```
 # set environment variables
-set VARIABLE=value 
+set VARIABLE=value
 
 # activate venv (considering you are at the same level as venv)
 ./venv/Scripts/activate.bat
 ```
 
 In PowerShell:
-``` 
+```
 # set environment variables
 $env:VARIABLE="value"
 
@@ -43,7 +43,7 @@ $env:VARIABLE="value"
 ```
 
 
-To create user run 
+To create user run
 ```
 psql -U postgres
 ```
@@ -68,7 +68,7 @@ python app.py
 ```
 
 
-## Flask Application Structure 
+## Flask Application Structure
 ```
 .
 ├── service_api/
@@ -99,4 +99,3 @@ python app.py
 └── .gitignore
 
 ```
-

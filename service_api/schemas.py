@@ -1,11 +1,10 @@
 from marshmallow import Schema, fields
-from pprint import pprint
 
 
 class RealtySchema(Schema):
 
     id = fields.Integer()
-    location_id = fields.Integer()
+    location = fields.Nested()
     floor = fields.Integer()
     square = fields.Integer()
     rental_price = fields.Float()
@@ -59,5 +58,3 @@ class StateSchema(Schema):
     state_id = fields.Integer()
     original_id = fields.Integer()
     city = fields.Integer()
-
-

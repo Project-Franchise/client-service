@@ -1,7 +1,7 @@
+import os
 from flask import Flask
 from flask_restful import Api
 from sqlalchemy.orm import declarative_base, sessionmaker
-import os
 from sqlalchemy import create_engine, MetaData
 import redis
 

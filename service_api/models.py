@@ -1,6 +1,6 @@
-from service_api import Base
 from sqlalchemy import Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
+from service_api import Base
 
 
 class Realty(Base):
@@ -18,8 +18,10 @@ class Realty(Base):
     published_at = Column(TIMESTAMP, nullable=False)
     original_id = Column(BIGINT, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False)
-    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id'), nullable=False)
-    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id'), nullable=False)
+    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id'),
+                            nullable=False)
+    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id'),
+                               nullable=False)
 
 
 class OperationType(Base):

@@ -14,8 +14,8 @@ class RealtyDetails(Base):
     square = Column(BIGINT, nullable=False)
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
-    original_id = Column(BIGINT, nullable=False)
-    original_url = Column(VARCHAR(255), nullable=False)
+    original_id = Column(BIGINT, nullable=False, unique=True)
+    original_url = Column(VARCHAR(255), nullable=False, unique=True)
 
 
 class OperationType(Base):
@@ -23,7 +23,7 @@ class OperationType(Base):
     __tablename__ = 'operation_type'
 
     id = Column(BIGINT, primary_key=True)
-    original_id = Column(BIGINT, nullable=False)
+    original_id = Column(BIGINT, nullable=False, unique=True)
     name = Column(VARCHAR(255), nullable=False)
     realty = relationship('Realty', backref='operation_type', lazy=True)
 
@@ -33,7 +33,7 @@ class RealtyType(Base):
     __tablename__ = 'realty_type'
 
     id = Column(BIGINT, primary_key=True)
-    original_id = Column(BIGINT, nullable=False)
+    original_id = Column(BIGINT, nullable=False, unique=True)
     name = Column(VARCHAR(255), nullable=False)
     realty = relationship('Realty', backref='realty_type', lazy=True)
 
@@ -57,7 +57,7 @@ class City(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
     state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
-    original_id = Column(BIGINT, nullable=False)
+    original_id = Column(BIGINT, nullable=False, unique=True)
     realty = relationship('Realty', backref='city', lazy=True)
 
 
@@ -67,6 +67,6 @@ class State(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
-    original_id = Column(BIGINT, nullable=False)
+    original_id = Column(BIGINT, nullable=False, unique=True)
     city = relationship('City', backref='state', lazy=True)
     realty = relationship('Realty', backref='state', lazy=True)

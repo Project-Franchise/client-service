@@ -18,8 +18,6 @@ class RealtyDetails(Base):
     original_url = Column(VARCHAR(255), nullable=False)
 
 
-
-
 class OperationType(Base):
 
     __tablename__ = 'operation_type'

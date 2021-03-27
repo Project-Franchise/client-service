@@ -1,7 +1,6 @@
 from marshmallow import Schema, fields, post_load
-from pprint import pprint
-
-from service_api.models import State, City, OperationType, Realty, Location, RealtyType
+from service_api.models import State, City, OperationType, Realty, \
+    RealtyDetails, RealtyType
 
 
 class OperationTypeSchema(Schema):
@@ -83,7 +82,5 @@ class LocationSchema(Schema):
 
     @post_load
     def create_state(self, data):
-        return Location(**data)
-
-
-
+        # return Location(**data)
+        pass

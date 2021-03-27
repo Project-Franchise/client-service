@@ -1,7 +1,7 @@
 """Updated models
 
 Revision ID: f35ba61540e8
-Revises: 
+Revises:
 Create Date: 2021-03-27 00:29:25.070536
 
 """

@@ -65,6 +65,22 @@ class Cities(Resource):
         return jsonify(schemas.CitySchema(many=True).dump(cities))
 
 
+class States(Resource):
+    def get(self):
+        with session_scope() as session:
+            session = Session()
+            states = session.query(models.State).filter_by().all()
+        return jsonify(schemas.StateSchema(many=True).dump(states))
+
+
+class State(Resource):
+    def get(self, id):
+        with session_scope() as session:
+            session = Session()
+            state = session.query(models.State).filter_by(id=id).first()
+        return jsonify(schemas.StateSchema().dump(state))
+
+
 class Characteristics(Resource):
     def get(self):
 
@@ -73,3 +89,5 @@ class Characteristics(Resource):
 
 api_.add_resource(IndexResource, "/")
 api_.add_resource(Cities, '/cities/<state_id>')
+api_.add_resource(States, '/states/')
+api_.add_resource(State, '/state/<id>')

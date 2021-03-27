@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, post_load
+from marshmallow import Schema, fields, post_load, validate
 from service_api.models import State, City, OperationType, Realty, \
     RealtyDetails, RealtyType
 
@@ -7,7 +7,7 @@ class OperationTypeSchema(Schema):
 
     id = fields.Integer()
     original_id = fields.Integer()
-    name = fields.String()
+    name = fields.String(validate=validate.Length(max=255))
 
     @post_load
     def create_state(self, data, **kwargs):
@@ -18,7 +18,7 @@ class RealtyTypeSchema(Schema):
 
     id = fields.Integer()
     original_id = fields.Integer()
-    name = fields.String()
+    name = fields.String(validate=validate.Length(max=255))
 
     @post_load
     def create_state(self, data, **kwargs):
@@ -28,59 +28,51 @@ class RealtyTypeSchema(Schema):
 class RealtySchema(Schema):
 
     id = fields.Integer()
-    location_id = fields.Integer()
-    floor = fields.Integer()
-    floors_number = fields.Integer()
-    square = fields.Integer()
-    rental_price = fields.Float()
-    sale_price = fields.Float()
-    building_state = fields.String()
-    published_at = fields.DateTime()
-    original_id = fields.Integer()
-    original_url = fields.Integer()
+    city_id = fields.Integer()
+    state_id = fields.Integer()
+    realty_details_id = fields.Integer()
     realty_type_id = fields.Integer()
-    realty_type = fields.Nested(RealtyTypeSchema)
     operation_type_id = fields.Integer()
-    operation_type = fields.Nested(OperationTypeSchema)
 
     @post_load
-    def create_state(self, data, **kwargs):
+    def create_state(self, data):
         return Realty(**data)
 
 
-class StateSchema(Schema):
+class RealtyDetailsSchema(Schema):
 
     id = fields.Integer()
-    name = fields.String()
+    floor = fields.Integer()
+    floors_number = fields.Integer()
+    square = fields.Integer()
+    price = fields.Float()
+    published_at = fields.DateTime()
     original_id = fields.Integer()
+    original_url = fields.Integer()
 
     @post_load
     def create_state(self, data, **kwargs):
-        return State(**data)
+        return RealtyDetails(**data)
 
 
 class CitySchema(Schema):
 
     id = fields.Integer()
-    name = fields.String()
-    original_id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer()
-    state = fields.Nested(StateSchema)
+    original_id = fields.Integer()
 
     @post_load
     def create_state(self, data, **kwargs):
         return City(**data)
 
 
-class LocationSchema(Schema):
+class StateSchema(Schema):
 
     id = fields.Integer()
-    street_name = fields.String()
-    building_number = fields.Integer()
-    city_id = fields.Integer()
-    city = fields.Nested(CitySchema)
+    name = fields.String(validate=validate.Length(max=255))
+    original_id = fields.Integer()
 
     @post_load
-    def create_state(self, data):
-        # return Location(**data)
-        pass
+    def create_state(self, data, **kwargs):
+        return State(**data)

@@ -1,8 +1,14 @@
 """Updated models
 
+<<<<<<< HEAD:alembic/versions/f35ba61540e8_updated_models.py
 Revision ID: f35ba61540e8
 Revises:
 Create Date: 2021-03-27 00:29:25.070536
+=======
+Revision ID: e86132eb6677
+Revises:
+Create Date: 2021-03-17 21:49:26.159403
+>>>>>>> docker_compose_config:alembic/versions/e86132eb6677_new_models.py
 
 """
 from alembic import op

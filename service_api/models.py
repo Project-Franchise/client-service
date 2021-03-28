@@ -1,6 +1,6 @@
-from service_api import Base
-from sqlalchemy import INTEGER, Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
 from sqlalchemy.orm import relationship
+from service_api import Base
 
 
 class RealtyDetails(Base):

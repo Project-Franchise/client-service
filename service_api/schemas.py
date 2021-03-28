@@ -28,7 +28,7 @@ class RealtyTypeSchema(Schema):
 class RealtySchema(Schema):
 
     id = fields.Integer()
-    location_id = fields.Integer()
+    location = fields.Nested()
     floor = fields.Integer()
     floors_number = fields.Integer()
     square = fields.Integer()

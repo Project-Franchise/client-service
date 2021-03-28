@@ -9,6 +9,7 @@ class RealtyDetails(Base):
 
     id = Column(BIGINT, primary_key=True)
     realty = relationship('Realty', uselist=False, backref='realty_details')
+    description = Column(VARCHAR(2047), nullable=True)
     floor = Column(BIGINT, nullable=False)
     floors_number = Column(BIGINT, nullable=False)
     square = Column(BIGINT, nullable=False)
@@ -45,7 +46,7 @@ class Realty(Base):
     id = Column(BIGINT, primary_key=True)
     city_id = Column(BIGINT, ForeignKey('city.id', ondelete='SET NULL'), nullable=False)
     state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
-    realty_details_id = Column(BIGINT, ForeignKey('realty_details.id', ondelete='CASCADE'), nullable=False)
+    realty_details_id = Column(BIGINT, ForeignKey('realty_details.id', ondelete='CASCADE'), nullable=False, unique=True)
     realty_type_id = Column(BIGINT, ForeignKey('realty_type.id', ondelete='SET NULL'), nullable=False)
     operation_type_id = Column(BIGINT, ForeignKey('operation_type.id', ondelete='SET NULL'), nullable=False)
 

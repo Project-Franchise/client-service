@@ -25,20 +25,6 @@ class RealtyTypeSchema(Schema):
         return RealtyType(**data)
 
 
-class RealtySchema(Schema):
-
-    id = fields.Integer()
-    city_id = fields.Integer()
-    state_id = fields.Integer()
-    realty_details_id = fields.Integer()
-    realty_type_id = fields.Integer()
-    operation_type_id = fields.Integer()
-
-    @post_load
-    def create_state(self, data):
-        return Realty(**data)
-
-
 class RealtyDetailsSchema(Schema):
 
     id = fields.Integer()
@@ -48,7 +34,7 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float()
     published_at = fields.DateTime()
     original_id = fields.Integer()
-    original_url = fields.Integer()
+    original_url = fields.String(validate=validate.Length(max=255))
 
     @post_load
     def create_state(self, data, **kwargs):
@@ -76,3 +62,22 @@ class StateSchema(Schema):
     @post_load
     def create_state(self, data, **kwargs):
         return State(**data)
+
+
+class RealtySchema(Schema):
+
+    id = fields.Integer()
+    city_id = fields.Integer(load_only=True)
+    city = fields.Nested(CitySchema, dump_only=True)
+    state_id = fields.Integer(load_only=True)
+    state = fields.Nested(StateSchema, dump_only=True)
+    realty_details_id = fields.Integer(load_only=True)
+    realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
+    realty_type_id = fields.Integer(load_only=True)
+    realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
+    operation_type_id = fields.Integer(load_only=True)
+    operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
+
+    @post_load
+    def create_state(self, data, **kwargs):
+        return Realty(**data)

@@ -7,3 +7,4 @@ setuptools~=54.1.2
 marshmallow~=3.10.0
 pylint==2.7.2
 pre-commit
+requests==2.25.1

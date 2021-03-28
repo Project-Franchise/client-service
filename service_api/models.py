@@ -3,23 +3,19 @@ from sqlalchemy import INTEGER, Column, BIGINT, VARCHAR, Float, TIMESTAMP, Forei
 from sqlalchemy.orm import relationship
 
 
-class Realty(Base):
+class RealtyDetails(Base):
 
-    __tablename__ = 'realty'
+    __tablename__ = 'realty_details'
 
     id = Column(BIGINT, primary_key=True)
-    location_id = Column(BIGINT, ForeignKey('location.id'), nullable=False)
+    realty = relationship('Realty', uselist=False, backref='realty_details')
     floor = Column(BIGINT, nullable=False)
     floors_number = Column(BIGINT, nullable=False)
     square = Column(BIGINT, nullable=False)
-    rental_price = Column(Float)
-    sale_price = Column(Float)
-    building_state = Column(VARCHAR(255), nullable=False)
+    price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_id = Column(BIGINT, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False)
-    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id'), nullable=False)
-    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id'), nullable=False)
 
 
 class OperationType(Base):
@@ -42,15 +38,16 @@ class RealtyType(Base):
     realty = relationship('Realty', backref='realty_type', lazy=True)
 
 
-class Location(Base):
+class Realty(Base):
 
-    __tablename__ = 'location'
+    __tablename__ = 'realty'
 
     id = Column(BIGINT, primary_key=True)
-    city_id = Column(BIGINT, ForeignKey('city.id'), nullable=False)
-    street_name = Column(VARCHAR(255), nullable=False)
-    building_number = Column(BIGINT, nullable=False)
-    realty = relationship('Realty', backref='location', lazy=True)
+    city_id = Column(BIGINT, ForeignKey('city.id', ondelete='SET NULL'), nullable=False)
+    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
+    realty_details_id = Column(BIGINT, ForeignKey('realty_details.id', ondelete='CASCADE'), nullable=False)
+    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id', ondelete='SET NULL'), nullable=False)
+    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id', ondelete='SET NULL'), nullable=False)
 
 
 class City(Base):
@@ -59,9 +56,9 @@ class City(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
-    state_id = Column(BIGINT, ForeignKey('state.id'), nullable=False)
+    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
     original_id = Column(BIGINT, nullable=False)
-    location = relationship('Location', backref='city', lazy=True)
+    realty = relationship('Realty', backref='city', lazy=True)
 
 
 class State(Base):
@@ -72,3 +69,4 @@ class State(Base):
     name = Column(VARCHAR(128), nullable=False)
     original_id = Column(BIGINT, nullable=False)
     city = relationship('City', backref='state', lazy=True)
+    realty = relationship('Realty', backref='state', lazy=True)

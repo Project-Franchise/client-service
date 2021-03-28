@@ -48,7 +48,7 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float()
     published_at = fields.DateTime()
     original_id = fields.Integer()
-    original_url = fields.Integer()
+    original_url = fields.String()
 
     @post_load
     def create_state(self, data, **kwargs):

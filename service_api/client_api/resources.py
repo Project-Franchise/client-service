@@ -81,6 +81,15 @@ class RealtyByState(Resource):
         return schemas.RealtySchema(many=True).dump(realties)
 
 
+class RealtyDetails(Resource):
+    def get(self, realty_details_id):
+        with session_scope() as session:
+            session = Session()
+            realty = session.query(models.Realty).filter_by(realty_details_id=realty_details_id).first()
+            details = session.query(models.RealtyDetails).filter_by(id=realty.realty_details_id).first()
+        return schemas.RealtyDetailsSchema().dump(details)
+
+
 api_.add_resource(IndexResource, "/")
 api_.add_resource(Cities, '/cities/<state_id>')
 api_.add_resource(City, '/cities/<state_id>/<id>')
@@ -89,3 +98,4 @@ api_.add_resource(RealtyByState, '/realty/<state_id>')
 api_.add_resource(RealtyByCity, '/realty/<state_id>/<city_id>')
 api_.add_resource(States, '/states/')
 api_.add_resource(State, '/states/<id>')
+api_.add_resource(RealtyDetails, '/details/<realty_details_id>')

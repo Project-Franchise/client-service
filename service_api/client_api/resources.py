@@ -90,6 +90,37 @@ class RealtyDetails(Resource):
         return schemas.RealtyDetailsSchema().dump(details)
 
 
+class RealtyTypes(Resource):
+    def get(self):
+        with session_scope() as session:
+            session = Session()
+            realty_types = session.query(models.RealtyType).filter_by().all()
+        return schemas.RealtyTypeSchema(many=True).dump(realty_types)
+
+
+class RealtyType(Resource):
+    def get(self, realty_type_id):
+        with session_scope() as session:
+            session = Session()
+            realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
+        return schemas.RealtyTypeSchema().dump(realty_type)
+
+
+class OperationTypes(Resource):
+    def get(self):
+        with session_scope() as session:
+            session = Session()
+            operation_types = session.query(models.OperationType).filter_by().all()
+        return schemas.OperationTypeSchema(many=True).dump(operation_types)
+
+
+class OperationType(Resource):
+    def get(self, operation_type_id):
+        with session_scope() as session:
+            session = Session()
+            operation_type = session.query(models.OperationType).filter_by(id=operation_type_id).first()
+        return schemas.OperationTypeSchema().dump(operation_type)
+
 api_.add_resource(IndexResource, "/")
 api_.add_resource(Cities, '/cities/<state_id>')
 api_.add_resource(City, '/cities/<state_id>/<id>')
@@ -99,3 +130,7 @@ api_.add_resource(RealtyByCity, '/realty/<state_id>/<city_id>')
 api_.add_resource(States, '/states/')
 api_.add_resource(State, '/states/<id>')
 api_.add_resource(RealtyDetails, '/details/<realty_details_id>')
+api_.add_resource(RealtyTypes, '/realty_types/')
+api_.add_resource(RealtyType, '/realty_type/<realty_type_id>')
+api_.add_resource(OperationTypes, '/operation_types/')
+api_.add_resource(OperationType, '/operation_type/<operation_type_id>')

@@ -18,9 +18,11 @@ from service_api import Session as Session_
 from service_api import api_, models, schemas, CACHE
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from .utils.grabbing_utils import process_request
 
 from . import constants
 from .characteristics import get_characteristics
+from .realty_requests import RealtyRequestToDomria
 
 
 @contextmanager
@@ -211,9 +213,9 @@ class LatestDataFromDomriaResource(Resource):
             try:
                 # load new characteristics
                 mapper = get_characteristics()
-                CACHE.set(constants.REDIS_CHARACTERISTICS, 
-                json.dumps(mapper), 
-                datetime.timedelta(**constants.REDIS_CHARACTERISTICS_EX_TIME))
+                CACHE.set(constants.REDIS_CHARACTERISTICS,
+                          json.dumps(mapper),
+                          datetime.timedelta(**constants.REDIS_CHARACTERISTICS_EX_TIME))
             except json.JSONDecodeError:
                 return {"status": "failed",
                         "error_message": "json_error"}
@@ -226,6 +228,9 @@ class LatestDataFromDomriaResource(Resource):
         # validation
         try:
             type_mapper = mapper.get(params.get("realty_type"))
+
+            page = params.pop("page")
+            page_ads_number = params.pop("page_ads_number")
         except Exception:
             pass
 
@@ -234,10 +239,14 @@ class LatestDataFromDomriaResource(Resource):
                           for key, value in params.items())
 
         # sending request for realty-ids list
+        items = RealtyRequestToDomria().get(new_params)
 
         # getting realty serialized data and write them into db
+        with session_scope() as session:
+            realty_json = process_request(
+                items, session, page, page_ads_number)
 
-        return
+        return realty_json
 
 
 # Be careful. Use this lisnks only once!!

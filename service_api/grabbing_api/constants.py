@@ -41,3 +41,5 @@ REDIS_STATES_FETCHED = "states_upload"
 REDIS_CHARACTERISTICS_EX_TIME = {
     "hours": 2
 }
+
+GENERAL_CHARACTERISTICS = ["city_id"]

@@ -1,7 +1,6 @@
 from service_api import models
 
 DOMRIA_DOMAIN: str = "https://developers.ria.com/dom"
-PAGE_ADS_NUMBER: int = 10
 
 DOMRIA_URL = {
     "cities": "/cities",

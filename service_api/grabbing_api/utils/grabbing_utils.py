@@ -69,3 +69,13 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
         realty_models.append((realty, realty_details))
 
     return realty_models
+
+
+def process_request(search_response: Dict, session: Session, page: int, page_ads_number: int) -> \
+        list[tuple[SchemaMeta, SchemaMeta]]:
+    page = page % page_ads_number
+    current_items = search_response["items"][
+                    page * page_ads_number - page_ads_number: page * page_ads_number
+                    ]
+
+    return create_records(current_items, session)

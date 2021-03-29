@@ -2,7 +2,6 @@ from marshmallow import Schema, fields, post_load, validate
 from service_api.models import State, City, OperationType, Realty, \
     RealtyDetails, RealtyType
 
-
 class OperationTypeSchema(Schema):
 
     id = fields.Integer()

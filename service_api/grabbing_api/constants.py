@@ -33,6 +33,11 @@ REALTY_DETAILS_KEYS = {
 
 DOMRIA_UKR = 4
 DOMRIA_API_KEY = os.environ['DOMRIA_API_KEY']
-REDIS_CHARACTERISTICS_AVALIABLE = "characteristics_avaliable"
+REDIS_CHARACTERISTICS = "characteristics_avaliable"
 REDIS_CITIES_FETCHED = "cities_upload"
 REDIS_STATES_FETCHED = "states_upload"
+
+# must be dict with datetime.timedelta params
+REDIS_CHARACTERISTICS_EX_TIME = {
+    "hours": 2
+}

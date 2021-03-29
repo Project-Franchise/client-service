@@ -6,10 +6,12 @@ import pickle
 import json
 
 from contextlib import contextmanager
+import datetime
 from typing import List, Iterator
 
 from flask import request
 import requests
+from ...service_api import CACHE
 from flask_restful import Resource
 from redis.exceptions import RedisError
 from service_api import Session as Session_
@@ -18,6 +20,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 from . import constants
+from .characteristics import get_characteristics
 
 
 @contextmanager
@@ -207,20 +210,37 @@ class LatestDataFromDomriaResource(Resource):
         if cached_characteristics is None:
             try:
                 # load new characteristics
-                pass
-            except Exception:
-                return {"status": "failed"}
+                mapper = get_characteristics()
+                CACHE.set(constants.REDIS_CHARACTERISTICS, 
+                json.dumps(mapper), 
+                datetime.timedelta(**constants.REDIS_CHARACTERISTICS_EX_TIME))
+            except json.JSONDecodeError:
+                return {"status": "failed",
+                        "error_message": "json_error"}
+            except RedisError:
+                return {"status": "failed",
+                        "erorr_message": "redis_error"}
         else:
             mapper = json.loads(cached_characteristics)
+
+        # validation
         try:
             type_mapper = mapper.get(params.get("realty_type"))
         except Exception:
             pass
 
-        return dict((type_mapper[key], value) for key, value in params.items())
+        # mapping text characteristics to theirs domria ids
+        new_params = dict((type_mapper[key], value)
+                          for key, value in params.items())
+
+        # sending request for realty-ids list
+
+        # getting realty serialized data and write them into db
+
+        return
 
 
 # Be careful. Use this lisnks only once!!
-api_.add_resource(StatesFromDomriaResource, "/get/states")
-api_.add_resource(CitiesFromDomriaResource, "/get/cities")
-api_.add_resource(LatestDataFromDomriaResource, "/latest")
+api_.add_resource(StatesFromDomriaResource, "/grabbing/states")
+api_.add_resource(CitiesFromDomriaResource, "/grabbing/cities")
+api_.add_resource(LatestDataFromDomriaResource, "/grabbing/latest")

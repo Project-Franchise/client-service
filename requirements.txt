@@ -1,8 +1,11 @@
 Flask==1.1.2
 flask_restful==0.3.8
 sqlalchemy==1.4.0
+<<<<<<< HEAD
 setuptools~=54.1.2
 requests==2.25.1
+=======
+>>>>>>> main
 redis==3.5.3
 psycopg2-binary==2.8.6
 marshmallow==3.10

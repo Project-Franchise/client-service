@@ -1,6 +1,6 @@
-from flask_restful import Resource
+from service_api import api_, CACHE
 from redis.exceptions import ConnectionError
-from service_api import api_, cache
+from flask_restful import Resource
 
 
 class IndexResource(Resource):
@@ -11,7 +11,7 @@ class IndexResource(Resource):
         :return: str
         """
         try:
-            count = cache.incr('hits')
+            count = CACHE.incr("hits")
         except ConnectionError as exc:
             return f"Redis connection error {exc}"
         return f"Project Realty: hits: {count}"

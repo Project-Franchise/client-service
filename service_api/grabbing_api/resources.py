@@ -3,19 +3,18 @@ Resources and urls for grabbing service
 """
 import itertools
 import pickle
-import json
+
 from contextlib import contextmanager
 from typing import List, Iterator
 
 import requests
-from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
 from ...service_api import CACHE
 from service_api import Session as Session_
 from service_api import api_, models, schemas
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoReferencedColumnError, SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError
 
 from . import constants
 
@@ -201,4 +200,3 @@ class StatesFromDomriaResource(Resource):
 # Be careful. Use this lisnks only once!!
 api_.add_resource(StatesFromDomriaResource, "/get-states-from-domria")
 api_.add_resource(CitiesFromDomriaResource, "/get-cities-from-domria")
-

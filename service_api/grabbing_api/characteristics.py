@@ -3,7 +3,7 @@ from typing import Dict
 
 import requests
 
-import constants
+from . import constants
 
 
 def decode_characteristics(dct: Dict) -> Dict:
@@ -13,7 +13,7 @@ def decode_characteristics(dct: Dict) -> Dict:
     in "items" dict
     """
     item_list = {}
-    if not "items" in dct:
+    if "items" not in dct:
         return dct
     if "items" in dct:
         for fields in dct["items"]:
@@ -26,10 +26,10 @@ def decode_characteristics(dct: Dict) -> Dict:
 
 def get_characteristics(characteristics: Dict = dict()) -> Dict:
     """
-    Function to get characteristics 
+    Function to get characteristics
     and retrieve them in dict
     """
-    with open("service_api\static data\main_hardcode.json") as json_file:
+    with open("service_api/static data/main_hardcode.json") as json_file:
         сharacteristics_data_set = json.load(json_file)
     for element in сharacteristics_data_set["realty_type"]:
         req = requests.get(

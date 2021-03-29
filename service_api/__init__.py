@@ -27,6 +27,7 @@ engine = create_engine(os.environ["DATABASE_URL"])
 metadata = MetaData()
 Base = declarative_base(metadata)
 Session = sessionmaker(bind=engine)
+session = Session()
 
 # entrypoint for caching using redis
 cache = redis.Redis(

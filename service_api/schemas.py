@@ -75,8 +75,8 @@ class RealtySchema(Schema):
     realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
     realty_type_id = fields.Integer(load_only=True)
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
-    operation_type = fields.Nested(OperationTypeSchema)
-    operation_type_id = fields.Integer()
+    operation_type_id = fields.Integer(load_only=True)
+    operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
     @post_load
     def create_state(self, data, **kwargs):

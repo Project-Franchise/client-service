@@ -29,5 +29,5 @@ session = Session()
 
 
 from . import models
-from service_api.client_api import resources
-from service_api.grabbing_api import resources
+from service_api import client_api
+from service_api import grabbing_api

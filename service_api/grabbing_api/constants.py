@@ -1,3 +1,5 @@
+import os
+
 from service_api import models
 
 DOMRIA_DOMAIN: str = "https://developers.ria.com/dom"
@@ -29,4 +31,5 @@ REALTY_DETAILS_KEYS = {
     "original_url": "beautiful_url",
 }
 
-
+DOMRIA_UKR = 4
+DOMRIA_API_KEY = os.environ['DOMRIA_API_KEY']

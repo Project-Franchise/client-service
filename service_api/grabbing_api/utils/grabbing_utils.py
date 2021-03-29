@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List, Dict
+from typing import List, Tuple, Dict
 
 import requests
 from marshmallow import ValidationError
@@ -8,7 +8,8 @@ from marshmallow.schema import SchemaMeta
 from sqlalchemy.orm import Session
 
 sys.path.append(os.getcwd())
-from service_api import session
+from service_api.grabbing_api.constants import DOMRIA_DOMAIN, DOMRIA_URL, REALTY_DETAILS_KEYS, REALTY_KEYS
+from service_api import schemas, session
 
 
 def load_data(data: Dict, session: Session, ModelSchema: SchemaMeta) -> SchemaMeta:
@@ -30,7 +31,9 @@ def make_realty_details_data(response: requests.models.Response, realty_details_
 
     realty_details_data = {
         key: value for (key, value) in
-        zip(self_keys, original_keys)
+        zip(
+            self_keys, original_keys
+        )
     }
 
     return realty_details_data
@@ -45,3 +48,24 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
         ).first()).id
 
     return realty_data
+
+
+def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, SchemaMeta]]:
+    params = {
+        "lang_id": 4,
+        "api_key": os.environ['DOMRIA_API_KEY'],
+    }
+
+    url = DOMRIA_DOMAIN + DOMRIA_URL["id"]
+    realty_models = []
+    for realty_id in id_list:
+        response = requests.get(url + "/" + str(realty_id), params=params)
+        realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
+        realty_details = load_data(realty_details_data, session, schemas.RealtyDetailsSchema)
+
+        realty_data = make_realty_data(response, REALTY_KEYS)
+        realty = load_data(realty_data, session, schemas.RealtySchema)
+
+        realty_models.append((realty, realty_details))
+
+    return realty_models

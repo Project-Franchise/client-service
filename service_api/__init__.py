@@ -25,6 +25,7 @@ engine = create_engine(os.environ["DATABASE_URL"])
 metadata = MetaData()
 Base = declarative_base(metadata)
 Session = sessionmaker(bind=engine)
+session = Session()
 
 
 from . import models

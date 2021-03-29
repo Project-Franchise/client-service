@@ -10,3 +10,4 @@ DOMRIA_URL = {
 }
 DOMRIA_UKR = 4
 DOMRIA_API_KEY = os.environ['DOMRIA_API_KEY']
+REDIS_CHARACTERISTICS_AVALIABLE = "characteristics_avaliable"

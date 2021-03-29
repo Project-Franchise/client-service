@@ -1,13 +1,14 @@
 """
 Resources and urls for grabbing service
 """
-import os
 from typing import List
+from flask import request
+import json
 
 import requests
 from flask_restful import Resource
 from service_api import Session as Session_
-from service_api import api_, models, schemas
+from service_api import api_, models, schemas, CACHE
 from sqlalchemy.orm import Session
 
 from . import constants
@@ -95,6 +96,29 @@ class StatesFromDomriaResource(Resource):
         return processed_states
 
 
+class LatestDataFromDomriaResource(Resource):
+
+    def get(self):
+        params = request.args
+
+        cached_characteristics = CACHE.get(constants.REDIS_CHARACTERISTICS)
+        if cached_characteristics is None:
+            try:
+                # load new characteristics
+                pass
+            except Exception:
+                return {"status": "failed"}
+        else:
+            mapper = json.loads(cached_characteristics)
+        try:
+            type_mapper = mapper.get(params.get("realty_type"))
+        except:
+            pass
+
+        return dict((type_mapper[key], value) for key, value in params.items())
+
+
 # Be careful. Use this lisnks only once!!
 api_.add_resource(StatesFromDomriaResource, "/get/states")
 api_.add_resource(CitiesFromDomriaResource, "/get/cities")
+api_.add_resource(LatestDataFromDomriaResource, "/latest")

@@ -14,6 +14,9 @@ from service_api import schemas, session
 
 
 def load_data(data: Dict, session: Session, ModelSchema: SchemaMeta) -> SchemaMeta:
+    """
+    Stores data in a database according to a given scheme
+    """
     try:
         res_data = ModelSchema().load(data)
     except ValidationError as error:
@@ -27,6 +30,9 @@ def load_data(data: Dict, session: Session, ModelSchema: SchemaMeta) -> SchemaMe
 
 
 def make_realty_details_data(response: requests.models.Response, realty_details_keys: Dict) -> Dict:
+    """
+    Composes data for RealtyDetails model
+    """
     original_keys = [response.json()[val] for val in realty_details_keys.values()]
     self_keys = realty_details_keys.keys()
 
@@ -41,6 +47,9 @@ def make_realty_details_data(response: requests.models.Response, realty_details_
 
 
 def make_realty_data(response: requests.models.Response, realty_keys: List) -> Dict:
+    """
+    Composes data for Realty model
+    """
     realty_data = dict()
     for keys in realty_keys:
         id, model, response_key = keys
@@ -52,6 +61,9 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
 
 
 def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, SchemaMeta]]:
+    """
+    Creates records in the database on the ID list
+    """
     params = {
         "lang_id": DOMRIA_UKR,
         "api_key": DOMRIA_API_KEY,
@@ -74,6 +86,9 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
 
 def process_request(search_response: Dict, session: Session, page: int, page_ads_number: int) -> \
         list[tuple[SchemaMeta, SchemaMeta]]:
+    """
+    Distributes a list of ids to write to the database and return to the user
+    """
     page = page % page_ads_number
     current_items = search_response["items"][
                     page * page_ads_number - page_ads_number: page * page_ads_number

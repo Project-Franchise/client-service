@@ -8,7 +8,8 @@ from marshmallow.schema import SchemaMeta
 from sqlalchemy.orm import Session
 
 sys.path.append(os.getcwd())
-from service_api.grabbing_api.constants import DOMRIA_DOMAIN, DOMRIA_URL, REALTY_DETAILS_KEYS, REALTY_KEYS
+from service_api.grabbing_api.constants import DOMRIA_DOMAIN, DOMRIA_URL, REALTY_DETAILS_KEYS, REALTY_KEYS, DOMRIA_UKR, \
+    DOMRIA_API_KEY
 from service_api import schemas, session
 
 
@@ -52,8 +53,8 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
 
 def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, SchemaMeta]]:
     params = {
-        "lang_id": 4,
-        "api_key": os.environ['DOMRIA_API_KEY'],
+        "lang_id": DOMRIA_UKR,
+        "api_key": DOMRIA_API_KEY,
     }
 
     url = DOMRIA_DOMAIN + DOMRIA_URL["id"]

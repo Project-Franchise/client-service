@@ -38,7 +38,11 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float()
     published_at = fields.DateTime()
     original_id = fields.Integer()
+<<<<<<< HEAD
     original_url = fields.String(validate=validate.Length(max=255))
+=======
+    original_url = fields.String()
+>>>>>>> APIRoutes
 
     @post_load
     def create_state(self, data, **kwargs):

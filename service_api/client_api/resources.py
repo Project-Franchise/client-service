@@ -58,22 +58,24 @@ class StateResource(Resource):
 
 
 # bug: filters must be validated
-class RealtyFromDBResource(Resource):
+class RealtyResource(Resource):
     def get(self):
-        filters = request.args
-        realty_schema = schemas.RealtySchema()
-        with session_scope() as session:
-            realty = session.query(models.Realty).join(models.RealtyDetails, models.Realty.realty_details_id ==
-                                                       models.RealtyDetails.id).filter_by(**filters).all()
-        return realty_schema.dump(realty, many=True)
-
-
-class RealtyFromGrabbingResource(Resource):
-    def get(self):
-        filters = request.args
-
-        response = requests.get('', params=filters)
-        return response.json()
+        filters = request.args.to_dict()
+        try:
+            latest = filters.pop('latest')
+        except KeyError:
+            return {'error': 'flag latest not provided'}
+        if latest:
+            response = requests.get('', params=filters)
+            return response.json()
+        else:
+            realty_schema = schemas.RealtySchema()
+            if errors := realty_schema.validate(filters):
+                return errors
+            with session_scope() as session:
+                realty = session.query(models.Realty).\
+                    join(models.RealtyDetails).filter_by(**filters).all()
+            return realty_schema.dump(realty, many=True)
 
 
 class RealtyTypesResource(Resource):
@@ -110,8 +112,7 @@ class OperationTypeResource(Resource):
 api_.add_resource(IndexResource, "/")
 api_.add_resource(CitiesResource, '/cities/<state_id>')
 api_.add_resource(CityResource, '/cities/<state_id>/<id>')
-api_.add_resource(RealtyFromDBResource, '/realty_db')
-api_.add_resource(RealtyFromGrabbingResource, '/realty_gb')
+api_.add_resource(RealtyResource, '/realty')
 api_.add_resource(StatesResource, '/states/')
 api_.add_resource(StateResource, '/states/<id>')
 api_.add_resource(RealtyTypesResource, '/realty_types/')

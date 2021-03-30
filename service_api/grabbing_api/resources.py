@@ -14,6 +14,10 @@ import requests
 from ...service_api import CACHE
 from flask_restful import Resource
 from redis.exceptions import RedisError
+<<<<<<< HEAD
+=======
+from service_api import CACHE
+>>>>>>> main
 from service_api import Session as Session_
 from service_api import api_, models, schemas, CACHE
 from sqlalchemy.orm import Session

@@ -29,11 +29,6 @@ Base = declarative_base(metadata)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
-# entrypoint for caching using redis
-cache = redis.Redis(
-    host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])
-
 # entrypoint for caching using redis
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])

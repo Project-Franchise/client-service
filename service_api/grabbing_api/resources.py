@@ -10,7 +10,7 @@ from typing import List, Iterator
 import requests
 from flask_restful import Resource
 from redis.exceptions import RedisError
-from ...service_api import CACHE
+from service_api import CACHE
 from service_api import Session as Session_
 from service_api import api_, models, schemas
 from sqlalchemy.orm import Session

@@ -8,10 +8,12 @@ from typing import Iterator
 from sqlalchemy.exc import SQLAlchemyError
 from flask import request
 import requests
+from sqlalchemy.orm import Session as Session_class
+from sqlalchemy.dialects import postgresql
 
 
 @contextmanager
-def session_scope() -> Iterator[Session]:
+def session_scope() -> Iterator[Session_class]:
     session = Session()
     try:
         yield session
@@ -87,21 +89,38 @@ class RealtyResource(Resource):
     """
 
     def post(self):
-        filters = request.get_json()
+        filters: dict = request.get_json()
         try:
             latest = filters.pop('latest')
         except KeyError:
             return {'error': 'flag latest not provided'}
         if latest:
-            response = requests.get('', params=filters)
+            print("DOMRIA")
+            response = requests.post(
+                'http://127.0.0.1:5000/grabbing/latest', json=filters)
+            print(response.text)
             return response.json()
         else:
             realty_schema = schemas.RealtySchema()
-            if errors := realty_schema.validate(filters):
-                return errors
+            # if errors := realty_schema.validate(filters):
+            #     return errors
             with session_scope() as session:
-                realty = session.query(models.Realty).\
-                    join(models.RealtyDetails).filter_by(**filters).all()
+                filt = []
+                for key, value in filters.items():
+
+                    if hasattr(models.Realty, key):
+                        filt.append(getattr(models.Realty, key) == value)
+                    elif hasattr(models.RealtyDetails, key):
+                        attr = getattr(models.RealtyDetails, key)
+                        if isinstance(value, dict):
+                            filt.append(attr.between(
+                                value["from"], value["to"]))
+                        else:
+                            filt.append(attr == value)
+                   
+                realty = session.query(models.Realty).filter(*filt).join(models.RealtyDetails)
+                print(realty.statement.compile(dialect=postgresql.dialect()))
+                realty = realty.all()
             return realty_schema.dump(realty, many=True)
 
 

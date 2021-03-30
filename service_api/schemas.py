@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from marshmallow import Schema, fields, post_load
-=======
 from marshmallow import Schema, fields, post_load, validate
->>>>>>> main
 from service_api.models import State, City, OperationType, Realty, \
     RealtyDetails, RealtyType
 
@@ -38,11 +34,7 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float()
     published_at = fields.DateTime()
     original_id = fields.Integer()
-<<<<<<< HEAD
-    original_url = fields.String(validate=validate.Length(max=255))
-=======
     original_url = fields.String()
->>>>>>> APIRoutes
 
     @post_load
     def create_state(self, data, **kwargs):
@@ -72,11 +64,7 @@ class StateSchema(Schema):
         return State(**data)
 
 
-<<<<<<< HEAD
-class LocationSchema(Schema):
-=======
 class RealtySchema(Schema):
->>>>>>> main
 
     id = fields.Integer()
     city_id = fields.Integer(load_only=True)
@@ -91,11 +79,5 @@ class RealtySchema(Schema):
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
     @post_load
-<<<<<<< HEAD
-    def create_state(self, data):
-        # return Location(**data)
-        pass
-=======
     def create_state(self, data, **kwargs):
         return Realty(**data)
->>>>>>> main

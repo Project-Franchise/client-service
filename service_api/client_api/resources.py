@@ -1,3 +1,6 @@
+"""
+Api routes for client api
+"""
 from flask_restful import Resource
 from service_api import api_, Session, models, schemas
 from contextlib import contextmanager
@@ -25,18 +28,27 @@ def session_scope() -> Iterator[Session]:
 
 
 class IndexResource(Resource):
+    """
+    Route for resource indexing
+    """
     def get(self):
         return "Project Realty"
 
 
 class CityResource(Resource):
-    def get(self, state_id, id):
+    """
+    Route to retrieve city by state and city id
+    """
+    def get(self, state_id, city_id):
         with session_scope() as session:
-            city = session.query(models.City).filter_by(state_id=state_id, id=id).first()
+            city = session.query(models.City).filter_by(state_id=state_id, id=city_id).first()
         return schemas.CitySchema().dump(city)
 
 
 class CitiesResource(Resource):
+    """
+    Route to retrieve all cities in a particular state
+    """
     def get(self, state_id):
         with session_scope() as session:
             cities = session.query(models.City).filter_by(state_id=state_id).all()
@@ -59,8 +71,12 @@ class StateResource(Resource):
 
 # bug: filters must be validated
 class RealtyResource(Resource):
-    def get(self):
-        filters = request.args.to_dict()
+    """
+    Route to retrieve a list of realty from database or grabbing
+    depending on 'latest' flag
+    """
+    def post(self):
+        filters = request.get_json()
         try:
             latest = filters.pop('latest')
         except KeyError:

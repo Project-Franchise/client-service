@@ -7,6 +7,29 @@ from marshmallow import Schema, fields, post_load, validate, ValidationError
 
 from service_api.models import State, City, OperationType, Realty, \
     RealtyDetails, RealtyType
+from service_api.grabbing_api.constants \
+    import ADDITIONAL_FILTERS
+
+
+def FiltersValidation(params):
+    """
+    Method that validates filters for Realty and Realty_details
+    :param: dict
+    :return: List[dict]
+    """
+    realty_dict = dict()
+    realty_details_dict = dict()
+    additional_params_dict = dict()
+    for key in params:
+        if hasattr(Realty, key):
+            realty_dict[key] = params.get(key)
+        elif hasattr(RealtyDetails, key):
+            realty_details_dict[key] = params.get(key)
+        elif key in ADDITIONAL_FILTERS:
+            additional_params_dict[key] = params.get(key)
+        else:
+            return "ERROR!"
+    return [realty_dict, realty_details_dict, additional_params_dict]
 
 
 def validate_positive_field(value):

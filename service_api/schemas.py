@@ -3,12 +3,11 @@ Schemas for models with fields validation
 """
 from datetime import datetime
 
-from marshmallow import Schema, fields, post_load, validate, ValidationError
+from marshmallow import Schema, ValidationError, fields, post_load, validate
 
-from service_api.models import State, City, OperationType, Realty, \
-    RealtyDetails, RealtyType
-from service_api.grabbing_api.constants \
-    import ADDITIONAL_FILTERS
+from service_api.grabbing_api.constants import ADDITIONAL_FILTERS
+from service_api.models import (City, OperationType, Realty, RealtyDetails,
+                                RealtyType, State)
 
 
 def FiltersValidation(params):

@@ -1,28 +1,31 @@
 """
 Resources and urls for grabbing service
 """
-import itertools
-import pickle
-import json
-
-from contextlib import contextmanager
 import datetime
-from typing import List, Iterator
+import itertools
+import json
+import pickle
+from contextlib import contextmanager
+from typing import Iterator, List
 
-from flask import request
 import requests
+from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
+from service_api import CACHE
 from service_api import Session as Session_
-from service_api import api_, models, schemas, CACHE
-from sqlalchemy.orm import Session
+from service_api import api_
+from service_api.models import City, RealtyType, State
+from service_api.schemas import CitySchema, Schema, StateSchema
 from sqlalchemy.exc import SQLAlchemyError
-from .utils.grabbing_utils import process_request
+from sqlalchemy.orm import Session
 
-from service_api.constants import URLS
-from service_api.grabbing_api import constants
 from .characteristics import get_characteristics
+from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
+                        REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
+                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, URLS)
 from .realty_requests import RealtyRequestToDomria
+from .utils.grabbing_utils import process_request
 
 
 @contextmanager
@@ -52,16 +55,16 @@ class CitiesFromDomriaResource(Resource):
         Get all cities from all states
         :return: list of serialized cities
         """
-        cached_sates_status = CACHE.get(constants.REDIS_STATES_FETCHED)
+        cached_sates_status = CACHE.get(REDIS_STATES_FETCHED)
         if cached_sates_status is not None and \
            pickle.loads(cached_sates_status):
 
-            city_schema = schemas.CitySchema(many=True)
+            city_schema = CitySchema(many=True)
 
-            cached_status = CACHE.get(constants.REDIS_CITIES_FETCHED)
+            cached_status = CACHE.get(REDIS_CITIES_FETCHED)
             if cached_status is not None and pickle.loads(cached_status):
                 with session_scope() as session:
-                    cities = session.query(models.City).all()
+                    cities = session.query(City).all()
 
                 return {
                     "status": "Allready in db",
@@ -69,14 +72,14 @@ class CitiesFromDomriaResource(Resource):
                 }
 
             with session_scope() as session:
-                states = session.query(models.State).all()
+                states = session.query(State).all()
 
             city_generator = (self.get_cities_by_state(state, city_schema)
                               for state in states)
             cities = list(itertools.chain.from_iterable(city_generator))
 
             try:
-                CACHE.set(constants.REDIS_CITIES_FETCHED,
+                CACHE.set(REDIS_CITIES_FETCHED,
                           pickle.dumps(True))
             except RedisError:
                 return {
@@ -95,8 +98,8 @@ class CitiesFromDomriaResource(Resource):
         }
 
     @staticmethod
-    def get_cities_by_state(state: models.State,
-                            city_schema: schemas.Schema) -> List[dict]:
+    def get_cities_by_state(state: State,
+                            city_schema: Schema) -> List[dict]:
         """
         Getting cities from DOMRIA by original state id.
         Returns list of serialized cities
@@ -104,12 +107,12 @@ class CitiesFromDomriaResource(Resource):
         :return: List[dict]
         """
         params = {
-            "lang_id": constants.DOMRIA_UKR,
-            "api_key": constants.DOMRIA_API_KEY
+            "lang_id": DOMRIA_UKR,
+            "api_key": DOMRIA_API_KEY
         }
 
-        url = constants.DOMRIA_DOMAIN + \
-            constants.DOMRIA_URL["cities"] + f"/{state.original_id}"
+        url = DOMRIA_DOMAIN + \
+            DOMRIA_URL["cities"] + f"/{state.original_id}"
         response = requests.get(url, params=params)
 
         cities_json = response.json()
@@ -135,8 +138,8 @@ class CitiesFromDomriaResource(Resource):
         and delete redis fetch value too
         """
         with session_scope() as session:
-            session.query(models.City).delete()
-            CACHE.delete(constants.REDIS_CITIES_FETCHED)
+            session.query(City).delete()
+            CACHE.delete(REDIS_CITIES_FETCHED)
 
         return "SUCCESS"
 
@@ -152,23 +155,22 @@ class StatesFromDomriaResource(Resource):
         :return: list of serialized states
         """
 
-        state_schema = schemas.StateSchema(many=True)
+        state_schema = StateSchema(many=True)
 
-        cached_status = CACHE.get(constants.REDIS_STATES_FETCHED)
+        cached_status = CACHE.get(REDIS_STATES_FETCHED)
         if cached_status is not None and pickle.loads(cached_status):
             with session_scope() as session:
-                states_from_db = session.query(models.State).all()
+                states_from_db = session.query(State).all()
             return {
                 "status": "Allready in db",
                 "data": state_schema.dump(states_from_db)
             }
 
         params = {
-            "lang_id": constants.DOMRIA_UKR,
-            "api_key": constants.DOMRIA_API_KEY
+            "lang_id": DOMRIA_UKR,
+            "api_key": DOMRIA_API_KEY
         }
-        response = requests.get(constants.DOMRIA_DOMAIN +
-                                constants.DOMRIA_URL["states"], params=params)
+        response = requests.get(DOMRIA_DOMAIN + DOMRIA_URL["states"], params=params)
 
         states_json = response.json()
 
@@ -181,7 +183,7 @@ class StatesFromDomriaResource(Resource):
         with session_scope() as session:
             session.add_all(states)
 
-        CACHE.set(constants.REDIS_STATES_FETCHED, pickle.dumps(True))
+        CACHE.set(REDIS_STATES_FETCHED, pickle.dumps(True))
 
         return {
             "status": "fetched from domria",
@@ -194,10 +196,10 @@ class StatesFromDomriaResource(Resource):
         and delete redis fetch value for both
         """
         with session_scope as session:
-            session.query(models.City).delete()
-            session.query(models.State).delete()
-            CACHE.delete(constants.REDIS_STATES_FETCHED)
-            CACHE.delete(constants.REDIS_CITIES_FETCHED)
+            session.query(City).delete()
+            session.query(State).delete()
+            CACHE.delete(REDIS_STATES_FETCHED)
+            CACHE.delete(REDIS_CITIES_FETCHED)
 
         return "SUCCESS"
 
@@ -207,16 +209,14 @@ class LatestDataFromDomriaResource(Resource):
     def post(self):
         params = request.get_json()
 
-        print("CACHE")
-
-        cached_characteristics = CACHE.get(constants.REDIS_CHARACTERISTICS)
+        cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
             try:
                 # load new characteristics
                 mapper = get_characteristics()
-                CACHE.set(constants.REDIS_CHARACTERISTICS,
+                CACHE.set(REDIS_CHARACTERISTICS,
                           json.dumps(mapper),
-                          datetime.timedelta(**constants.REDIS_CHARACTERISTICS_EX_TIME))
+                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
             except json.JSONDecodeError:
                 return {"status": "failed",
                         "error_message": "json_error"}
@@ -228,7 +228,7 @@ class LatestDataFromDomriaResource(Resource):
 
         # validation
         with session_scope() as session:
-            realty_type = session.query(models.RealtyType).get(
+            realty_type = session.query(RealtyType).get(
                 params.get("realty_type"))
 
         try:

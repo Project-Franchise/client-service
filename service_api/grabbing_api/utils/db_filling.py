@@ -1,11 +1,11 @@
-from typing import Dict
 import json
-import sys
 import os
+import sys
+from typing import Dict
 
 sys.path.append(os.getcwd())
-from service_api.models import RealtyType, OperationType
 from service_api.grabbing_api.resources import session_scope
+from service_api.models import OperationType, RealtyType
 
 
 def fill_db(values: Dict, Model):

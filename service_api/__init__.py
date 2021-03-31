@@ -1,9 +1,10 @@
 import os
+
+import redis
 from flask import Flask
 from flask_restful import Api, output_json
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy import create_engine, MetaData
-import redis
 
 
 class UnicodeApi(Api):
@@ -32,7 +33,3 @@ session = Session()
 # entrypoint for caching using redis
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])
-
-from . import models
-from service_api import client_api
-from service_api import grabbing_api

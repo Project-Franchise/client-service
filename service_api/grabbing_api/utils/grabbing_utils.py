@@ -1,5 +1,6 @@
 import os
 import sys
+from json import JSONDecodeError
 from typing import List, Tuple, Dict
 
 import requests
@@ -75,10 +76,19 @@ def create_records(id_list: List) -> List[Tuple[SchemaMeta, SchemaMeta]]:
     realty_models = []
     for realty_id in id_list:
         response = requests.get(url + "/" + str(realty_id), params=params)
-        realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
+
+        try:
+            realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
+        except JSONDecodeError as error:
+            raise JSONDecodeError
+
         realty_details = load_data(realty_details_data, schemas.RealtyDetailsSchema)
 
-        realty_data = make_realty_data(response, REALTY_KEYS)
+        try:
+            realty_data = make_realty_data(response, REALTY_KEYS)
+        except JSONDecodeError as error:
+            raise JSONDecodeError
+
         realty = load_data(realty_data, schemas.RealtySchema)
 
         realty_models.append((realty, realty_details))

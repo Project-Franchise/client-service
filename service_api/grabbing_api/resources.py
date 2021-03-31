@@ -12,38 +12,22 @@ import requests
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
-from service_api import CACHE
-from service_api import Session as Session_
-from service_api import api_
-from service_api.models import City, RealtyType, State
-from service_api.schemas import Schema, StateSchema, CitySchema
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from .characteristics import get_characteristics
+from service_api import CACHE
+from service_api import Session as Session_
+from service_api import api_
+from service_api import session_scope
 from service_api.constants import URLS
+from service_api.models import City, RealtyType, State
+from service_api.schemas import Schema, StateSchema, CitySchema
+from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
                         REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
                         REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED)
 from .realty_requests import RealtyRequestToDomria
 from .utils.grabbing_utils import process_request
-
-
-@contextmanager
-def session_scope() -> Iterator[Session]:
-    session = Session_()
-    try:
-        yield session
-        session.commit()
-    except SQLAlchemyError:
-        session.rollback()
-        raise
-    else:
-        try:
-            session.commit()
-        except SQLAlchemyError:
-            session.rollback()
-            raise
 
 
 class CitiesFromDomriaResource(Resource):

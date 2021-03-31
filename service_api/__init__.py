@@ -1,9 +1,12 @@
 import os
+from contextlib import contextmanager
+from typing import Iterator
 
 import redis
 from flask import Flask
 from flask_restful import Api, output_json
 from sqlalchemy import MetaData, create_engine
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 
@@ -33,6 +36,23 @@ session = Session()
 # entrypoint for caching using redis
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])
+
+
+@contextmanager
+def session_scope() -> Iterator[Session]:
+    try:
+        yield session
+        session.commit()
+    except SQLAlchemyError:
+        session.rollback()
+        raise
+    else:
+        try:
+            session.commit()
+        except SQLAlchemyError:
+            session.rollback()
+            raise
+
 
 from . import models, schemas
 from service_api import client_api

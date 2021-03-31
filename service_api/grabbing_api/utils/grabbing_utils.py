@@ -75,6 +75,7 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
     for realty_id in id_list:
         response = requests.get(url + "/" + str(realty_id), params=params)
         realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
+
         realty_details = load_data(realty_details_data, session, schemas.RealtyDetailsSchema)
 
         realty_data = make_realty_data(response, REALTY_KEYS)
@@ -82,7 +83,7 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
 
         schema = schemas.RealtySchema()
         elem = schema.dump(realty)
-      
+
         realty_models.append(elem)
 
     return realty_models

@@ -1,3 +1,6 @@
+"""
+Sending requests to Domria
+"""
 from . import constants
 import requests
 
@@ -38,25 +41,7 @@ class RealtyRequestToDomria():
         :return: Dict
         """
 
-        params = {
-            'category': 1,
-            'realty_type': 2,
-            'operation_type': 1,
-            'state_id': 10,
-            'city_id': 10,
-            'district_id': [15187, 15189, 15188],
-            209: {'from': 1, 'to': 3},
-            214: {'from': 60, 'to': 90},
-            216: {'from': 30, 'to': 50},
-            218: {'from': 4, 'to': 9},
-            227: {'from': 3, 'to': 7},
-            443: 442,
-            234: {'from': 20000, 'to': 90000},
-            242: 239,
-            273: 273,
-            1437: 1434,
-            'api_key': constants.DOMRIA_API_KEY,
-        }
+        params['api_key'] = constants.DOMRIA_API_KEY,
 
         new_params = self.form_new_dict(params)
 

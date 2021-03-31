@@ -61,23 +61,24 @@ class CitiesFromDomriaResource(Resource):
                     "status": "Allready in db",
                     "data": city_schema.dump(cities)
                 }
+                
             with session_scope() as session:
-                states = session.query(models.State).all()
+                states = session.query(models.State).all()[:1]
 
-            with session_scope() as session:
-                city_generator = (self.get_cities_by_state(state, city_schema)
-                                  for state in states)
-                cities = list(itertools.chain.from_iterable(city_generator))
+           
+            city_generator = (self.get_cities_by_state(state, city_schema)
+                                for state in states)
+            cities = list(itertools.chain.from_iterable(city_generator))
 
-                try:
-                    CACHE.set(constants.REDIS_CITIES_FETCHED,
-                              pickle.dumps(True))
-                except RedisError:
-                    session.rollback()
-                    return {
-                        "status": "redis failed",
-                        "data": None
-                    }
+            try:
+                CACHE.set(constants.REDIS_CITIES_FETCHED,
+                            pickle.dumps(True))
+            except RedisError:
+                
+                return {
+                    "status": "redis failed",
+                    "data": None
+                }
 
             return {
                 "status": "fetched from domria",
@@ -129,7 +130,7 @@ class CitiesFromDomriaResource(Resource):
         Drops all cities from DB
         and delete redis fetch value too
         """
-        with session_scope as session:
+        with session_scope() as session:
             session.query(models.City).delete()
             CACHE.delete(constants.REDIS_CITIES_FETCHED)
 

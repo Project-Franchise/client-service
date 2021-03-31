@@ -7,7 +7,8 @@ from marshmallow import Schema, fields, post_load, validate, ValidationError
 
 from service_api.models import State, City, OperationType, Realty, \
     RealtyDetails, RealtyType
-from service_api.grabbing_api.constants import ADDITIONAL_FILTERS
+from service_api.grabbing_api.constants \
+    import ADDITIONAL_FILTERS
 
 
 def FiltersValidation(params):

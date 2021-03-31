@@ -12,6 +12,7 @@ from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
                                                 REALTY_DETAILS_KEYS,
                                                 REALTY_KEYS)
 from sqlalchemy.orm import Session
+import json
 
 sys.path.append(os.getcwd())
 
@@ -81,7 +82,10 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
         realty_data = make_realty_data(response, REALTY_KEYS)
         realty = load_data(realty_data, session, RealtySchema)
 
-        realty_models.append((realty, realty_details))
+        schema = schemas.RealtySchema()
+        elem = schema.dump(realty)
+
+        realty_models.append(elem)
 
     return realty_models
 

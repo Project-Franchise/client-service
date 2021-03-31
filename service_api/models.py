@@ -1,4 +1,4 @@
-from sqlalchemy import Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, BIGINT, VARCHAR, Float, TIMESTAMP, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from service_api import Base
 
@@ -49,6 +49,10 @@ class Realty(Base):
     realty_details_id = Column(BIGINT, ForeignKey('realty_details.id', ondelete='CASCADE'), nullable=False, unique=True)
     realty_type_id = Column(BIGINT, ForeignKey('realty_type.id', ondelete='CASCADE'), nullable=False)
     operation_type_id = Column(BIGINT, ForeignKey('operation_type.id', ondelete='SET NULL'), nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint(city_id, state_id, realty_details_id, realty_type_id, operation_type_id),
+    )
 
 
 class City(Base):

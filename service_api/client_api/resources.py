@@ -13,6 +13,9 @@ from errors import BadRequestException, ServiceUnavailableException
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
+    """
+    Context manager to manage session lifecycle
+    """
     session = Session()
     try:
         yield session
@@ -38,9 +41,14 @@ class IndexResource(Resource):
 
 class CityResource(Resource):
     """
-    Route to retrieve city by state and/or city id
+    Route to retrieve city/cities by state and/or city id
     """
     def get(self):
+        """
+        Method that returns city/cities by state and/or city id
+        :params: int, int
+        :return: json(schema)
+        """
         filters = request.args
         if not filters:
             raise BadRequestException('No filters provided')
@@ -50,16 +58,32 @@ class CityResource(Resource):
 
 
 class StatesResource(Resource):
+    """
+    Route to retrieve all states
+    """
     def get(self):
+        """
+        Method that returns list of all available states
+        :param:
+        :return: json(schema)
+        """
         with session_scope() as session:
             states = session.query(models.State).filter_by().all()
         return schemas.StateSchema(many=True).dump(states), 200
 
 
 class StateResource(Resource):
-    def get(self, id):
+    """
+    Route to retrieve a particular state by id
+    """
+    def get(self, state_id):
+        """
+        Method that returns a particular state by id
+        :param: int
+        :return: json(schema)
+        """
         with session_scope() as session:
-            state = session.query(models.State).filter_by(id=id).first()
+            state = session.query(models.State).filter_by(id=state_id).first()
         return schemas.StateSchema().dump(state), 200
 
 
@@ -81,17 +105,19 @@ class RealtyResource(Resource):
             if response.status_code == 503:
                 raise ServiceUnavailableException('DOMRIA does not respond')
             return response.json(), 200
-        else:
-            realty_schema = schemas.RealtySchema()
-            if errors := realty_schema.validate(filters):
-                raise BadRequestException(errors)
-            with session_scope() as session:
-                realty = session.query(models.Realty).\
-                    join(models.RealtyDetails).filter_by(**filters).all()
-            return realty_schema.dump(realty, many=True), 200
+        realty_schema = schemas.RealtySchema()
+        if errors := realty_schema.validate(filters):
+            raise BadRequestException(errors)
+        with session_scope() as session:
+            realty = session.query(models.Realty).\
+                join(models.RealtyDetails).filter_by(**filters).all()
+        return realty_schema.dump(realty, many=True), 200
 
 
 class RealtyTypesResource(Resource):
+    """
+    Route to retrieve all realty types
+    """
     def get(self):
         with session_scope() as session:
             realty_types = session.query(models.RealtyType).filter_by().all()

@@ -3,9 +3,8 @@ Resources and urls for grabbing service
 """
 import itertools
 import pickle
-
 from contextlib import contextmanager
-from typing import List, Iterator
+from typing import Iterator, List
 
 import requests
 from flask_restful import Resource
@@ -13,8 +12,8 @@ from redis.exceptions import RedisError
 from service_api import CACHE
 from service_api import Session as Session_
 from service_api import api_, models, schemas
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
 from . import constants
 
@@ -61,20 +60,18 @@ class CitiesFromDomriaResource(Resource):
                     "status": "Allready in db",
                     "data": city_schema.dump(cities)
                 }
-                
-            with session_scope() as session:
-                states = session.query(models.State).all()[:1]
 
-           
+            with session_scope() as session:
+                states = session.query(models.State).all()
+
             city_generator = (self.get_cities_by_state(state, city_schema)
-                                for state in states)
+                              for state in states)
             cities = list(itertools.chain.from_iterable(city_generator))
 
             try:
                 CACHE.set(constants.REDIS_CITIES_FETCHED,
-                            pickle.dumps(True))
+                          pickle.dumps(True))
             except RedisError:
-                
                 return {
                     "status": "redis failed",
                     "data": None
@@ -198,7 +195,7 @@ class StatesFromDomriaResource(Resource):
         return "SUCCESS"
 
 
-class RequestToDomria():
+class RequestToDomria:
     """
     Send requests for getting list of id of items
     """
@@ -212,9 +209,11 @@ class RequestToDomria():
         for parameters in params:
             if isinstance(parameters, int):
                 if isinstance(params.get(parameters), dict):
-                    new_key_from = 'characteristic%5B' + str(parameters) + '%5D%5Bfrom%5D'
+                    new_key_from = 'characteristic%5B' + \
+                        str(parameters) + '%5D%5Bfrom%5D'
                     new_value_from = params[parameters].get("from")
-                    new_key_to = 'characteristic%5B' + str(parameters) + '%5D%5Bto%5D'
+                    new_key_to = 'characteristic%5B' + \
+                        str(parameters) + '%5D%5Bto%5D'
                     new_value_to = params[parameters].get("to")
                     new_params[new_key_from] = new_value_from
                     new_params[new_key_to] = new_value_to

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from marshmallow import Schema, ValidationError, fields, post_load, validate
 
-from service_api.grabbing_api.constants import ADDITIONAL_FILTERS
+from .constants import ADDITIONAL_FILTERS
 from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
 

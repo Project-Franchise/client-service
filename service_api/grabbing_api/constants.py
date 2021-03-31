@@ -5,6 +5,7 @@ from service_api.models import (City, OperationType, RealtyDetails, RealtyType,
 
 DOMRIA_DOMAIN: str = "https://developers.ria.com/dom"
 
+
 DOMRIA_URL = {
     "cities": "/cities",
     "states": "/states",
@@ -44,4 +45,3 @@ REDIS_CHARACTERISTICS_EX_TIME = {
 }
 
 GENERAL_CHARACTERISTICS = ["city_id"]
-ADDITIONAL_FILTERS = ["page", "page_ads_number"]

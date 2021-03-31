@@ -16,3 +16,5 @@ URLS = {
         "GET_LATEST_URL": "/grabbing/latest"
     }
 }
+
+ADDITIONAL_FILTERS = ["page", "page_ads_number"]

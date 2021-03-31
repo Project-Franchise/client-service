@@ -136,12 +136,14 @@ class RealtyTypesResource(Resource):
 
 class RealtyTypeResource(Resource):
     """
-    Method that retrieves realty type by realty type id
-    :param: int
-    :return: json(schema)
+    Route to retrieve realty type by realty type id
     """
     def get(self, realty_type_id):
-
+        """
+        Method that retrieves realty type by realty type id
+        :param: int
+        :return: json(schema)
+        """
         with session_scope() as session:
             realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
         return schemas.RealtyTypeSchema().dump(realty_type), 200

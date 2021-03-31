@@ -73,17 +73,29 @@ class ServiceUnavailableException(Exception):
 
 
 def handle_error(error):
+    """
+    Method that handles errors
+    :return: json, status_code
+    """
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
 
 
 def not_found(error):
+    """
+    Method that handles Not Found
+    :return: json, status_code
+    """
     response = jsonify(code=404, type='NOT_FOUND', message='Not found')
     return response, 404
 
 
 def internal_server_error(error):
+    """
+    Method that handles Internal Server Error
+    :return: json, status_code
+    """
     response = jsonify(code=500, type='INTERNAL_SERVER_ERROR', message='Internal Server Error')
     return response, 500
 

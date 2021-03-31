@@ -1,13 +1,13 @@
 """
 Api routes for client api
 """
-from flask_restful import Resource
-from service_api import api_, Session, models, schemas
 from contextlib import contextmanager
 from typing import Iterator
+from flask_restful import Resource
 from sqlalchemy.exc import SQLAlchemyError
 from flask import request
 import requests
+from service_api import api_, Session, models, schemas
 from errors import BadRequestException, ServiceUnavailableException
 
 
@@ -93,6 +93,11 @@ class RealtyResource(Resource):
     depending on 'latest' flag
     """
     def post(self):
+        """
+        Method that retrieves a list of realty from database or grabbing
+        :param: json
+        :return: json(schema)
+        """
         filters = request.get_json()
         if not filters:
             raise BadRequestException('No filters provided')
@@ -119,27 +124,54 @@ class RealtyTypesResource(Resource):
     Route to retrieve all realty types
     """
     def get(self):
+        """
+        Method that retrieves all realty types
+        :param:
+        :return: json(schema)
+        """
         with session_scope() as session:
             realty_types = session.query(models.RealtyType).filter_by().all()
         return schemas.RealtyTypeSchema(many=True).dump(realty_types), 200
 
 
 class RealtyTypeResource(Resource):
+    """
+    Method that retrieves realty type by realty type id
+    :param: int
+    :return: json(schema)
+    """
     def get(self, realty_type_id):
+
         with session_scope() as session:
             realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
         return schemas.RealtyTypeSchema().dump(realty_type), 200
 
 
 class OperationTypesResource(Resource):
+    """
+    Route to retrieve all operation types
+    """
     def get(self):
+        """
+        Method that retrieves all operation types
+        :param:
+        :return: json(schema)
+        """
         with session_scope() as session:
             operation_types = session.query(models.OperationType).filter_by().all()
         return schemas.OperationTypeSchema(many=True).dump(operation_types), 200
 
 
 class OperationTypeResource(Resource):
+    """
+    Route to retrieve operation type by operation type id
+    """
     def get(self, operation_type_id):
+        """
+        Method that retrieves operation type by operation type id
+        :param: int
+        :return: json(schema)
+        """
         with session_scope() as session:
             operation_type = session.query(models.OperationType).filter_by(id=operation_type_id).first()
         return schemas.OperationTypeSchema().dump(operation_type), 200

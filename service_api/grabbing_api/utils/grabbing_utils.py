@@ -1,21 +1,22 @@
+from service_api.schemas import RealtySchema, RealtyDetailsSchema
 import os
 import sys
+from json import JSONDecodeError
 from typing import Dict, List, Tuple
 
 import requests
 from marshmallow import ValidationError
 from marshmallow.schema import SchemaMeta
-from service_api import session
+
+sys.path.append(os.getcwd())
 from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
                                                 DOMRIA_UKR, DOMRIA_URL,
                                                 REALTY_DETAILS_KEYS,
                                                 REALTY_KEYS)
-from service_api.schemas import RealtyDetailsSchema, RealtySchema
-from sqlalchemy.orm import Session
+from service_api.grabbing_api.resources import session_scope
 
-sys.path.append(os.getcwd())
 
-def load_data(data: Dict, session: Session, ModelSchema: SchemaMeta) -> SchemaMeta:
+def load_data(data: Dict, ModelSchema: SchemaMeta) -> SchemaMeta:
     """
     Stores data in a database according to a given scheme
     """
@@ -24,10 +25,11 @@ def load_data(data: Dict, session: Session, ModelSchema: SchemaMeta) -> SchemaMe
     except ValidationError as error:
         print(error.messages)
         print("Validation failed", 400)
-        return ModelSchema().load(dict())
+        raise ValidationError
 
-    session.add(res_data)
-    session.commit()
+    with session_scope() as session:
+        session.add(res_data)
+        session.commit()
     return res_data
 
 
@@ -53,16 +55,17 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
     Composes data for Realty model
     """
     realty_data = dict()
-    for keys in realty_keys:
-        id, model, response_key = keys
-        realty_data[id] = (session.query(model).filter(
-            model.original_id == response.json()[response_key]
-        ).first()).id
+    with session_scope() as session:
+        for keys in realty_keys:
+            id, model, response_key = keys
+            realty_data[id] = (session.query(model).filter(
+                model.original_id == response.json()[response_key]
+            ).first()).id
 
     return realty_data
 
 
-def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, SchemaMeta]]:
+def create_records(id_list: List) -> List[Dict]:
     """
     Creates records in the database on the ID list
     """
@@ -75,11 +78,20 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
     realty_models = []
     for realty_id in id_list:
         response = requests.get(url + "/" + str(realty_id), params=params)
-        realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
-        realty_details = load_data(realty_details_data, session, RealtyDetailsSchema)
 
-        realty_data = make_realty_data(response, REALTY_KEYS)
-        realty = load_data(realty_data, session, RealtySchema)
+        try:
+            realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
+        except JSONDecodeError as error:
+            raise JSONDecodeError
+
+        load_data(realty_details_data, RealtyDetailsSchema)
+
+        try:
+            realty_data = make_realty_data(response, REALTY_KEYS)
+        except JSONDecodeError as error:
+            raise JSONDecodeError
+
+        realty = load_data(realty_data, RealtySchema)
 
         schema = RealtySchema()
         elem = schema.dump(realty)
@@ -89,8 +101,7 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
     return realty_models
 
 
-def process_request(search_response: Dict, session: Session, page: int, page_ads_number: int) -> \
-        list[tuple[SchemaMeta, SchemaMeta]]:
+def process_request(search_response: Dict, page: int, page_ads_number: int) -> List[Dict]:
     """
     Distributes a list of ids to write to the database and return to the user
     """
@@ -99,4 +110,4 @@ def process_request(search_response: Dict, session: Session, page: int, page_ads
         page * page_ads_number - page_ads_number: page * page_ads_number
     ]
 
-    return create_records(current_items, session)
+    return create_records(current_items)

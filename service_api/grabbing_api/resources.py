@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
                         REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
-                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED)
+                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, URLS)
 from .realty_requests import RealtyRequestToDomria
 from .utils.grabbing_utils import process_request
 
@@ -256,7 +256,7 @@ class LatestDataFromDomriaResource(Resource):
         return realty_json
 
 
-# Be careful. Use this lisnks only once!!
-api_.add_resource(StatesFromDomriaResource, "/grabbing/states")
-api_.add_resource(CitiesFromDomriaResource, "/grabbing/cities")
-api_.add_resource(LatestDataFromDomriaResource, "/grabbing/latest")
+# Be careful. Use this links only once!!
+api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
+api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
+api_.add_resource(LatestDataFromDomriaResource, URLS["GRABBING"]["GET_LATEST_URL"])

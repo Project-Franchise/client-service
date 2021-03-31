@@ -7,6 +7,7 @@ import requests
 from marshmallow import ValidationError
 from marshmallow.schema import SchemaMeta
 
+
 sys.path.append(os.getcwd())
 from service_api.grabbing_api.resources import session_scope
 from service_api.grabbing_api.constants import DOMRIA_DOMAIN, DOMRIA_URL, REALTY_DETAILS_KEYS, REALTY_KEYS, DOMRIA_UKR, \
@@ -63,7 +64,7 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
     return realty_data
 
 
-def create_records(id_list: List) -> List[Tuple[SchemaMeta, SchemaMeta]]:
+def create_records(id_list: List) -> List[Dict]:
     """
     Creates records in the database on the ID list
     """
@@ -82,7 +83,7 @@ def create_records(id_list: List) -> List[Tuple[SchemaMeta, SchemaMeta]]:
         except JSONDecodeError as error:
             raise JSONDecodeError
 
-        realty_details = load_data(realty_details_data, schemas.RealtyDetailsSchema)
+        load_data(realty_details_data, schemas.RealtyDetailsSchema)
 
         try:
             realty_data = make_realty_data(response, REALTY_KEYS)
@@ -91,13 +92,15 @@ def create_records(id_list: List) -> List[Tuple[SchemaMeta, SchemaMeta]]:
 
         realty = load_data(realty_data, schemas.RealtySchema)
 
-        realty_models.append((realty, realty_details))
+        schema = schemas.RealtySchema()
+        elem = schema.dump(realty)
+
+        realty_models.append(elem)
 
     return realty_models
 
 
-def process_request(search_response: Dict, page: int, page_ads_number: int) -> \
-        list[tuple[SchemaMeta, SchemaMeta]]:
+def process_request(search_response: Dict, page: int, page_ads_number: int) -> List[Dict]:
     """
     Distributes a list of ids to write to the database and return to the user
     """

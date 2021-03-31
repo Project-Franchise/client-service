@@ -8,6 +8,7 @@ from typing import Iterator
 from sqlalchemy.exc import SQLAlchemyError
 from flask import request
 import requests
+from errors import BadRequestException
 
 
 @contextmanager
@@ -37,22 +38,15 @@ class IndexResource(Resource):
 
 class CityResource(Resource):
     """
-    Route to retrieve city by state and city id
+    Route to retrieve city by state and/or city id
     """
-    def get(self, state_id, city_id):
+    def get(self):
+        filters = request.args
+        if not filters:
+            raise BadRequestException('No filters provided')
         with session_scope() as session:
-            city = session.query(models.City).filter_by(state_id=state_id, id=city_id).first()
-        return schemas.CitySchema().dump(city)
-
-
-class CitiesResource(Resource):
-    """
-    Route to retrieve all cities in a particular state
-    """
-    def get(self, state_id):
-        with session_scope() as session:
-            cities = session.query(models.City).filter_by(state_id=state_id).all()
-        return schemas.CitySchema(many=True).dump(cities)
+            city = session.query(models.City).filter_by(**filters).all()
+        return schemas.CitySchema(many=True).dump(city)
 
 
 class StatesResource(Resource):
@@ -69,7 +63,6 @@ class StateResource(Resource):
         return schemas.StateSchema().dump(state)
 
 
-# bug: filters must be validated
 class RealtyResource(Resource):
     """
     Route to retrieve a list of realty from database or grabbing
@@ -77,17 +70,19 @@ class RealtyResource(Resource):
     """
     def post(self):
         filters = request.get_json()
+        if not filters:
+            raise BadRequestException('No filters provided')
         try:
             latest = filters.pop('latest')
         except KeyError:
-            return {'error': 'flag latest not provided'}
+            raise BadRequestException('Flag latest not provided')
         if latest:
             response = requests.get('', params=filters)
             return response.json()
         else:
             realty_schema = schemas.RealtySchema()
             if errors := realty_schema.validate(filters):
-                return errors
+                raise BadRequestException(errors)
             with session_scope() as session:
                 realty = session.query(models.Realty).\
                     join(models.RealtyDetails).filter_by(**filters).all()
@@ -96,11 +91,8 @@ class RealtyResource(Resource):
 
 class RealtyTypesResource(Resource):
     def get(self):
-        filters = request.args
-        if int(filters["id"]) < 0:
-            return {'error': 'invalid id'}
         with session_scope() as session:
-            realty_types = session.query(models.RealtyType).filter_by(**filters).all()
+            realty_types = session.query(models.RealtyType).filter_by().all()
         return schemas.RealtyTypeSchema(many=True).dump(realty_types)
 
 
@@ -126,8 +118,7 @@ class OperationTypeResource(Resource):
 
 
 api_.add_resource(IndexResource, "/")
-api_.add_resource(CitiesResource, '/cities/<state_id>')
-api_.add_resource(CityResource, '/cities/<state_id>/<id>')
+api_.add_resource(CityResource, '/cities')
 api_.add_resource(RealtyResource, '/realty')
 api_.add_resource(StatesResource, '/states/')
 api_.add_resource(StateResource, '/states/<id>')

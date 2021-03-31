@@ -63,7 +63,7 @@ class CityResource(Resource):
         """
         filters = request.args
         if not filters:
-            raise BadRequestException('No filters provided')
+            raise BadRequestException("No filters provided")
         with session_scope() as session:
             city = session.query(models.City).filter_by(**filters).all()
         return schemas.CitySchema(many=True).dump(city), 200
@@ -102,7 +102,7 @@ class StateResource(Resource):
 class RealtyResource(Resource):
     """
     Route to retrieve a list of realty from database or grabbing
-    depending on 'latest' flag
+    depending on "latest" flag
     """
     def post(self):
         """
@@ -112,15 +112,15 @@ class RealtyResource(Resource):
         """
         filters = request.get_json()
         if not filters:
-            raise BadRequestException('No filters provided')
+            raise BadRequestException("No filters provided")
         try:
-            latest = filters.pop('latest')
+            latest = filters.pop("latest")
         except KeyError:
-            raise BadRequestException('Flag latest not provided')
+            raise BadRequestException("Flag latest not provided")
         if latest:
-            response = requests.get('', params=filters)
+            response = requests.get("", params=filters)
             if response.status_code == 503:
-                raise ServiceUnavailableException('DOMRIA does not respond')
+                raise ServiceUnavailableException("DOMRIA does not respond")
             return response.json(), 200
         realty_schema = schemas.RealtySchema()
         if errors := realty_schema.validate(filters):
@@ -192,11 +192,11 @@ class OperationTypeResource(Resource):
 
 
 api_.add_resource(IndexResource, "/")
-api_.add_resource(CityResource, '/cities')
-api_.add_resource(RealtyResource, '/realty')
-api_.add_resource(StatesResource, '/states/')
-api_.add_resource(StateResource, '/states/<id>')
-api_.add_resource(RealtyTypesResource, '/realty_types/')
-api_.add_resource(RealtyTypeResource, '/realty_type/<realty_type_id>')
-api_.add_resource(OperationTypesResource, '/operation_types/')
-api_.add_resource(OperationTypeResource, '/operation_type/<operation_type_id>')
+api_.add_resource(CityResource, "/cities")
+api_.add_resource(RealtyResource, "/realty")
+api_.add_resource(StatesResource, "/states/")
+api_.add_resource(StateResource, "/states/<id>")
+api_.add_resource(RealtyTypesResource, "/realty_types/")
+api_.add_resource(RealtyTypeResource, "/realty_type/<realty_type_id>")
+api_.add_resource(OperationTypesResource, "/operation_types/")
+api_.add_resource(OperationTypeResource, "/operation_type/<operation_type_id>")

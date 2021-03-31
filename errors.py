@@ -11,7 +11,7 @@ class BadRequestException(Exception):
     Class for Bad Request Exception(400 status code)
     """
 
-    def __init__(self, message='Bad request sent'):
+    def __init__(self, message="Bad request sent"):
 
         """
         Method to initialize bad request params(status_code, type, message)
@@ -21,7 +21,7 @@ class BadRequestException(Exception):
 
         Exception.__init__(self)
         self.status_code = 400
-        self.type = 'BAD_REQUEST'
+        self.type = "BAD_REQUEST"
         self.message = message
 
     def to_dict(self):
@@ -32,9 +32,9 @@ class BadRequestException(Exception):
         """
 
         resp = dict()
-        resp['message'] = self.message
-        resp['code'] = self.status_code
-        resp['type'] = self.type
+        resp["message"] = self.message
+        resp["code"] = self.status_code
+        resp["type"] = self.type
         return resp
 
 
@@ -44,7 +44,7 @@ class ServiceUnavailableException(Exception):
     Class for Service Unavailable Exception(503 status code)
     """
 
-    def __init__(self, message='Service Unavailable'):
+    def __init__(self, message="Service Unavailable"):
 
         """
         Method to initialize Service Unavailable Exception(status_code, type, message)
@@ -54,7 +54,7 @@ class ServiceUnavailableException(Exception):
 
         Exception.__init__(self)
         self.status_code = 503
-        self.type = 'Service_Unavailable_Error'
+        self.type = "Service_Unavailable_Error"
         self.message = message
 
     def to_dict(self):
@@ -66,9 +66,9 @@ class ServiceUnavailableException(Exception):
         """
 
         resp = dict()
-        resp['message'] = self.message
-        resp['code'] = self.status_code
-        resp['type'] = self.type
+        resp["message"] = self.message
+        resp["code"] = self.status_code
+        resp["type"] = self.type
         return resp
 
 
@@ -87,7 +87,7 @@ def not_found(error):
     Method that handles Not Found
     :return: json, status_code
     """
-    response = jsonify(code=404, type='NOT_FOUND', message='Not found')
+    response = jsonify(code=404, type="NOT_FOUND", message="Not found")
     return response, 404
 
 
@@ -96,7 +96,7 @@ def internal_server_error(error):
     Method that handles Internal Server Error
     :return: json, status_code
     """
-    response = jsonify(code=500, type='INTERNAL_SERVER_ERROR', message='Internal Server Error')
+    response = jsonify(code=500, type="INTERNAL_SERVER_ERROR", message="Internal Server Error")
     return response, 500
 
 

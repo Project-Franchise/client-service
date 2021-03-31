@@ -11,6 +11,11 @@ from service_api.grabbing_api.constants import ADDITIONAL_FILTERS
 
 
 def FiltersValidation(params):
+    """
+    Method that validates filters for Realty and Realty_details
+    :param: dict
+    :return: List[dict]
+    """
     realty_dict = dict()
     realty_details_dict = dict()
     additional_params_dict = dict()

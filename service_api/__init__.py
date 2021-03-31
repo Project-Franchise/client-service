@@ -33,7 +33,3 @@ session = Session()
 # entrypoint for caching using redis
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])
-
-from service_api import client_api, grabbing_api
-
-from . import models

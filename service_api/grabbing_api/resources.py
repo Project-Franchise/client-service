@@ -1,30 +1,31 @@
 """
 Resources and urls for grabbing service
 """
-import itertools
-import pickle
-import json
-
-from contextlib import contextmanager
 import datetime
-from typing import List, Iterator
+import itertools
+import json
+import pickle
+from contextlib import contextmanager
+from typing import Iterator, List
 
-from flask import request
 import requests
+from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
+from service_api import CACHE
 from service_api import Session as Session_
-from service_api import api_, CACHE
-from service_api.models import City, State, RealtyType
+from service_api import api_
+from service_api.models import City, RealtyType, State
 from service_api.schemas import CitySchema, Schema, StateSchema
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from .utils.grabbing_utils import process_request
 from .characteristics import get_characteristics
-from .realty_requests import RealtyRequestToDomria
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
-                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, REDIS_CHARACTERISTICS)
+                        REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
+                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED)
+from .realty_requests import RealtyRequestToDomria
+from .utils.grabbing_utils import process_request
 
 
 @contextmanager
@@ -169,8 +170,7 @@ class StatesFromDomriaResource(Resource):
             "lang_id": DOMRIA_UKR,
             "api_key": DOMRIA_API_KEY
         }
-        response = requests.get(DOMRIA_DOMAIN +
-                                DOMRIA_URL["states"], params=params)
+        response = requests.get(DOMRIA_DOMAIN + DOMRIA_URL["states"], params=params)
 
         states_json = response.json()
 

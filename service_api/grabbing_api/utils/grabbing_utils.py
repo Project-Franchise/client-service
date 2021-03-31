@@ -6,13 +6,12 @@ import requests
 from marshmallow import ValidationError
 from marshmallow.schema import SchemaMeta
 from service_api import session
-from service_api.schemas import RealtyDetailsSchema, RealtySchema
 from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
                                                 DOMRIA_UKR, DOMRIA_URL,
                                                 REALTY_DETAILS_KEYS,
                                                 REALTY_KEYS)
+from service_api.schemas import RealtyDetailsSchema, RealtySchema
 from sqlalchemy.orm import Session
-import json
 
 sys.path.append(os.getcwd())
 
@@ -82,7 +81,7 @@ def create_records(id_list: List, session: Session) -> List[Tuple[SchemaMeta, Sc
         realty_data = make_realty_data(response, REALTY_KEYS)
         realty = load_data(realty_data, session, RealtySchema)
 
-        schema = schemas.RealtySchema()
+        schema = RealtySchema()
         elem = schema.dump(realty)
 
         realty_models.append(elem)
@@ -97,7 +96,7 @@ def process_request(search_response: Dict, session: Session, page: int, page_ads
     """
     page = page % page_ads_number
     current_items = search_response["items"][
-                    page * page_ads_number - page_ads_number: page * page_ads_number
-                    ]
+        page * page_ads_number - page_ads_number: page * page_ads_number
+    ]
 
     return create_records(current_items, session)

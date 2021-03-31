@@ -1,3 +1,6 @@
+"""
+Schemas for models with fields validation
+"""
 from datetime import datetime
 
 from marshmallow import Schema, fields, post_load, validate, ValidationError
@@ -7,34 +10,49 @@ from service_api.models import State, City, OperationType, Realty, \
 
 
 def validate_positive_field(value):
+    """
+    Function for validation of positive fields
+    """
     if value <= 0:
         raise ValidationError("This field must be non negative")
 
 
 class OperationTypeSchema(Schema):
-
+    """
+    Schema for OperationType model
+    """
     id = fields.Integer()
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for OperationType model
+        """
         return OperationType(**data)
 
 
 class RealtyTypeSchema(Schema):
-
+    """
+    Schema for RealtyType model
+    """
     id = fields.Integer()
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for RealtyType model
+        """
         return RealtyType(**data)
 
 
 class RealtyDetailsSchema(Schema):
-
+    """
+    Schema for RealtyDetails model
+    """
     id = fields.Integer()
     floor = fields.Integer(validate=validate.Range(min=0, max=50))
     floors_number = fields.Integer(validate=validate.Range(min=1, max=50))
@@ -48,11 +66,16 @@ class RealtyDetailsSchema(Schema):
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for RealtyDetails model
+        """
         return RealtyDetails(**data)
 
 
 class CitySchema(Schema):
-
+    """
+    Schema for City model
+    """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
@@ -60,22 +83,32 @@ class CitySchema(Schema):
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for City model
+        """
         return City(**data)
 
 
 class StateSchema(Schema):
-
+    """
+    Schema for State model
+    """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     original_id = fields.Integer(validate=validate_positive_field)
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for State model
+        """
         return State(**data)
 
 
 class RealtySchema(Schema):
-
+    """
+    Schema for Realty model
+    """
     id = fields.Integer()
     city_id = fields.Integer(load_only=True)
     city = fields.Nested(CitySchema, dump_only=True)
@@ -90,4 +123,7 @@ class RealtySchema(Schema):
 
     @post_load
     def create_state(self, data, **kwargs):
+        """
+        Post_load function for returning for Realty model
+        """
         return Realty(**data)

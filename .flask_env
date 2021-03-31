@@ -1,5 +1,5 @@
 CS_HOST_PORT=5000
 CS_HOST_IP=127.0.0.1
-DATABASE_URL=postgresql://lv-python-mc:575@0.0.0.0:5432/Realty_DB
+DATABASE_URL=postgresql://lv-python-mc:575@127.0.0.1:5432/Realty_DB
 REDIS_IP=127.0.0.1
 REDIS_PORT=6379

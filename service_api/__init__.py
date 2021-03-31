@@ -2,12 +2,12 @@ import os
 from contextlib import contextmanager
 from typing import Iterator
 
+import redis
 from flask import Flask
 from flask_restful import Api, output_json
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy import create_engine, MetaData
-import redis
 
 
 class UnicodeApi(Api):
@@ -53,6 +53,7 @@ def session_scope() -> Iterator[Session]:
             session.rollback()
             raise
 
-from . import models
+
+from . import models, schemas
 from service_api import client_api
 from service_api import grabbing_api

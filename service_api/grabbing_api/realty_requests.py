@@ -1,8 +1,9 @@
 """
 Sending requests to Domria
 """
-from . import constants
 import requests
+
+from .constants import DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_URL
 
 
 class RealtyRequestToDomria():
@@ -41,12 +42,11 @@ class RealtyRequestToDomria():
         :return: Dict
         """
 
-        params["api_key"] = constants.DOMRIA_API_KEY,
+        params["api_key"] = DOMRIA_API_KEY,
 
         new_params = self.form_new_dict(params)
 
-        response = requests.get(constants.DOMRIA_DOMAIN +
-                                constants.DOMRIA_URL["search"],
+        response = requests.get(DOMRIA_DOMAIN + DOMRIA_URL["search"],
                                 params=new_params)
 
         items_json = response.json()

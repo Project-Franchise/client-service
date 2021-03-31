@@ -10,11 +10,17 @@ services:
       - ./:/app
     depends_on:
       - db
-      - redis
-    environment:
-      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - redis  
     env_file:
       - .flask_env
+    environment:
+      - CS_HOST_IP=0.0.0.0
+      - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
+      - REDIS_IP=redis
+      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+
+    external_links:
+      - agregattor:0.0.0.0
 
   db:
     image: postgres:13.2
@@ -26,6 +32,8 @@ services:
       - POSTGRES_DB=Realty_DB
     volumes:
       - flask_db_volume:/var/lib/postgresql/data
+    external_links:
+      - agregattor:0.0.0.0
 
   redis:
     image: redis:6.2

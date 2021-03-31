@@ -235,7 +235,7 @@ class LatestDataFromDomriaResource(Resource):
             page_ads_number = params.pop("page_ads_number")
         except Exception:
             return {"error": "E"}
-        
+
         # mapping text characteristics to theirs domria ids
 
         # CHANGE CITY ID TO ORINAL ID

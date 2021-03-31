@@ -2,6 +2,7 @@
 Module to handle HTTP status codes
 """
 from flask import jsonify
+
 from service_api import flask_app
 
 

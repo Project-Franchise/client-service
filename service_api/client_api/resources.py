@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from typing import Iterator
 
 import requests
-from errors import BadRequestException, ServiceUnavailableException
+from service_api.errors import BadRequestException, ServiceUnavailableException
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError

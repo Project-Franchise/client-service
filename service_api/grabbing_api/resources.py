@@ -1,44 +1,23 @@
 """
 Resources and urls for grabbing service
 """
-import itertools
-import pickle
-import json
-
-from contextlib import contextmanager
 import datetime
-from typing import List, Iterator
+import itertools
+import json
+import pickle
+from typing import List
 
-from flask import request
 import requests
+from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
-from service_api import Session as Session_
-from service_api import api_, models, schemas, CACHE
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from .utils.grabbing_utils import process_request
 
+from service_api import api_, models, schemas, CACHE
+from service_api import session_scope
 from . import constants
 from .characteristics import get_characteristics
 from .realty_requests import RealtyRequestToDomria
-
-
-@contextmanager
-def session_scope() -> Iterator[Session]:
-    session = Session_()
-    try:
-        yield session
-        session.commit()
-    except SQLAlchemyError:
-        session.rollback()
-        raise
-    else:
-        try:
-            session.commit()
-        except SQLAlchemyError:
-            session.rollback()
-            raise
+from .utils.grabbing_utils import process_request
 
 
 class CitiesFromDomriaResource(Resource):

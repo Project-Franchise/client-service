@@ -43,3 +43,4 @@ REDIS_CHARACTERISTICS_EX_TIME = {
 }
 
 GENERAL_CHARACTERISTICS = ["city_id"]
+ADDITIONAL_FILTERS = ["page", "page_ads_number"]

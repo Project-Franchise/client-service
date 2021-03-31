@@ -6,3 +6,4 @@ requests==2.25.1
 redis==3.5.3
 psycopg2-binary==2.8.6
 marshmallow==3.10
+requests==2.25.1

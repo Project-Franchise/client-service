@@ -66,6 +66,7 @@ class CitiesFromDomriaResource(Resource):
                     "status": "Allready in db",
                     "data": city_schema.dump(cities)
                 }
+
             with session_scope() as session:
                 states = session.query(models.State).all()
 
@@ -132,7 +133,7 @@ class CitiesFromDomriaResource(Resource):
         Drops all cities from DB
         and delete redis fetch value too
         """
-        with session_scope as session:
+        with session_scope() as session:
             session.query(models.City).delete()
             CACHE.delete(constants.REDIS_CITIES_FETCHED)
 
@@ -226,7 +227,8 @@ class LatestDataFromDomriaResource(Resource):
 
         # validation
         with session_scope() as session:
-            realty_type = session.query(models.RealtyType).get(params.get("realty_type"))
+            realty_type = session.query(models.RealtyType).get(
+                params.get("realty_type"))
 
         try:
             type_mapper = mapper.get(realty_type.name)

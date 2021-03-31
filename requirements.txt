@@ -1,10 +1,7 @@
 Flask==1.1.2
 flask_restful==0.3.8
 sqlalchemy==1.4.0
-psycopg2==2.8.6
-alembic==1.5.7
-setuptools~=54.1.2
-marshmallow~=3.10.0
-pylint==2.7.2
-pre-commit
-requests==2.25.1
+redis==3.5.3
+psycopg2-binary==2.8.6
+marshmallow==3.10
+requests==2.25

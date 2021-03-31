@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  app:
+    profiles: ["not-dev"]
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis  
+    env_file:
+      - .flask_env
+    environment:
+      - CS_HOST_IP=0.0.0.0
+      - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
+      - REDIS_IP=redis
+      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+
+    external_links:
+      - agregattor:0.0.0.0
+
+  db:
+    image: postgres:13.2
+    ports:
+      - "5482:5432"
+    environment:
+      - POSTGRES_USER=lv-python-mc
+      - POSTGRES_PASSWORD=575
+      - POSTGRES_DB=Realty_DB
+    volumes:
+      - flask_db_volume:/var/lib/postgresql/data
+    external_links:
+      - agregattor:0.0.0.0
+
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - flask_redis_volume:/data
+
+volumes:
+  flask_db_volume:
+  flask_redis_volume:

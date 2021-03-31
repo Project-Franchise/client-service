@@ -3,12 +3,16 @@ Api routes for client api
 """
 from contextlib import contextmanager
 from typing import Iterator
-from flask_restful import Resource
-from sqlalchemy.exc import SQLAlchemyError
-from flask import request
+
 import requests
-from service_api import api_, Session, models, schemas
+from flask import request
+from flask_restful import Resource
+from redis.exceptions import ConnectionError
+from sqlalchemy.exc import SQLAlchemyError
+
 from errors import BadRequestException, ServiceUnavailableException
+from service_api import Session, models, schemas
+from service_api import api_, CACHE
 
 
 @contextmanager
@@ -33,10 +37,18 @@ def session_scope() -> Iterator[Session]:
 
 class IndexResource(Resource):
     """
-    Route for resource indexing
+    Main View entity based on Resource(from flask_restful
     """
+
     def get(self):
-        return "Project Realty"
+        """HTTP GET method realisation.
+        :return: str
+        """
+        try:
+            count = CACHE.incr("hits")
+        except ConnectionError as exc:
+            return f"Redis connection error {exc}"
+        return f"Project Realty: hits: {count}"
 
 
 class CityResource(Resource):

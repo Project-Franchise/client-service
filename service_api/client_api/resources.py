@@ -39,9 +39,10 @@ class IndexResource(Resource):
     """
 
     def get(self):
-        """HTTP GET method realisation.
-            :return: str
-            """
+        """
+        HTTP GET method realisation.
+        :return: str
+        """
         try:
             count = CACHE.incr("hits")
         except ConnectionError as exc:

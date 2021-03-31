@@ -44,11 +44,11 @@ class Realty(Base):
     __tablename__ = 'realty'
 
     id = Column(BIGINT, primary_key=True)
-    city_id = Column(BIGINT, ForeignKey('city.id', ondelete='SET NULL'), nullable=False)
-    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
+    city_id = Column(BIGINT, ForeignKey('city.id', ondelete='SET NULL'), nullable=True)
+    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='CASCADE'), nullable=False)
     realty_details_id = Column(BIGINT, ForeignKey('realty_details.id', ondelete='CASCADE'), nullable=False, unique=True)
-    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id', ondelete='SET NULL'), nullable=False)
-    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id', ondelete='SET NULL'), nullable=False)
+    realty_type_id = Column(BIGINT, ForeignKey('realty_type.id', ondelete='CASCADE'), nullable=False)
+    operation_type_id = Column(BIGINT, ForeignKey('operation_type.id', ondelete='SET NULL'), nullable=True)
 
 
 class City(Base):
@@ -57,7 +57,7 @@ class City(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
-    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='SET NULL'), nullable=False)
+    state_id = Column(BIGINT, ForeignKey('state.id', ondelete='CASCADE'), nullable=False)
     original_id = Column(BIGINT, nullable=False, unique=True)
     realty = relationship('Realty', backref='city', lazy=True)
 

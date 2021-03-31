@@ -11,7 +11,7 @@ from flask_restful import Resource
 from redis.exceptions import ConnectionError
 from service_api import CACHE, Session, api_, models, schemas
 from sqlalchemy.exc import SQLAlchemyError
-
+from service_api.constants import URLS
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
@@ -203,12 +203,12 @@ class OperationTypeResource(Resource):
         return schemas.OperationTypeSchema().dump(operation_type), 200
 
 
-api_.add_resource(IndexResource, "/")
-api_.add_resource(CityResource, "/cities")
-api_.add_resource(RealtyResource, "/realty")
-api_.add_resource(StatesResource, "/states/")
-api_.add_resource(StateResource, "/states/<id>")
-api_.add_resource(RealtyTypesResource, "/realty_types/")
-api_.add_resource(RealtyTypeResource, "/realty_type/<realty_type_id>")
-api_.add_resource(OperationTypesResource, "/operation_types/")
-api_.add_resource(OperationTypeResource, "/operation_type/<operation_type_id>")
+api_.add_resource(IndexResource, URLS["CLIENT"]["INDEX_URL"])
+api_.add_resource(CityResource, URLS["CLIENT"]["GET_CITIES_URL"])
+api_.add_resource(RealtyResource, URLS["CLIENT"]["GET_REALTY_URL"])
+api_.add_resource(StatesResource, URLS["CLIENT"]["GET_STATES_URL"])
+api_.add_resource(StateResource, URLS["CLIENT"]["GET_STATES_BY_ID_URL"])
+api_.add_resource(RealtyTypesResource, URLS["CLIENT"]["GET_REALTY_TYPES_URL"])
+api_.add_resource(RealtyTypeResource, URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
+api_.add_resource(OperationTypesResource, URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
+api_.add_resource(OperationTypeResource, URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])

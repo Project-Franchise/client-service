@@ -83,7 +83,7 @@ class RealtyDetailsSchema(Schema):
                             error_messages={"validator_failed": "Square must be greater than 0"})
     price = fields.Float(validate=lambda val: val >= 0,
                          error_messages={"validator_failed": "Price must be greater than 0"})
-    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1), max=datetime.now()))
+    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_id = fields.Integer(validate=validate_positive_field)
     original_url = fields.String(validate=validate.Length(max=255))
 

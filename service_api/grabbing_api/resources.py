@@ -3,19 +3,25 @@ Resources and urls for grabbing service
 """
 import itertools
 import pickle
-from contextlib import contextmanager
-from typing import Iterator, List
+import json
 
+from contextlib import contextmanager
+import datetime
+from typing import List, Iterator
+
+from flask import request
 import requests
 from flask_restful import Resource
 from redis.exceptions import RedisError
-from service_api import CACHE
 from service_api import Session as Session_
-from service_api import api_, models, schemas
-from sqlalchemy.exc import SQLAlchemyError
+from service_api import api_, models, schemas, CACHE
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
+from .utils.grabbing_utils import process_request
 
 from . import constants
+from .characteristics import get_characteristics
+from .realty_requests import RealtyRequestToDomria
 
 
 @contextmanager
@@ -195,71 +201,61 @@ class StatesFromDomriaResource(Resource):
         return "SUCCESS"
 
 
-class RequestToDomria:
-    """
-    Send requests for getting list of id of items
-    """
+class LatestDataFromDomriaResource(Resource):
 
-    @staticmethod
-    def form_new_dict(params: dict) -> dict:
-        """
-        Method, that forms dictionary with parameters for the request
-        """
-        new_params = dict()
-        for parameters in params:
-            if isinstance(parameters, int):
-                if isinstance(params.get(parameters), dict):
-                    new_key_from = 'characteristic%5B' + \
-                        str(parameters) + '%5D%5Bfrom%5D'
-                    new_value_from = params[parameters].get("from")
-                    new_key_to = 'characteristic%5B' + \
-                        str(parameters) + '%5D%5Bto%5D'
-                    new_value_to = params[parameters].get("to")
-                    new_params[new_key_from] = new_value_from
-                    new_params[new_key_to] = new_value_to
-                else:
-                    new_key = 'characteristic%5B' + str(parameters) + '%5D'
-                    new_value = params.get(parameters)
-                    new_params[new_key] = new_value
-            else:
-                new_params[parameters] = params.get(parameters)
-        return new_params
+    def post(self):
+        params = request.get_json()
 
-    def get(self, params: dict) -> dict:
-        """
-        Get all items from DOMRIA by parameters
-        :return: Dict
-        """
+        print("CACHE")
 
-        params = {
-            'category': 1,
-            'realty_type': 2,
-            'operation_type': 1,
-            'state_id': 10,
-            'city_id': 10,
-            'district_id': [15187, 15189, 15188],
-            209: {'from': 1, 'to': 3},
-            214: {'from': 60, 'to': 90},
-            216: {'from': 30, 'to': 50},
-            218: {'from': 4, 'to': 9},
-            227: {'from': 3, 'to': 7},
-            443: 442,
-            234: {'from': 20000, 'to': 90000},
-            242: 239,
-            273: 273,
-            1437: 1434,
-            'api_key': constants.DOMRIA_API_KEY,
-        }
+        cached_characteristics = CACHE.get(constants.REDIS_CHARACTERISTICS)
+        if cached_characteristics is None:
+            try:
+                # load new characteristics
+                mapper = get_characteristics()
+                CACHE.set(constants.REDIS_CHARACTERISTICS,
+                          json.dumps(mapper),
+                          datetime.timedelta(**constants.REDIS_CHARACTERISTICS_EX_TIME))
+            except json.JSONDecodeError:
+                return {"status": "failed",
+                        "error_message": "json_error"}
+            except RedisError:
+                return {"status": "failed",
+                        "erorr_message": "redis_error"}
+        else:
+            mapper = json.loads(cached_characteristics)
 
-        new_params = self.form_new_dict(params)
+        # validation
+        with session_scope() as session:
+            realty_type = session.query(models.RealtyType).get(
+                params.get("realty_type"))
 
-        response = requests.get(constants.DOMRIA_DOMAIN +
-                                constants.DOMRIA_URL["search"], params=new_params)
+        try:
+            type_mapper = mapper.get(realty_type.name)
 
-        items_json = response.json()
-        return items_json
+            page = params.pop("page")
+            page_ads_number = params.pop("page_ads_number")
+        except Exception:
+            return {"error": "E"}
+
+        # mapping text characteristics to theirs domria ids
+
+        # CHANGE CITY ID TO ORINAL ID
+        new_params = dict((type_mapper.get(key, key), value)
+                          for key, value in params.items())
+
+        # sending request for realty-ids list
+        items = RealtyRequestToDomria().get(new_params)
+
+        # getting realty serialized data and write them into db
+        with session_scope() as session:
+            realty_json = process_request(
+                items, session, page, page_ads_number)
+
+        return realty_json
 
 
-# Be careful. Use this links only once!!
-api_.add_resource(StatesFromDomriaResource, "/get-states-from-domria")
-api_.add_resource(CitiesFromDomriaResource, "/get-cities-from-domria")
+# Be careful. Use this lisnks only once!!
+api_.add_resource(StatesFromDomriaResource, "/grabbing/states")
+api_.add_resource(CitiesFromDomriaResource, "/grabbing/cities")
+api_.add_resource(LatestDataFromDomriaResource, "/grabbing/latest")

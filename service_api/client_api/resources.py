@@ -1,6 +1,6 @@
-from service_api import api_, CACHE
-from redis.exceptions import ConnectionError
 from flask_restful import Resource
+from redis.exceptions import ConnectionError
+from service_api import CACHE, api_
 
 
 class IndexResource(Resource):

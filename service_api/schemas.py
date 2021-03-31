@@ -1,6 +1,7 @@
 from marshmallow import Schema, fields, post_load, validate
-from service_api.models import State, City, OperationType, Realty, \
-    RealtyDetails, RealtyType
+
+from service_api.models import (City, OperationType, Realty, RealtyDetails,
+                                RealtyType, State)
 
 
 class OperationTypeSchema(Schema):

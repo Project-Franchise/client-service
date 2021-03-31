@@ -10,7 +10,7 @@ class RealtyDetails(Base):
 
     id = Column(BIGINT, primary_key=True)
     realty = relationship('Realty', uselist=False, backref='realty_details')
-    description = Column(VARCHAR(2047), nullable=True)
+    # description = Column(VARCHAR(2047), nullable=True)
     floor = Column(BIGINT, nullable=False)
     floors_number = Column(BIGINT, nullable=False)
     square = Column(BIGINT, nullable=False)

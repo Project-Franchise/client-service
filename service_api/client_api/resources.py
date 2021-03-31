@@ -122,9 +122,10 @@ class RealtyResource(Resource):
         except KeyError:
             raise BadRequestException("Flag latest not provided")
         if latest:
-            response = requests.get("", params=filters)
-            if response.status_code == 503:
-                raise ServiceUnavailableException("DOMRIA does not respond")
+            response = requests.post(
+                "http://127.0.0.1:5000/grabbing/latest", json=filters)
+            if response.status_code >= 400:
+                raise ServiceUnavailableException("GRABBING does not respond")
             return response.json(), 200
         realty_schema = schemas.RealtySchema()
         if errors := realty_schema.validate(filters):

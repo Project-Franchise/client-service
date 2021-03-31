@@ -202,8 +202,10 @@ class StatesFromDomriaResource(Resource):
 
 class LatestDataFromDomriaResource(Resource):
 
-    def get(self):
-        params = request.args
+    def post(self):
+        params = request.get_json()
+
+        print("CACHE")
 
         cached_characteristics = CACHE.get(constants.REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -223,16 +225,21 @@ class LatestDataFromDomriaResource(Resource):
             mapper = json.loads(cached_characteristics)
 
         # validation
+        with session_scope() as session:
+            realty_type = session.query(models.RealtyType).get(params.get("realty_type"))
+
         try:
-            type_mapper = mapper.get(params.get("realty_type"))
+            type_mapper = mapper.get(realty_type.name)
 
             page = params.pop("page")
             page_ads_number = params.pop("page_ads_number")
         except Exception:
-            pass
-
+            return {"error": "E"}
+        
         # mapping text characteristics to theirs domria ids
-        new_params = dict((type_mapper[key], value)
+
+        # CHANGE CITY ID TO ORINAL ID
+        new_params = dict((type_mapper.get(key, key), value)
                           for key, value in params.items())
 
         # sending request for realty-ids list

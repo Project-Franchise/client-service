@@ -64,20 +64,19 @@ class CitiesFromDomriaResource(Resource):
             with session_scope() as session:
                 states = session.query(models.State).all()
 
-            with session_scope() as session:
-                city_generator = (self.get_cities_by_state(state, city_schema)
-                                  for state in states)
-                cities = list(itertools.chain.from_iterable(city_generator))
 
-                try:
-                    CACHE.set(constants.REDIS_CITIES_FETCHED,
-                              pickle.dumps(True))
-                except RedisError:
-                    session.rollback()
-                    return {
-                        "status": "redis failed",
-                        "data": None
-                    }
+            city_generator = (self.get_cities_by_state(state, city_schema)
+                              for state in states)
+            cities = list(itertools.chain.from_iterable(city_generator))
+
+            try:
+                CACHE.set(constants.REDIS_CITIES_FETCHED,
+                          pickle.dumps(True))
+            except RedisError:
+                return {
+                    "status": "redis failed",
+                    "data": None
+                }
 
             return {
                 "status": "fetched from domria",
@@ -197,7 +196,7 @@ class StatesFromDomriaResource(Resource):
         return "SUCCESS"
 
 
-class RequestToDomria():
+class RequestToDomria:
     """
     Send requests for getting list of id of items
     """

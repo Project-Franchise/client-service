@@ -8,7 +8,7 @@ from typing import Iterator
 from sqlalchemy.exc import SQLAlchemyError
 from flask import request
 import requests
-from errors import BadRequestException
+from errors import BadRequestException, ServiceUnavailableException
 
 
 @contextmanager
@@ -46,21 +46,21 @@ class CityResource(Resource):
             raise BadRequestException('No filters provided')
         with session_scope() as session:
             city = session.query(models.City).filter_by(**filters).all()
-        return schemas.CitySchema(many=True).dump(city)
+        return schemas.CitySchema(many=True).dump(city), 200
 
 
 class StatesResource(Resource):
     def get(self):
         with session_scope() as session:
             states = session.query(models.State).filter_by().all()
-        return schemas.StateSchema(many=True).dump(states)
+        return schemas.StateSchema(many=True).dump(states), 200
 
 
 class StateResource(Resource):
     def get(self, id):
         with session_scope() as session:
             state = session.query(models.State).filter_by(id=id).first()
-        return schemas.StateSchema().dump(state)
+        return schemas.StateSchema().dump(state), 200
 
 
 class RealtyResource(Resource):
@@ -78,7 +78,9 @@ class RealtyResource(Resource):
             raise BadRequestException('Flag latest not provided')
         if latest:
             response = requests.get('', params=filters)
-            return response.json()
+            if response.status_code == 503:
+                raise ServiceUnavailableException('DOMRIA does not respond')
+            return response.json(), 200
         else:
             realty_schema = schemas.RealtySchema()
             if errors := realty_schema.validate(filters):
@@ -86,35 +88,35 @@ class RealtyResource(Resource):
             with session_scope() as session:
                 realty = session.query(models.Realty).\
                     join(models.RealtyDetails).filter_by(**filters).all()
-            return realty_schema.dump(realty, many=True)
+            return realty_schema.dump(realty, many=True), 200
 
 
 class RealtyTypesResource(Resource):
     def get(self):
         with session_scope() as session:
             realty_types = session.query(models.RealtyType).filter_by().all()
-        return schemas.RealtyTypeSchema(many=True).dump(realty_types)
+        return schemas.RealtyTypeSchema(many=True).dump(realty_types), 200
 
 
 class RealtyTypeResource(Resource):
     def get(self, realty_type_id):
         with session_scope() as session:
             realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
-        return schemas.RealtyTypeSchema().dump(realty_type)
+        return schemas.RealtyTypeSchema().dump(realty_type), 200
 
 
 class OperationTypesResource(Resource):
     def get(self):
         with session_scope() as session:
             operation_types = session.query(models.OperationType).filter_by().all()
-        return schemas.OperationTypeSchema(many=True).dump(operation_types)
+        return schemas.OperationTypeSchema(many=True).dump(operation_types), 200
 
 
 class OperationTypeResource(Resource):
     def get(self, operation_type_id):
         with session_scope() as session:
             operation_type = session.query(models.OperationType).filter_by(id=operation_type_id).first()
-        return schemas.OperationTypeSchema().dump(operation_type)
+        return schemas.OperationTypeSchema().dump(operation_type), 200
 
 
 api_.add_resource(IndexResource, "/")

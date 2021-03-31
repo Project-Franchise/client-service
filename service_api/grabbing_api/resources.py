@@ -22,6 +22,8 @@ from .utils.grabbing_utils import process_request
 from . import constants
 from .characteristics import get_characteristics
 from .realty_requests import RealtyRequestToDomria
+from .constants import REALTY_KEYS_FOR_REQUEST
+from ...service_api.errors import BadRequestException
 
 
 @contextmanager
@@ -204,9 +206,23 @@ class StatesFromDomriaResource(Resource):
 class LatestDataFromDomriaResource(Resource):
 
     def post(self):
-        params = request.get_json()
+        post_body = request.get_json()
 
-        print("CACHE")
+        try:
+            characteristics = post_body["characteristics"]
+            realty = post_body["realty_filters"]
+            additional = post_body["additional"]
+        except KeyError:
+            raise BadRequestException("Some paramteters are missing!")
+
+        params = dict()
+        with session_scope() as session:
+            for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
+                if param in realty:
+                    obj = session.query(model).get(realty[param])
+                    if obj is None:
+                        raise BadRequestException("No such filters!")
+                    params[param] = obj.original_id
 
         cached_characteristics = CACHE.get(constants.REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -233,8 +249,8 @@ class LatestDataFromDomriaResource(Resource):
         try:
             type_mapper = mapper.get(realty_type.name)
 
-            page = params.pop("page")
-            page_ads_number = params.pop("page_ads_number")
+            page = additional.pop("page")
+            page_ads_number = additional.pop("page_ads_number")
         except Exception:
             return {"error": "E"}
 
@@ -242,7 +258,8 @@ class LatestDataFromDomriaResource(Resource):
 
         # CHANGE CITY ID TO ORINAL ID
         new_params = dict((type_mapper.get(key, key), value)
-                          for key, value in params.items())
+                          for key, value in characteristics.items())
+        new_params.update(params)
 
         # sending request for realty-ids list
         items = RealtyRequestToDomria().get(new_params)

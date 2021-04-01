@@ -2,10 +2,12 @@
 Schemas for models with fields validation
 """
 from datetime import datetime
+from typing import Dict, List
 
-from marshmallow import Schema, ValidationError, fields, post_load, validate
+from marshmallow import Schema, ValidationError, fields, validate
 from service_api.errors import BadRequestException
-from .constants import ADDITIONAL_FILTERS
+from service_api import Base
+
 from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
 
@@ -25,27 +27,6 @@ class IntOrDictField(fields.Field):
         return super()._validate(value)
 
 
-def FiltersValidation(params):
-    """
-    Method that validates filters for Realty and Realty_details
-    :param: dict
-    :return: List[dict]
-    """
-    realty_dict = dict()
-    realty_details_dict = dict()
-    additional_params_dict = dict()
-    for key in params:
-        if hasattr(Realty, key):
-            realty_dict[key] = params.get(key)
-        elif hasattr(RealtyDetails, key):
-            realty_details_dict[key] = params.get(key)
-        elif key in ADDITIONAL_FILTERS:
-            additional_params_dict[key] = params.get(key)
-        else:
-            raise BadRequestException("Invalid input data!")
-    return [realty_dict, realty_details_dict, additional_params_dict]
-
-
 def validate_positive_field(value):
     """
     Function for validation of positive fields
@@ -61,6 +42,14 @@ class OperationTypeSchema(Schema):
     id = fields.Integer()
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
+
+
+class AdditionalFilterParametersSchema(Schema):
+    """
+    Schema for additional filter parameters
+    """
+    page = fields.Integer(validate=validate_positive_field, required=True)
+    page_ads_number = fields.Integer(validate=validate_positive_field, required=True)
 
 
 class RealtyTypeSchema(Schema):
@@ -123,3 +112,29 @@ class RealtySchema(Schema):
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
+
+
+def filters_validation(params: Dict, list_of_models: List[Base], schemes: List[Schema]) -> List[Dict]:
+    """
+    Method that validates filters for Realty and Realty_details
+    :param: dict
+    :return: List[dict]
+    """
+    list_of_filters = []
+    for objects in list_of_models:
+
+        list_of_filters.append({key: params.get(key)
+                                for key in params
+                                if hasattr(objects, key) or
+                                (isinstance(objects, list) and key in objects)})
+
+    if sum(map(len, list_of_filters)) != len(params):
+        raise BadRequestException("Undefinded parameters found")
+    iter_list = iter(list_of_filters)
+    for scheme in schemes:
+        dict_to_validate = next(iter_list)
+        try:
+            scheme().load(dict_to_validate)
+        except ValidationError as err:
+            raise BadRequestException(err.args)
+    return list_of_filters

@@ -1,1 +1,1 @@
-__all__ = ['client_api']
+from . import service_api

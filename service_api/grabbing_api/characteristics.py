@@ -3,7 +3,7 @@ from typing import Dict
 
 import requests
 
-from . import constants
+from .constants import DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_URL
 
 
 def decode_characteristics(dct: Dict) -> Dict:
@@ -33,10 +33,10 @@ def get_characteristics(characteristics: Dict = dict()) -> Dict:
         сharacteristics_data_set = json.load(json_file)
     for element in сharacteristics_data_set["realty_type"]:
         req = requests.get(
-            constants.DOMRIA_DOMAIN + constants.DOMRIA_URL["options"],
+            DOMRIA_DOMAIN + DOMRIA_URL["options"],
             params={"realty_type": сharacteristics_data_set["realty_type"][element],
                     "operation_type": 1,
-                    "api_key": constants.DOMRIA_API_KEY})
+                    "api_key": DOMRIA_API_KEY})
         list_of_characteristics = req.json(object_hook=decode_characteristics)
         list_of_characteristics = [
             element for element in list_of_characteristics if element != {}]

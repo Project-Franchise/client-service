@@ -10,9 +10,10 @@ from typing import List
 import requests
 from flask import request
 from flask_restful import Resource
+from marshmallow import ValidationError
 from redis.exceptions import RedisError
 
-from service_api import CACHE
+from service_api import CACHE, Base
 from service_api import api_
 from service_api import session_scope
 from service_api.constants import URLS
@@ -57,7 +58,7 @@ class CitiesFromDomriaResource(Resource):
             with session_scope() as session:
                 states = session.query(State).all()
 
-            city_generator = (self.get_cities_by_state(state, city_schema)
+            city_generator = (self.get_cities_by_state(state, City, city_schema)
                               for state in states)
             cities = list(itertools.chain.from_iterable(city_generator))
 
@@ -81,8 +82,7 @@ class CitiesFromDomriaResource(Resource):
         }
 
     @staticmethod
-    def get_cities_by_state(state: State,
-                            city_schema: Schema) -> List[dict]:
+    def get_cities_by_state(state: State, CityModel: Base, city_schema: Schema) -> List[dict]:
         """
         Getting cities from DOMRIA by original state id.
         Returns list of serialized cities
@@ -108,7 +108,12 @@ class CitiesFromDomriaResource(Resource):
         except KeyError:
             return []
 
-        cities = city_schema.load(processed_cities)
+        try:
+            valid_data = city_schema.load(processed_cities)
+            cities = [CityModel(**valid_city) for valid_city in valid_data]
+        except ValidationError as error:
+            print(error.messages)
+            print("Validation failed", 400)
 
         with session_scope() as session:
             session.add_all(cities)
@@ -162,7 +167,12 @@ class StatesFromDomriaResource(Resource):
                              "original_id": state["stateID"]}
                             for state in states_json]
 
-        states = state_schema.load(processed_states)
+        try:
+            valid_data = StateSchema(many=True).load(processed_states)
+            states = [State(**valid_state) for valid_state in valid_data]
+        except ValidationError as error:
+            print(error.messages)
+            print("Validation failed", 400)
 
         with session_scope() as session:
             session.add_all(states)
@@ -179,7 +189,7 @@ class StatesFromDomriaResource(Resource):
         Drops all states and cities from DB
         and delete redis fetch value for both
         """
-        with session_scope as session:
+        with session_scope() as session:
             session.query(City).delete()
             session.query(State).delete()
             CACHE.delete(REDIS_STATES_FETCHED)

@@ -1,3 +1,5 @@
+from service_api import Base
+from service_api.models import RealtyDetails, Realty
 from service_api.schemas import RealtySchema, RealtyDetailsSchema
 import os
 import sys
@@ -16,21 +18,22 @@ from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
 from service_api.grabbing_api.resources import session_scope
 
 
-def load_data(data: Dict, ModelSchema: SchemaMeta) -> SchemaMeta:
+def load_data(data: Dict, Model: Base, ModelSchema: SchemaMeta) -> SchemaMeta:
     """
     Stores data in a database according to a given scheme
     """
+
     try:
-        res_data = ModelSchema().load(data)
+        valid_data = ModelSchema().load(data)
+        record = Model(**valid_data)
     except ValidationError as error:
         print(error.messages)
         print("Validation failed", 400)
         raise ValidationError(error.args)
-
     with session_scope() as session:
-        session.add(res_data)
+        session.add(record)
         session.commit()
-    return res_data
+    return record
 
 
 def make_realty_details_data(response: requests.models.Response, realty_details_keys: Dict) -> Dict:
@@ -87,14 +90,14 @@ def create_records(id_list: List) -> List[Dict]:
         except JSONDecodeError as error:
             raise JSONDecodeError(error.args)
 
-        load_data(realty_details_data, RealtyDetailsSchema)
+        load_data(realty_details_data, RealtyDetails, RealtyDetailsSchema)
 
         try:
             realty_data = make_realty_data(response, REALTY_KEYS)
         except JSONDecodeError as error:
             raise JSONDecodeError(error.args)
 
-        realty = load_data(realty_data, RealtySchema)
+        realty = load_data(realty_data, Realty, RealtySchema)
 
         schema = RealtySchema()
         elem = schema.dump(realty)

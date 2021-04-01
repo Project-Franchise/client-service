@@ -18,6 +18,7 @@ class IndexResource(Resource):
     """
     Main View entity based on Resource(from flask_restful
     """
+
     def get(self):
         """
         HTTP GET method realisation.
@@ -107,21 +108,35 @@ class RealtyResource(Resource):
 
         if latest:
             response = requests.post(
-                "http://127.0.0.1:5000/grabbing/latest", json=filters)
+                "http://127.0.0.1:5000/grabbing/latest", json={
+                    "realty_filters": realty_dict,
+                    "characteristics": realty_details_dict,
+                    "additional": additional_params_dict
+                })
             if response.status_code >= 400:
                 raise ServiceUnavailableException("GRABBING does not respond")
             return response.json(), 200
 
         with session_scope() as session:
+            try:
+                page = int(additional_params_dict["page"])
+                per_page = int(additional_params_dict["page_ads_number"])
+            except KeyError:
+                raise BadRequestException("No page data")
+            except ValueError:
+                raise BadRequestException("Page number must be an integer")
+
+            offset = (page-1)*per_page
 
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
-                    getattr(RealtyDetails, key).between(value["from"], value["to"])
+                    getattr(RealtyDetails, key).between(
+                        value["from"], value["to"])
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
-                  ]
-            ).join(RealtyDetails).all()
+                ]
+            ).join(RealtyDetails).all()[offset: offset+per_page]
 
             return RealtySchema(many=True).dump(realty)
 
@@ -199,6 +214,9 @@ api_.add_resource(RealtyResource, URLS["CLIENT"]["GET_REALTY_URL"])
 api_.add_resource(StatesResource, URLS["CLIENT"]["GET_STATES_URL"])
 api_.add_resource(StateResource, URLS["CLIENT"]["GET_STATES_BY_ID_URL"])
 api_.add_resource(RealtyTypesResource, URLS["CLIENT"]["GET_REALTY_TYPES_URL"])
-api_.add_resource(RealtyTypeResource, URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
-api_.add_resource(OperationTypesResource, URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
-api_.add_resource(OperationTypeResource, URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])
+api_.add_resource(RealtyTypeResource,
+                  URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
+api_.add_resource(OperationTypesResource,
+                  URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
+api_.add_resource(OperationTypeResource,
+                  URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])

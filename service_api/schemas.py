@@ -11,27 +11,6 @@ from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
 
 
-def FiltersValidation(params):
-    """
-    Method that validates filters for Realty and Realty_details
-    :param: dict
-    :return: List[dict]
-    """
-    realty_dict = dict()
-    realty_details_dict = dict()
-    additional_params_dict = dict()
-    for key in params:
-        if hasattr(Realty, key):
-            realty_dict[key] = params.get(key)
-        elif hasattr(RealtyDetails, key):
-            realty_details_dict[key] = params.get(key)
-        elif key in ADDITIONAL_FILTERS:
-            additional_params_dict[key] = params.get(key)
-        else:
-            raise BadRequestException("Invalid input data!")
-    return [realty_dict, realty_details_dict, additional_params_dict]
-
-
 def validate_positive_field(value):
     """
     Function for validation of positive fields
@@ -47,6 +26,14 @@ class OperationTypeSchema(Schema):
     id = fields.Integer()
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
+
+
+class AdditionalFilterParametersSchema(Schema):
+    """
+    Schema for additional filter parameters
+    """
+    page = fields.Integer(validate=validate_positive_field)
+    page_ads_number = fields.Integer(validate=validate_positive_field)
 
 
 class RealtyTypeSchema(Schema):
@@ -108,3 +95,32 @@ class RealtySchema(Schema):
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
     operation_type_id = fields.Integer(load_only=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
+
+
+def filters_validation(params):
+    """
+    Method that validates filters for Realty and Realty_details
+    :param: dict
+    :return: List[dict]
+    """
+    params_check, list_of_filters = [Realty, RealtyDetails, ADDITIONAL_FILTERS], []
+    schemes = [RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema]
+    for objects in params_check:
+        filter_dict = {}
+        counter = 0
+        for key in params:
+            if hasattr(objects, key) or (isinstance(objects, list) and key in objects):
+                filter_dict[key] = params.get(key)
+            else:
+                counter += 1
+        if counter == len(params_check):
+            raise BadRequestException("Invalid input data!")
+        list_of_filters.append(filter_dict)
+    iter_list = iter(list_of_filters)
+    for scheme in schemes:
+        dict_to_validate = next(iter_list)
+        try:
+            validation = scheme().load(dict_to_validate)
+        except ValidationError:
+            raise BadRequestException("Validation failed!")
+    return list_of_filters

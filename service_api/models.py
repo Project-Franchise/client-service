@@ -10,7 +10,7 @@ class RealtyDetails(Base):
     __tablename__ = "realty_details"
 
     id = Column(BIGINT, primary_key=True)
-    realty = relationship("Realty", uselist=False, backref="realty_details")
+    realty = relationship("Realty", uselist=False, backref="realty_details", cascade="all,delete")
     floor = Column(BIGINT, nullable=True)
     floors_number = Column(BIGINT, nullable=True)
     square = Column(BIGINT, nullable=True)

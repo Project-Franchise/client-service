@@ -235,9 +235,8 @@ class LatestDataFromDomriaResource(Resource):
             raise BadRequestException("Invalid realty_type")
 
         try:
-            print("!!")
             type_mapper = mapper.get(realty_type.name)
-            print("!!")
+
             page = additional.pop("page")
             page_ads_number = additional.pop("page_ads_number")
         except Exception as e:

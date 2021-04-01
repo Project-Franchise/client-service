@@ -8,10 +8,10 @@ from flask_restful import Resource
 from redis.exceptions import ConnectionError
 
 from service_api import CACHE, api_, models, schemas, session_scope
-from service_api.constants import URLS
+from service_api.constants import URLS, ADDITIONAL_FILTERS
 from service_api.errors import BadRequestException, ServiceUnavailableException
 from service_api.models import Realty, RealtyDetails
-from service_api.schemas import FiltersValidation, RealtySchema
+from service_api.schemas import filters_validation, RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema
 
 
 class IndexResource(Resource):
@@ -104,7 +104,10 @@ class RealtyResource(Resource):
         except KeyError:
             raise BadRequestException("Flag latest not provided")
 
-        realty_dict, realty_details_dict, additional_params_dict = FiltersValidation(filters)
+        realty_dict, realty_details_dict, additional_params_dict = filters_validation(
+            filters,
+            [Realty, RealtyDetails, ADDITIONAL_FILTERS],
+            [RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema])
 
         if latest:
             response = requests.post(

@@ -2,13 +2,29 @@
 Schemas for models with fields validation
 """
 from datetime import datetime
-from re import T
+from typing import Dict, List
 
-from marshmallow import Schema, ValidationError, fields, post_load, validate
+from marshmallow import Schema, ValidationError, fields, validate
 from service_api.errors import BadRequestException
-from .constants import ADDITIONAL_FILTERS
+from service_api import Base
+
 from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
+
+
+class IntOrDictField(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        if isinstance(value, int):
+            return value
+        elif isinstance(value, dict) and value.get("to") and value.get("from"):
+            return value
+        else:
+            raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
+
+    def _validate(self, value):
+        if isinstance(value, dict):
+            return super()._validate(value.get("to")), super()._validate(value.get("from"))
+        return super()._validate(value)
 
 
 def validate_positive_field(value):
@@ -32,8 +48,8 @@ class AdditionalFilterParametersSchema(Schema):
     """
     Schema for additional filter parameters
     """
-    page = fields.Integer(validate=validate_positive_field)
-    page_ads_number = fields.Integer(validate=validate_positive_field)
+    page = fields.Integer(validate=validate_positive_field, required=True)
+    page_ads_number = fields.Integer(validate=validate_positive_field, required=True)
 
 
 class RealtyTypeSchema(Schema):
@@ -50,13 +66,14 @@ class RealtyDetailsSchema(Schema):
     Schema for RealtyDetails model
     """
     id = fields.Integer()
-    floor = fields.Integer(validate=validate.Range(min=0, max=50), allow_none=True)
-    floors_number = fields.Integer(validate=validate.Range(min=1, max=50), allow_none=True)
-    square = fields.Integer(validate=lambda val: val >= 0,
-                            error_messages={"validator_failed": "Square must be greater than 0"}, allow_none=True)
-    price = fields.Float(validate=lambda val: val >= 0,
-                         error_messages={"validator_failed": "Price must be greater than 0"})
-    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
+    floor = fields.Integer(validate=validate.Range(
+        min=0, max=50), allow_none=True)
+    floors_number = fields.Integer(
+        validate=validate.Range(min=1, max=50), allow_none=True)
+    square = IntOrDictField(validate=validate_positive_field)
+    price = IntOrDictField(validate=validate_positive_field)
+    published_at = fields.DateTime(
+        validate=validate.Range(min=datetime(1990, 1, 1)))
     original_id = fields.Integer(validate=validate_positive_field)
     original_url = fields.String(validate=validate.Length(max=255))
 
@@ -91,36 +108,33 @@ class RealtySchema(Schema):
     state = fields.Nested(StateSchema, dump_only=True)
     realty_details_id = fields.Integer(load_only=True)
     realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
-    realty_type_id = fields.Integer(load_only=True)
+    realty_type_id = fields.Integer(load_only=True, required=True)
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
-    operation_type_id = fields.Integer(load_only=True)
+    operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
 
-def filters_validation(params):
+def filters_validation(params: Dict, list_of_models: List[Base], schemes: List[Schema]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details
     :param: dict
     :return: List[dict]
     """
-    params_check, list_of_filters = [Realty, RealtyDetails, ADDITIONAL_FILTERS], []
-    schemes = [RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema]
-    for objects in params_check:
-        filter_dict = {}
-        counter = 0
-        for key in params:
-            if hasattr(objects, key) or (isinstance(objects, list) and key in objects):
-                filter_dict[key] = params.get(key)
-            else:
-                counter += 1
-        if counter == len(params_check):
-            raise BadRequestException("Invalid input data!")
-        list_of_filters.append(filter_dict)
+    list_of_filters = []
+    for objects in list_of_models:
+
+        list_of_filters.append({key: params.get(key)
+                                for key in params
+                                if hasattr(objects, key) or
+                                (isinstance(objects, list) and key in objects)})
+
+    if sum(map(len, list_of_filters)) != len(params):
+        raise BadRequestException("Undefinded parameters found")
     iter_list = iter(list_of_filters)
     for scheme in schemes:
         dict_to_validate = next(iter_list)
         try:
-            validation = scheme().load(dict_to_validate)
-        except ValidationError:
-            raise BadRequestException("Validation failed!")
+            scheme().load(dict_to_validate)
+        except ValidationError as err:
+            raise BadRequestException(err.args)
     return list_of_filters

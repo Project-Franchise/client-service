@@ -13,13 +13,10 @@ def decode_characteristics(dct: Dict) -> Dict:
     in "items" dict
     """
     item_list = {}
-    if "items" not in dct:
-        return dct
     if "items" in dct:
         for fields in dct["items"]:
             if "field_name" in fields:
-                item_list.update(
-                    {fields["field_name"]: fields["characteristic_id"]})
+                item_list[fields["field_name"]] = fields["characteristic_id"]
         return item_list
     return dct
 

@@ -28,7 +28,7 @@ def load_data(data: Dict, Model: Base, ModelSchema: SchemaMeta) -> SchemaMeta:
         valid_data = ModelSchema().load(data)
         record = Model(**valid_data)
     except ValidationError as error:
-        raise BadRequestException("Validation failed")
+        raise BadRequestException(error.args)
     with session_scope() as session:
         session.add(record)
         session.commit()
@@ -87,6 +87,7 @@ def create_records(id_list: List) -> List[Dict]:
         try:
             realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
         except JSONDecodeError as error:
+            print(error)
             raise JSONDecodeError(error.args)
 
         load_data(realty_details_data, RealtyDetails, RealtyDetailsSchema)
@@ -94,6 +95,7 @@ def create_records(id_list: List) -> List[Dict]:
         try:
             realty_data = make_realty_data(response, REALTY_KEYS)
         except JSONDecodeError as error:
+            print(error)
             raise JSONDecodeError(error.args)
 
         realty = load_data(realty_data, Realty, RealtySchema)
@@ -114,5 +116,4 @@ def process_request(search_response: Dict, page: int, page_ads_number: int) -> L
     current_items = search_response["items"][
         page * page_ads_number - page_ads_number: page * page_ads_number
     ]
-
     return create_records(current_items)

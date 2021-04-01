@@ -12,20 +12,18 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from redis.exceptions import RedisError
-
-from service_api import CACHE, Base
-from service_api import api_
-from service_api import session_scope
+from service_api import CACHE, api_, session_scope
 from service_api.constants import URLS
-from service_api.models import City, RealtyType, State
-from service_api.schemas import Schema, StateSchema, CitySchema
 from service_api.errors import BadRequestException
+from service_api.models import City, RealtyType, State
+from service_api.schemas import CitySchema, StateSchema
+
 from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
-                        REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
-                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, REALTY_KEYS_FOR_REQUEST)
+                        REALTY_KEYS_FOR_REQUEST, REDIS_CHARACTERISTICS,
+                        REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
+                        REDIS_STATES_FETCHED)
 from .realty_requests import RealtyRequestToDomria
-
 from .utils.grabbing_utils import process_request
 
 
@@ -58,29 +56,23 @@ class CitiesFromDomriaResource(Resource):
             with session_scope() as session:
                 states = session.query(State).all()
 
-            city_generator = (self.get_cities_by_state(state, city_schema) for state in states)
+            city_generator = (self.get_cities_by_state(state) for state in states)
             cities = list(itertools.chain.from_iterable(city_generator))
 
             try:
                 CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
-            except RedisError:
-                return {
-                    "status": "redis failed",
-                    "data": None
-                }
+            except RedisError as error:
+                raise RedisError(error.args)
 
             return {
                 "status": "fetched from domria",
                 "data": cities
             }
 
-        return {
-            "status": "failed",
-            "error_message": "There is no state in db"
-        }
+        raise BadRequestException("There is no state in db")
 
     @staticmethod
-    def get_cities_by_state(state: State, CityModel: Base, city_schema: Schema) -> List[dict]:
+    def get_cities_by_state(state: State) -> List[dict]:
         """
         Getting cities from DOMRIA by original state id.
         Returns list of serialized cities
@@ -107,8 +99,8 @@ class CitiesFromDomriaResource(Resource):
             return []
 
         try:
-            valid_data = city_schema.load(processed_cities)
-            cities = [CityModel(**valid_city) for valid_city in valid_data]
+            valid_data = CitySchema(many=True).load(processed_cities)
+            cities = [City(**valid_city) for valid_city in valid_data]
         except ValidationError:
             raise BadRequestException("Validation failed")
 
@@ -197,6 +189,7 @@ class StatesFromDomriaResource(Resource):
 class LatestDataFromDomriaResource(Resource):
 
     def post(self):
+
         post_body = request.get_json()
 
         try:
@@ -218,21 +211,17 @@ class LatestDataFromDomriaResource(Resource):
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
             try:
-                # load new characteristics
                 mapper = get_characteristics()
                 CACHE.set(REDIS_CHARACTERISTICS,
                           json.dumps(mapper),
                           datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
-            except json.JSONDecodeError:
-                return {"status": "failed",
-                        "error_message": "json_error"}
-            except RedisError:
-                return {"status": "failed",
-                        "erorr_message": "redis_error"}
+            except json.JSONDecodeError as error:
+                raise json.JSONDecodeError(error.args)
+            except RedisError as error:
+                raise RedisError(error.args)
         else:
             mapper = json.loads(cached_characteristics)
 
-        # validation
         with session_scope() as session:
             realty_type = session.query(RealtyType).get(
                 realty.get("realty_type_id"))
@@ -245,20 +234,16 @@ class LatestDataFromDomriaResource(Resource):
 
             page = additional.pop("page")
             page_ads_number = additional.pop("page_ads_number")
-        except Exception as e:
-            return {"error": e.args}
+        except Exception as err:
+            print(err)
+            raise Exception(err.args)
 
-        # mapping text characteristics to theirs domria ids
-
-        # CHANGE CITY ID TO ORINAL ID
         new_params = dict((type_mapper.get(key, key), value)
                           for key, value in characteristics.items())
         new_params.update(params)
 
-        # sending request for realty-ids list
         items = RealtyRequestToDomria().get(new_params)
 
-        # getting realty serialized data and write them into db
         with session_scope() as session:
             realty_json = process_request(
                 items, page, page_ads_number)

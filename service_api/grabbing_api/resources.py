@@ -111,9 +111,8 @@ class CitiesFromDomriaResource(Resource):
         try:
             valid_data = city_schema.load(processed_cities)
             cities = [CityModel(**valid_city) for valid_city in valid_data]
-        except ValidationError as error:
-            print(error.messages)
-            print("Validation failed", 400)
+        except ValidationError:
+            raise BadRequestException("Validation failed")
 
         with session_scope() as session:
             session.add_all(cities)
@@ -170,9 +169,8 @@ class StatesFromDomriaResource(Resource):
         try:
             valid_data = StateSchema(many=True).load(processed_states)
             states = [State(**valid_state) for valid_state in valid_data]
-        except ValidationError as error:
-            print(error.messages)
-            print("Validation failed", 400)
+        except ValidationError:
+            raise BadRequestException("Validation failed")
 
         with session_scope() as session:
             session.add_all(states)

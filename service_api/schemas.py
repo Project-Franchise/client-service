@@ -2,7 +2,6 @@
 Schemas for models with fields validation
 """
 from datetime import datetime
-from re import T
 
 from marshmallow import Schema, ValidationError, fields, post_load, validate
 from service_api.errors import BadRequestException
@@ -19,6 +18,12 @@ class IntOrDictField(fields.Field):
             return value
         else:
             raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
+
+    def _validate(self, value):
+        if isinstance(value, dict):
+            return super()._validate(value.get("to")), super()._validate(value.get("from"))
+        return super()._validate(value)
+
 
 def FiltersValidation(params):
     """
@@ -86,11 +91,14 @@ class RealtyDetailsSchema(Schema):
     Schema for RealtyDetails model
     """
     id = fields.Integer()
-    floor = fields.Integer(validate=validate.Range(min=0, max=50), allow_none=True)
-    floors_number = fields.Integer(validate=validate.Range(min=1, max=50), allow_none=True)
-    square = IntOrDictField()
-    price = IntOrDictField()
-    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
+    floor = fields.Integer(validate=validate.Range(
+        min=0, max=50), allow_none=True)
+    floors_number = fields.Integer(
+        validate=validate.Range(min=1, max=50), allow_none=True)
+    square = IntOrDictField(validate=validate_positive_field)
+    price = IntOrDictField(validate=validate_positive_field)
+    published_at = fields.DateTime(
+        validate=validate.Range(min=datetime(1990, 1, 1)))
     original_id = fields.Integer(validate=validate_positive_field)
     original_url = fields.String(validate=validate.Length(max=255))
 
@@ -146,9 +154,9 @@ class RealtySchema(Schema):
     state = fields.Nested(StateSchema, dump_only=True)
     realty_details_id = fields.Integer(load_only=True)
     realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
-    realty_type_id = fields.Integer(load_only=True)
+    realty_type_id = fields.Integer(load_only=True, required=True)
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
-    operation_type_id = fields.Integer(load_only=True)
+    operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
     @post_load

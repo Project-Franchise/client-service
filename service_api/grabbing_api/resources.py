@@ -57,13 +57,11 @@ class CitiesFromDomriaResource(Resource):
             with session_scope() as session:
                 states = session.query(State).all()
 
-            city_generator = (self.get_cities_by_state(state, city_schema)
-                              for state in states)
+            city_generator = (self.get_cities_by_state(state, city_schema) for state in states)
             cities = list(itertools.chain.from_iterable(city_generator))
 
             try:
-                CACHE.set(REDIS_CITIES_FETCHED,
-                          pickle.dumps(True))
+                CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
             except RedisError:
                 return {
                     "status": "redis failed",

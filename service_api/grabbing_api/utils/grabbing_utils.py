@@ -1,4 +1,5 @@
 from service_api import Base
+from service_api.errors import BadRequestException
 from service_api.models import RealtyDetails, Realty
 from service_api.schemas import RealtySchema, RealtyDetailsSchema
 import os
@@ -27,9 +28,7 @@ def load_data(data: Dict, Model: Base, ModelSchema: SchemaMeta) -> SchemaMeta:
         valid_data = ModelSchema().load(data)
         record = Model(**valid_data)
     except ValidationError as error:
-        print(error.messages)
-        print("Validation failed", 400)
-        raise ValidationError(error.args)
+        raise BadRequestException("Validation failed")
     with session_scope() as session:
         session.add(record)
         session.commit()

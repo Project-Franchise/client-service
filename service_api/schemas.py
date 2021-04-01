@@ -4,7 +4,7 @@ Schemas for models with fields validation
 from datetime import datetime
 
 from marshmallow import Schema, ValidationError, fields, post_load, validate
-
+from service_api.errors import BadRequestException
 from .constants import ADDITIONAL_FILTERS
 from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
@@ -27,7 +27,7 @@ def FiltersValidation(params):
         elif key in ADDITIONAL_FILTERS:
             additional_params_dict[key] = params.get(key)
         else:
-            return "ERROR!"
+            raise BadRequestException("Invalid input data!")
     return [realty_dict, realty_details_dict, additional_params_dict]
 
 

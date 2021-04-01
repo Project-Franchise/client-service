@@ -5,18 +5,14 @@ import datetime
 import itertools
 import json
 import pickle
-from contextlib import contextmanager
-from typing import Iterator, List
+from typing import List
 
 import requests
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import RedisError
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 
 from service_api import CACHE
-from service_api import Session as Session_
 from service_api import api_
 from service_api import session_scope
 from service_api.constants import URLS

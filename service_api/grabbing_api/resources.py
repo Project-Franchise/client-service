@@ -12,20 +12,18 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from redis.exceptions import RedisError
-
-from service_api import CACHE, Base
-from service_api import api_
-from service_api import session_scope
+from service_api import CACHE, api_, session_scope
 from service_api.constants import URLS
-from service_api.models import City, RealtyType, State
-from service_api.schemas import Schema, StateSchema, CitySchema
 from service_api.errors import BadRequestException
+from service_api.models import City, RealtyType, State
+from service_api.schemas import CitySchema, StateSchema
+
 from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
-                        REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
-                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, REALTY_KEYS_FOR_REQUEST)
+                        REALTY_KEYS_FOR_REQUEST, REDIS_CHARACTERISTICS,
+                        REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
+                        REDIS_STATES_FETCHED)
 from .realty_requests import RealtyRequestToDomria
-
 from .utils.grabbing_utils import process_request
 
 
@@ -191,6 +189,7 @@ class StatesFromDomriaResource(Resource):
 class LatestDataFromDomriaResource(Resource):
 
     def post(self):
+
         post_body = request.get_json()
 
         try:

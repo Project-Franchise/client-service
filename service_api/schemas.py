@@ -11,6 +11,15 @@ from service_api.models import (City, OperationType, Realty, RealtyDetails,
                                 RealtyType, State)
 
 
+class IntOrDictField(fields.Field):
+    def _deserialize(self, value, attr, data, **kwargs):
+        if isinstance(value, int):
+            return value
+        elif isinstance(value, dict) and value.get("to") and value.get("from"):
+            return value
+        else:
+            raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
+
 def FiltersValidation(params):
     """
     Method that validates filters for Realty and Realty_details
@@ -79,10 +88,8 @@ class RealtyDetailsSchema(Schema):
     id = fields.Integer()
     floor = fields.Integer(validate=validate.Range(min=0, max=50), allow_none=True)
     floors_number = fields.Integer(validate=validate.Range(min=1, max=50), allow_none=True)
-    square = fields.Integer(validate=lambda val: val >= 0,
-                            error_messages={"validator_failed": "Square must be greater than 0"}, allow_none=True)
-    price = fields.Float(validate=lambda val: val >= 0,
-                         error_messages={"validator_failed": "Price must be greater than 0"})
+    square = IntOrDictField()
+    price = IntOrDictField()
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_id = fields.Integer(validate=validate_positive_field)
     original_url = fields.String(validate=validate.Length(max=255))

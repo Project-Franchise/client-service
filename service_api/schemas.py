@@ -14,7 +14,7 @@ from service_api.models import (City, OperationType, Realty, RealtyDetails,
 
 class IntOrDictField(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
-        if isinstance(value, int):
+        if isinstance(value, (float, int)):
             return value
         elif isinstance(value, dict) and value.get("to") and value.get("from"):
             return value
@@ -70,7 +70,7 @@ class RealtyDetailsSchema(Schema):
         min=0, max=50), allow_none=True)
     floors_number = fields.Integer(
         validate=validate.Range(min=1, max=50), allow_none=True)
-    square = IntOrDictField(validate=validate_positive_field)
+    square = IntOrDictField(validate=validate_positive_field, allow_none=True)
     price = IntOrDictField(validate=validate_positive_field)
     published_at = fields.DateTime(
         validate=validate.Range(min=datetime(1990, 1, 1)))

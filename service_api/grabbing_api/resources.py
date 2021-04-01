@@ -18,11 +18,13 @@ from service_api import session_scope
 from service_api.constants import URLS
 from service_api.models import City, RealtyType, State
 from service_api.schemas import Schema, StateSchema, CitySchema
+from service_api.errors import BadRequestException
 from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
                         REDIS_CHARACTERISTICS, REDIS_CHARACTERISTICS_EX_TIME,
-                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED)
+                        REDIS_CITIES_FETCHED, REDIS_STATES_FETCHED, REALTY_KEYS_FOR_REQUEST)
 from .realty_requests import RealtyRequestToDomria
+
 from .utils.grabbing_utils import process_request
 
 
@@ -151,7 +153,8 @@ class StatesFromDomriaResource(Resource):
             "lang_id": DOMRIA_UKR,
             "api_key": DOMRIA_API_KEY
         }
-        response = requests.get(DOMRIA_DOMAIN + DOMRIA_URL["states"], params=params)
+        response = requests.get(
+            DOMRIA_DOMAIN + DOMRIA_URL["states"], params=params)
 
         states_json = response.json()
 
@@ -188,7 +191,23 @@ class StatesFromDomriaResource(Resource):
 class LatestDataFromDomriaResource(Resource):
 
     def post(self):
-        params = request.get_json()
+        post_body = request.get_json()
+
+        try:
+            characteristics = post_body["characteristics"]
+            realty = post_body["realty_filters"]
+            additional = post_body["additional"]
+        except KeyError:
+            raise BadRequestException("Some paramteters are missing!")
+
+        params = dict()
+        with session_scope() as session:
+            for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
+                if param in realty:
+                    obj = session.query(model).get(realty[param])
+                    if obj is None:
+                        raise BadRequestException("No such filters!")
+                    params[domria_param] = obj.original_id
 
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -210,21 +229,25 @@ class LatestDataFromDomriaResource(Resource):
         # validation
         with session_scope() as session:
             realty_type = session.query(RealtyType).get(
-                params.get("realty_type"))
+                realty.get("realty_type_id"))
+
+        if realty_type is None:
+            raise BadRequestException("Invalid realty_type")
 
         try:
             type_mapper = mapper.get(realty_type.name)
 
-            page = params.pop("page")
-            page_ads_number = params.pop("page_ads_number")
-        except Exception:
-            return {"error": "E"}
+            page = additional.pop("page")
+            page_ads_number = additional.pop("page_ads_number")
+        except Exception as e:
+            return {"error": e.args}
 
         # mapping text characteristics to theirs domria ids
 
         # CHANGE CITY ID TO ORINAL ID
         new_params = dict((type_mapper.get(key, key), value)
-                          for key, value in params.items())
+                          for key, value in characteristics.items())
+        new_params.update(params)
 
         # sending request for realty-ids list
         items = RealtyRequestToDomria().get(new_params)
@@ -232,7 +255,7 @@ class LatestDataFromDomriaResource(Resource):
         # getting realty serialized data and write them into db
         with session_scope() as session:
             realty_json = process_request(
-                items, session, page, page_ads_number)
+                items, page, page_ads_number)
 
         return realty_json
 
@@ -240,4 +263,5 @@ class LatestDataFromDomriaResource(Resource):
 # Be careful. Use this links only once!!
 api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
 api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
-api_.add_resource(LatestDataFromDomriaResource, URLS["GRABBING"]["GET_LATEST_URL"])
+api_.add_resource(LatestDataFromDomriaResource,
+                  URLS["GRABBING"]["GET_LATEST_URL"])

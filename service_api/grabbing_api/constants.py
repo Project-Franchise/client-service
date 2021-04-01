@@ -33,6 +33,14 @@ REALTY_DETAILS_KEYS = {
     "original_url": "beautiful_url",
 }
 
+REALTY_KEYS_FOR_REQUEST = [
+    ("city_id", City, "city_id"),
+    ("state_id", State, "state_id"),
+    ("realty_type_id", RealtyType, "realty_type"),
+    ("operation_type_id", OperationType, "operation_type")
+
+]
+
 DOMRIA_UKR = 4
 DOMRIA_API_KEY = os.environ["DOMRIA_API_KEY"]
 REDIS_CHARACTERISTICS = "characteristics_avaliable"

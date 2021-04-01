@@ -25,7 +25,7 @@ def load_data(data: Dict, ModelSchema: SchemaMeta) -> SchemaMeta:
     except ValidationError as error:
         print(error.messages)
         print("Validation failed", 400)
-        raise ValidationError
+        raise ValidationError(error.args)
 
     with session_scope() as session:
         session.add(res_data)
@@ -37,7 +37,10 @@ def make_realty_details_data(response: requests.models.Response, realty_details_
     """
     Composes data for RealtyDetails model
     """
-    original_keys = [response.json()[val] for val in realty_details_keys.values()]
+
+    data = response.json()
+
+    original_keys = [data.get(val, None) for val in realty_details_keys.values()]
     self_keys = realty_details_keys.keys()
 
     realty_details_data = {
@@ -82,14 +85,14 @@ def create_records(id_list: List) -> List[Dict]:
         try:
             realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
         except JSONDecodeError as error:
-            raise JSONDecodeError
+            raise JSONDecodeError(error.args)
 
         load_data(realty_details_data, RealtyDetailsSchema)
 
         try:
             realty_data = make_realty_data(response, REALTY_KEYS)
         except JSONDecodeError as error:
-            raise JSONDecodeError
+            raise JSONDecodeError(error.args)
 
         realty = load_data(realty_data, RealtySchema)
 

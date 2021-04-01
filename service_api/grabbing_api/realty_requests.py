@@ -42,7 +42,7 @@ class RealtyRequestToDomria():
         :return: Dict
         """
 
-        params["api_key"] = DOMRIA_API_KEY,
+        params["api_key"] = DOMRIA_API_KEY
 
         new_params = self.form_new_dict(params)
 

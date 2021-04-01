@@ -97,7 +97,7 @@ class RealtySchema(Schema):
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
 
-def FiltersValidation(params):
+def Filters_Validation(params):
     """
     Method that validates filters for Realty and Realty_details
     :param: dict

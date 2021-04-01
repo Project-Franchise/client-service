@@ -62,13 +62,6 @@ class OperationTypeSchema(Schema):
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
 
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for OperationType model
-        """
-        return OperationType(**data)
-
 
 class RealtyTypeSchema(Schema):
     """
@@ -77,13 +70,6 @@ class RealtyTypeSchema(Schema):
     id = fields.Integer()
     original_id = fields.Integer(validate=validate_positive_field)
     name = fields.String(validate=validate.Length(max=255))
-
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for RealtyType model
-        """
-        return RealtyType(**data)
 
 
 class RealtyDetailsSchema(Schema):
@@ -102,13 +88,6 @@ class RealtyDetailsSchema(Schema):
     original_id = fields.Integer(validate=validate_positive_field)
     original_url = fields.String(validate=validate.Length(max=255))
 
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for RealtyDetails model
-        """
-        return RealtyDetails(**data)
-
 
 class CitySchema(Schema):
     """
@@ -119,13 +98,6 @@ class CitySchema(Schema):
     state_id = fields.Integer(load_only=True)
     original_id = fields.Integer(validate=validate_positive_field)
 
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for City model
-        """
-        return City(**data)
-
 
 class StateSchema(Schema):
     """
@@ -134,13 +106,6 @@ class StateSchema(Schema):
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     original_id = fields.Integer(validate=validate_positive_field)
-
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for State model
-        """
-        return State(**data)
 
 
 class RealtySchema(Schema):
@@ -158,10 +123,3 @@ class RealtySchema(Schema):
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
-
-    @post_load
-    def create_state(self, data, **kwargs):
-        """
-        Post_load function for returning for Realty model
-        """
-        return Realty(**data)

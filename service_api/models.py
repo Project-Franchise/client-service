@@ -11,9 +11,9 @@ class RealtyDetails(Base):
 
     id = Column(BIGINT, primary_key=True)
     realty = relationship("Realty", uselist=False, backref="realty_details")
-    floor = Column(BIGINT, nullable=False)
-    floors_number = Column(BIGINT, nullable=False)
-    square = Column(BIGINT, nullable=False)
+    floor = Column(BIGINT, nullable=True)
+    floors_number = Column(BIGINT, nullable=True)
+    square = Column(BIGINT, nullable=True)
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_id = Column(BIGINT, nullable=False, unique=True)

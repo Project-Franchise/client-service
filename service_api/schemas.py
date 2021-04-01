@@ -2,6 +2,7 @@
 Schemas for models with fields validation
 """
 from datetime import datetime
+from re import T
 
 from marshmallow import Schema, ValidationError, fields, post_load, validate
 from service_api.errors import BadRequestException
@@ -76,10 +77,10 @@ class RealtyDetailsSchema(Schema):
     Schema for RealtyDetails model
     """
     id = fields.Integer()
-    floor = fields.Integer(validate=validate.Range(min=0, max=50))
-    floors_number = fields.Integer(validate=validate.Range(min=1, max=50))
+    floor = fields.Integer(validate=validate.Range(min=0, max=50), allow_none=True)
+    floors_number = fields.Integer(validate=validate.Range(min=1, max=50), allow_none=True)
     square = fields.Integer(validate=lambda val: val >= 0,
-                            error_messages={"validator_failed": "Square must be greater than 0"})
+                            error_messages={"validator_failed": "Square must be greater than 0"}, allow_none=True)
     price = fields.Float(validate=lambda val: val >= 0,
                          error_messages={"validator_failed": "Price must be greater than 0"})
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))

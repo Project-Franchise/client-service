@@ -136,7 +136,7 @@ class RealtyResource(Resource):
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
                 ]
-            ).join(RealtyDetails).all()[offset, offset+per_page]
+            ).join(RealtyDetails).all()[offset: offset+per_page]
 
             return RealtySchema(many=True).dump(realty)
 

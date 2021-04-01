@@ -207,7 +207,7 @@ class LatestDataFromDomriaResource(Resource):
                     obj = session.query(model).get(realty[param])
                     if obj is None:
                         raise BadRequestException("No such filters!")
-                    params[param] = obj.original_id
+                    params[domria_param] = obj.original_id
 
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -229,15 +229,19 @@ class LatestDataFromDomriaResource(Resource):
         # validation
         with session_scope() as session:
             realty_type = session.query(RealtyType).get(
-                params.get("realty_type"))
+                realty.get("realty_type_id"))
+
+        if realty_type is None:
+            raise BadRequestException("Invalid realty_type")
 
         try:
+            print("!!")
             type_mapper = mapper.get(realty_type.name)
-
+            print("!!")
             page = additional.pop("page")
             page_ads_number = additional.pop("page_ads_number")
-        except Exception:
-            return {"error": "E"}
+        except Exception as e:
+            return {"error": e.args}
 
         # mapping text characteristics to theirs domria ids
 
@@ -252,7 +256,7 @@ class LatestDataFromDomriaResource(Resource):
         # getting realty serialized data and write them into db
         with session_scope() as session:
             realty_json = process_request(
-                items, session, page, page_ads_number)
+                items, page, page_ads_number)
 
         return realty_json
 

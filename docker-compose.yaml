@@ -10,7 +10,7 @@ services:
       - ./:/app
     depends_on:
       - db
-      - redis  
+      - redis
     env_file:
       - .flask_env
     environment:

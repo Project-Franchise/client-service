@@ -7,7 +7,7 @@ from flask import Flask
 from flask_restful import Api, output_json
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
 
 class UnicodeApi(Api):
@@ -30,8 +30,8 @@ api_ = UnicodeApi(flask_app)
 engine = create_engine(os.environ["DATABASE_URL"])
 metadata = MetaData()
 Base = declarative_base(metadata)
-Session = sessionmaker(bind=engine)
-session = Session()
+Session_factory = sessionmaker(bind=engine)
+session = Session_factory()
 
 # entrypoint for caching using redis
 CACHE = redis.Redis(

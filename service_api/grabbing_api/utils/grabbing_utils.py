@@ -17,19 +17,18 @@ from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
                                                 DOMRIA_UKR, DOMRIA_URL,
                                                 REALTY_DETAILS_KEYS,
                                                 REALTY_KEYS)
-from service_api.grabbing_api.resources import session_scope
+from service_api import session_scope
 
 
 def load_data(data: Dict, model: Base, model_schema: SchemaMeta) -> SchemaMeta:
     """
     Stores data in a database according to a given scheme
     """
-
     try:
         valid_data = model_schema().load(data)
         record = model(**valid_data)
     except ValidationError as error:
-        raise BadRequestException from error
+        raise BadRequestException(error.args) from error
     with session_scope() as session:
         session.add(record)
         session.commit()
@@ -46,9 +45,9 @@ def make_realty_details_data(response: requests.models.Response, realty_details_
     original_keys = [data.get(val, None) for val in realty_details_keys.values()]
     self_keys = realty_details_keys.keys()
 
-    realty_details_data = dict.fromkeys(
+    realty_details_data = dict(zip(
         self_keys, original_keys
-    )
+    ))
 
     return realty_details_data
 

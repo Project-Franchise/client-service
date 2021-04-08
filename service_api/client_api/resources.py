@@ -105,7 +105,7 @@ class RealtyResource(Resource):
         try:
             latest = filters.pop("latest")
         except KeyError as error:
-            raise BadRequestException from error
+            raise BadRequestException(error.args)from error
 
         realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
             filters,
@@ -129,9 +129,9 @@ class RealtyResource(Resource):
                 page = int(additional_params_dict["page"])
                 per_page = int(additional_params_dict["page_ads_number"])
             except KeyError as error:
-                raise BadRequestException from error
+                raise BadRequestException(error.args)from error
             except ValueError as error:
-                raise BadRequestException from error
+                raise BadRequestException(error.args)from error
 
             offset = (page-1)*per_page
 

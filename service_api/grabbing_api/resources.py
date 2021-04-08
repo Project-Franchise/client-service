@@ -102,7 +102,7 @@ class CitiesFromDomriaResource(Resource):
             valid_data = CitySchema(many=True).load(processed_cities)
             cities = [City(**valid_city) for valid_city in valid_data]
         except ValidationError as error:
-            raise BadRequestException from error
+            raise BadRequestException(error.args) from error
 
         with session_scope() as session:
             session.add_all(cities)
@@ -160,7 +160,7 @@ class StatesFromDomriaResource(Resource):
             valid_data = StateSchema(many=True).load(processed_states)
             states = [State(**valid_state) for valid_state in valid_data]
         except ValidationError as error:
-            raise BadRequestException from error
+            raise BadRequestException(error.args) from error
 
         with session_scope() as session:
             session.add_all(states)
@@ -192,10 +192,11 @@ class LatestDataFromDomriaResource(Resource):
     """
 
     @staticmethod
-    def named_filed_converter(params, realty):
+    def named_filed_converter(realty):
         """
         Convert fileds names to domria names and replace id for its domria api
         """
+        params = dict()
         with session_scope() as session:
             for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
                 if param in realty:
@@ -203,6 +204,8 @@ class LatestDataFromDomriaResource(Resource):
                     if obj is None:
                         raise BadRequestException("No such filters!")
                     params[domria_param] = obj.original_id
+
+        return params
 
     def post(self):
         """
@@ -216,9 +219,9 @@ class LatestDataFromDomriaResource(Resource):
             realty = post_body["realty_filters"]
             additional = post_body["additional"]
         except KeyError as error:
-            raise BadRequestException from error
+            raise BadRequestException(error.args)from error
 
-        params = self.named_filed_converter(dict(), realty)
+        params = self.named_filed_converter(realty)
 
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -230,7 +233,7 @@ class LatestDataFromDomriaResource(Resource):
             except json.JSONDecodeError as error:
                 raise json.JSONDecodeError from error
             except RedisError as error:
-                raise RedisError from error
+                raise RedisError(error.args) from error
         else:
             mapper = json.loads(cached_characteristics)
 
@@ -251,12 +254,12 @@ class LatestDataFromDomriaResource(Resource):
                           for key, value in characteristics.items()))
 
         items = RealtyRequestToDomria().get(params)
-
         with session_scope() as session:
             try:
                 return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"))
             except KeyError as error:
-                raise BadRequestException from error
+                print(error.args)
+                raise BadRequestException(error.args) from error
 
 
 # Be careful. Use this links only once!!

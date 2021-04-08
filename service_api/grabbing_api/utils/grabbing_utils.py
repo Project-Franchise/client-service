@@ -1,17 +1,18 @@
-from service_api import Base
-from service_api.errors import BadRequestException
-from service_api.models import RealtyDetails, Realty
-from service_api.schemas import RealtySchema, RealtyDetailsSchema
-import os
-import sys
+"""
+Utilities for creating models and saving them in DB
+"""
+
 from json import JSONDecodeError
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import requests
 from marshmallow import ValidationError
 from marshmallow.schema import SchemaMeta
+from service_api import Base
+from service_api.errors import BadRequestException
+from service_api.models import Realty, RealtyDetails
+from service_api.schemas import RealtyDetailsSchema, RealtySchema
 
-sys.path.append(os.getcwd())
 from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
                                                 DOMRIA_UKR, DOMRIA_URL,
                                                 REALTY_DETAILS_KEYS,
@@ -19,16 +20,16 @@ from service_api.grabbing_api.constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN,
 from service_api.grabbing_api.resources import session_scope
 
 
-def load_data(data: Dict, Model: Base, ModelSchema: SchemaMeta) -> SchemaMeta:
+def load_data(data: Dict, model: Base, model_schema: SchemaMeta) -> SchemaMeta:
     """
     Stores data in a database according to a given scheme
     """
 
     try:
-        valid_data = ModelSchema().load(data)
-        record = Model(**valid_data)
+        valid_data = model_schema().load(data)
+        record = model(**valid_data)
     except ValidationError as error:
-        raise BadRequestException(error.args)
+        raise BadRequestException from error
     with session_scope() as session:
         session.add(record)
         session.commit()
@@ -45,12 +46,9 @@ def make_realty_details_data(response: requests.models.Response, realty_details_
     original_keys = [data.get(val, None) for val in realty_details_keys.values()]
     self_keys = realty_details_keys.keys()
 
-    realty_details_data = {
-        key: value for (key, value) in
-        zip(
-            self_keys, original_keys
-        )
-    }
+    realty_details_data = dict.fromkeys(
+        self_keys, original_keys
+    )
 
     return realty_details_data
 
@@ -62,8 +60,8 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
     realty_data = dict()
     with session_scope() as session:
         for keys in realty_keys:
-            id, model, response_key = keys
-            realty_data[id] = (session.query(model).filter(
+            key, model, response_key = keys
+            realty_data[key] = (session.query(model).filter(
                 model.original_id == response.json()[response_key]
             ).first()).id
 
@@ -88,7 +86,7 @@ def create_records(id_list: List) -> List[Dict]:
             realty_details_data = make_realty_details_data(response, REALTY_DETAILS_KEYS)
         except JSONDecodeError as error:
             print(error)
-            raise JSONDecodeError(error.args)
+            raise
 
         load_data(realty_details_data, RealtyDetails, RealtyDetailsSchema)
 
@@ -96,7 +94,7 @@ def create_records(id_list: List) -> List[Dict]:
             realty_data = make_realty_data(response, REALTY_KEYS)
         except JSONDecodeError as error:
             print(error)
-            raise JSONDecodeError(error.args)
+            raise
 
         realty = load_data(realty_data, Realty, RealtySchema)
 

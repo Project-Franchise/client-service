@@ -1,3 +1,7 @@
+"""
+Main logic for getting characteristics from domria_api
+"""
+
 import json
 from typing import Dict
 
@@ -21,17 +25,21 @@ def decode_characteristics(dct: Dict) -> Dict:
     return dct
 
 
-def get_characteristics(characteristics: Dict = dict()) -> Dict:
+def get_characteristics(characteristics: Dict = None) -> Dict:
     """
     Function to get characteristics
     and retrieve them in dict
     """
+
+    if characteristics is None:
+        characteristics = dict()
+
     with open("service_api/static data/main_hardcode.json") as json_file:
-        сharacteristics_data_set = json.load(json_file)
-    for element in сharacteristics_data_set["realty_type"]:
+        characteristics_data_set = json.load(json_file)
+    for element in characteristics_data_set["realty_type"]:
         req = requests.get(
             DOMRIA_DOMAIN + DOMRIA_URL["options"],
-            params={"realty_type": сharacteristics_data_set["realty_type"][element],
+            params={"realty_type": characteristics_data_set["realty_type"][element],
                     "operation_type": 1,
                     "api_key": DOMRIA_API_KEY})
         list_of_characteristics = req.json(object_hook=decode_characteristics)

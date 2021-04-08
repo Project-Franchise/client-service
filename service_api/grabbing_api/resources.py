@@ -62,7 +62,7 @@ class CitiesFromDomriaResource(Resource):
             try:
                 CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
             except RedisError as error:
-                raise RedisError(error.args)
+                raise RedisError from error
 
             return {
                 "status": "fetched from domria",
@@ -101,8 +101,8 @@ class CitiesFromDomriaResource(Resource):
         try:
             valid_data = CitySchema(many=True).load(processed_cities)
             cities = [City(**valid_city) for valid_city in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
+        except ValidationError as error:
+            raise BadRequestException from error
 
         with session_scope() as session:
             session.add_all(cities)
@@ -159,8 +159,8 @@ class StatesFromDomriaResource(Resource):
         try:
             valid_data = StateSchema(many=True).load(processed_states)
             states = [State(**valid_state) for valid_state in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
+        except ValidationError as error:
+            raise BadRequestException from error
 
         with session_scope() as session:
             session.add_all(states)
@@ -187,19 +187,15 @@ class StatesFromDomriaResource(Resource):
 
 
 class LatestDataFromDomriaResource(Resource):
+    """
+    Resource that is responsible for manipulation with latest data from resources described on metadata
+    """
 
-    def post(self):
-
-        post_body = request.get_json()
-
-        try:
-            characteristics = post_body["characteristics"]
-            realty = post_body["realty_filters"]
-            additional = post_body["additional"]
-        except KeyError:
-            raise BadRequestException("Some paramteters are missing!")
-
-        params = dict()
+    @staticmethod
+    def named_filed_converter(params, realty):
+        """
+        Convert fileds names to domria names and replace id for its domria api
+        """
         with session_scope() as session:
             for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
                 if param in realty:
@@ -207,6 +203,22 @@ class LatestDataFromDomriaResource(Resource):
                     if obj is None:
                         raise BadRequestException("No such filters!")
                     params[domria_param] = obj.original_id
+
+    def post(self):
+        """
+        Returns latest information about realty and save it to DB
+        """
+
+        post_body = request.get_json()
+
+        try:
+            characteristics = post_body["characteristics"]
+            realty = post_body["realty_filters"]
+            additional = post_body["additional"]
+        except KeyError as error:
+            raise BadRequestException from error
+
+        params = self.named_filed_converter(dict(), realty)
 
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
         if cached_characteristics is None:
@@ -216,9 +228,9 @@ class LatestDataFromDomriaResource(Resource):
                           json.dumps(mapper),
                           datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
             except json.JSONDecodeError as error:
-                raise json.JSONDecodeError(error.args)
+                raise json.JSONDecodeError from error
             except RedisError as error:
-                raise RedisError(error.args)
+                raise RedisError from error
         else:
             mapper = json.loads(cached_characteristics)
 
@@ -227,32 +239,27 @@ class LatestDataFromDomriaResource(Resource):
                 realty.get("realty_type_id"))
 
         if realty_type is None:
-            raise BadRequestException("Invalid realty_type")
+            raise BadRequestException("Invalid realty_type while getting latest data")
 
         try:
             type_mapper = mapper.get(realty_type.name)
+        except Exception as error:
+            print(error)
+            raise
 
-            page = additional.pop("page")
-            page_ads_number = additional.pop("page_ads_number")
-        except Exception as err:
-            print(err)
-            raise Exception(err.args)
+        params.update(dict((type_mapper.get(key, key), value)
+                          for key, value in characteristics.items()))
 
-        new_params = dict((type_mapper.get(key, key), value)
-                          for key, value in characteristics.items())
-        new_params.update(params)
-
-        items = RealtyRequestToDomria().get(new_params)
+        items = RealtyRequestToDomria().get(params)
 
         with session_scope() as session:
-            realty_json = process_request(
-                items, page, page_ads_number)
-
-        return realty_json
+            try:
+                return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"))
+            except KeyError as error:
+                raise BadRequestException from error
 
 
 # Be careful. Use this links only once!!
 api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
 api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
-api_.add_resource(LatestDataFromDomriaResource,
-                  URLS["GRABBING"]["GET_LATEST_URL"])
+api_.add_resource(LatestDataFromDomriaResource, URLS["GRABBING"]["GET_LATEST_URL"])

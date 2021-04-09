@@ -197,7 +197,7 @@ class LatestDataFromDomriaResource(Resource):
             realty = post_body["realty_filters"]
             additional = post_body["additional"]
         except KeyError:
-            raise BadRequestException("Some paramteters are missing!")
+            raise BadRequestException("Some parameters are missing!")
 
         params = dict()
         with session_scope() as session:
@@ -244,9 +244,8 @@ class LatestDataFromDomriaResource(Resource):
 
         items = RealtyRequestToDomria().get(new_params)
 
-        with session_scope() as session:
-            realty_json = process_request(
-                items, page, page_ads_number)
+        realty_json = process_request(
+            items, page, page_ads_number)
 
         return realty_json
 

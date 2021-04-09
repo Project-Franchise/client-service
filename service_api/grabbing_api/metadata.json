@@ -1,0 +1,9 @@
+[
+  {
+    "name": "DOMRIA API",
+    "base_url": "https://developers.ria.com/dom",
+    "url_rules": {
+      "cities": "/cities"
+    }
+  }
+]

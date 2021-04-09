@@ -33,7 +33,9 @@ def get_characteristics(characteristics: Dict = dict()) -> Dict:
             DOMRIA_DOMAIN + DOMRIA_URL["options"],
             params={"realty_type": сharacteristics_data_set["realty_type"][element],
                     "operation_type": 1,
-                    "api_key": DOMRIA_API_KEY})
+                    "api_key": DOMRIA_API_KEY},
+            headers={'User-Agent': 'Mozilla/5.0'}
+        )
         list_of_characteristics = req.json(object_hook=decode_characteristics)
         list_of_characteristics = [
             element for element in list_of_characteristics if element != {}]

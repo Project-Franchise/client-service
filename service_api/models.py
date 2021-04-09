@@ -17,7 +17,7 @@ class RealtyDetails(Base):
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_id = Column(BIGINT, nullable=False, unique=True)
-    original_url = Column(VARCHAR(255), nullable=False, unique=True)
+    original_url = Column(VARCHAR(255), nullable=False, unique=True)    
 
 
 class OperationType(Base):

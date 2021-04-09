@@ -129,7 +129,7 @@ def filters_validation(params: Dict, list_of_models: List[Base], schemes: List[S
                                 (isinstance(objects, list) and key in objects)})
 
     if sum(map(len, list_of_filters)) != len(params):
-        raise BadRequestException("Undefinded parameters found")
+        raise BadRequestException("Undefined parameters found")
     iter_list = iter(list_of_filters)
     for scheme in schemes:
         dict_to_validate = next(iter_list)

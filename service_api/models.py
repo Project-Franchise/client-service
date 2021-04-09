@@ -1,3 +1,6 @@
+"""
+Models for service_api
+"""
 from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey,
                         UniqueConstraint)
 from sqlalchemy.orm import relationship
@@ -6,6 +9,18 @@ from service_api import Base
 
 
 class RealtyDetails(Base):
+    """
+    Realty details model
+    :param: realty Realty
+    :param: floor int nullable
+    :param: floors_number int nullable
+    :param: square int nullable
+    :param: price float
+    :param: published_at datetime
+    :param: floors_number int nullable
+    :param: original_id int
+    :param: original_url str
+    """
 
     __tablename__ = "realty_details"
 
@@ -21,6 +36,12 @@ class RealtyDetails(Base):
 
 
 class OperationType(Base):
+    """
+    Operation type model
+    :param: name str
+    :param: realty Realty
+    :param: original_id int
+    """
 
     __tablename__ = "operation_type"
 
@@ -31,6 +52,12 @@ class OperationType(Base):
 
 
 class RealtyType(Base):
+    """
+    Realty type model
+    :param: name str
+    :param: realty Realty
+    :param: original_id int
+    """
 
     __tablename__ = "realty_type"
 
@@ -41,6 +68,14 @@ class RealtyType(Base):
 
 
 class Realty(Base):
+    """
+    Realty model
+    :param: city_id int
+    :param: state_id int
+    :param: realty_details_id int
+    :param: realty_type_id int
+    :param: operation_type_id int
+    """
 
     __tablename__ = "realty"
 
@@ -58,6 +93,12 @@ class Realty(Base):
 
 
 class City(Base):
+    """
+    Realty type model
+    :param: name str
+    :param: state_id int
+    :param: original_id int
+    """
 
     __tablename__ = "city"
 
@@ -70,6 +111,11 @@ class City(Base):
 
 
 class State(Base):
+    """
+    Realty type model
+    :param: name str
+    :param: original_id int
+    """
 
     __tablename__ = "state"
 

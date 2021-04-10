@@ -2,8 +2,19 @@
   {
     "name": "DOMRIA API",
     "base_url": "https://developers.ria.com/dom",
+    "required": {
+      "api_key": ""
+    },
     "url_rules": {
-      "cities": "/cities"
+      "cities": {
+        "url_prefix": "/cities"
+      },
+      "states": {
+        "url_prefix": "/states"
+      },
+      "options": {
+        "url_prefix": "/options"
+      }
     }
   }
 ]

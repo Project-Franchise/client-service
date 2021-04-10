@@ -60,7 +60,7 @@ def make_realty_data(response: requests.models.Response, realty_keys: List) -> D
     """
     Composes data for Realty model
     """
-    realty_data = dict()
+    realty_data = {}
     with session_scope() as session:
         for keys in realty_keys:
             id, model, response_key = keys

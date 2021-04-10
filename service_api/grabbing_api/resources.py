@@ -38,8 +38,7 @@ class CitiesFromDomriaResource(Resource):
         :return: list of serialized cities
         """
         cached_sates_status = CACHE.get(REDIS_STATES_FETCHED)
-        if cached_sates_status is not None and \
-           pickle.loads(cached_sates_status):
+        if cached_sates_status is not None and pickle.loads(cached_sates_status):
 
             city_schema = CitySchema(many=True)
 
@@ -202,25 +201,25 @@ class LatestDataFromDomriaResource(Resource):
         params = dict()
         with session_scope() as session:
             for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
-                if param in realty:
-                    obj = session.query(model).get(realty[param])
-                    if obj is None:
+                if param in realty:                                       #чи нада це? Чи можна просто з метаданих?
+                    obj = session.query(model).get(realty[param])         #чи нада це? Чи можна просто з метаданих?
+                    if obj is None:                                       #чи нада це? Чи можна просто з метаданих?
                         raise BadRequestException("No such filters!")
                     params[domria_param] = obj.original_id
 
-        cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
+        cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)                 # >>>>>>
         if cached_characteristics is None:
             try:
                 mapper = get_characteristics()
                 CACHE.set(REDIS_CHARACTERISTICS,
                           json.dumps(mapper),
-                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
-            except json.JSONDecodeError as error:
-                raise json.JSONDecodeError(error.args)
+                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))    # Окрема функція
+            except json.JSONDecodeError as error:                                 # Окрема функція
+                raise json.JSONDecodeError(error.args)                            # Окрема функція
             except RedisError as error:
                 raise RedisError(error.args)
         else:
-            mapper = json.loads(cached_characteristics)
+            mapper = json.loads(cached_characteristics)                           # <<<<<<<<<
 
         with session_scope() as session:
             realty_type = session.query(RealtyType).get(

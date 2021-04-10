@@ -21,7 +21,7 @@ def decode_characteristics(dct: Dict) -> Dict:
     return dct
 
 
-def get_characteristics(characteristics: Dict = dict()) -> Dict:
+def get_characteristics(characteristics: Dict = dict()) -> Dict:  # None {}
     """
     Function to get characteristics
     and retrieve them in dict

@@ -1,3 +1,6 @@
+"""
+Service_api global constants
+"""
 URLS = {
     "CLIENT": {
         "INDEX_URL": "/",

@@ -61,7 +61,7 @@ class CitiesFromDomriaResource(Resource):
             try:
                 CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
             except RedisError as error:
-                raise RedisError(error.args)
+                raise RedisError from error
 
             return {
                 "status": "fetched from domria",
@@ -100,8 +100,8 @@ class CitiesFromDomriaResource(Resource):
         try:
             valid_data = CitySchema(many=True).load(processed_cities)
             cities = [City(**valid_city) for valid_city in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
+        except ValidationError as error:
+            raise BadRequestException(error.args) from error
 
         with session_scope() as session:
             session.add_all(cities)
@@ -158,8 +158,8 @@ class StatesFromDomriaResource(Resource):
         try:
             valid_data = StateSchema(many=True).load(processed_states)
             states = [State(**valid_state) for valid_state in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
+        except ValidationError as error:
+            raise BadRequestException(error.args) from error
 
         with session_scope() as session:
             session.add_all(states)
@@ -186,8 +186,30 @@ class StatesFromDomriaResource(Resource):
 
 
 class LatestDataFromDomriaResource(Resource):
+    """
+    Resource that is responsible for manipulation with latest data from resources described on metadata
+    """
+
+    @staticmethod
+    def named_filed_converter(realty):
+        """
+        Convert fileds names to domria names and replace id for its domria api
+        """
+        params = dict()
+        with session_scope() as session:
+            for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
+                if param in realty:
+                    obj = session.query(model).get(realty[param])
+                    if obj is None:
+                        raise BadRequestException("No such filters!")
+                    params[domria_param] = obj.original_id
+
+        return params
 
     def post(self):
+        """
+        Returns latest information about realty and save it to DB
+        """
 
         post_body = request.get_json()
 
@@ -195,17 +217,10 @@ class LatestDataFromDomriaResource(Resource):
             characteristics = post_body["characteristics"]
             realty = post_body["realty_filters"]
             additional = post_body["additional"]
-        except KeyError:
-            raise BadRequestException("Some parameters are missing!")
+        except KeyError as error:
+            raise BadRequestException(error.args) from error
 
-        params = dict()
-        with session_scope() as session:
-            for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
-                if param in realty:                                       #чи нада це? Чи можна просто з метаданих?
-                    obj = session.query(model).get(realty[param])         #чи нада це? Чи можна просто з метаданих?
-                    if obj is None:                                       #чи нада це? Чи можна просто з метаданих?
-                        raise BadRequestException("No such filters!")
-                    params[domria_param] = obj.original_id
+        params = self.named_filed_converter(realty)
 
         cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)                 # >>>>>>
         if cached_characteristics is None:
@@ -213,11 +228,11 @@ class LatestDataFromDomriaResource(Resource):
                 mapper = get_characteristics()
                 CACHE.set(REDIS_CHARACTERISTICS,
                           json.dumps(mapper),
-                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))    # Окрема функція
-            except json.JSONDecodeError as error:                                 # Окрема функція
-                raise json.JSONDecodeError(error.args)                            # Окрема функція
+                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
+            except json.JSONDecodeError as error:
+                raise json.JSONDecodeError from error
             except RedisError as error:
-                raise RedisError(error.args)
+                raise RedisError(error.args) from error
         else:
             mapper = json.loads(cached_characteristics)                           # <<<<<<<<<
 
@@ -226,31 +241,27 @@ class LatestDataFromDomriaResource(Resource):
                 realty.get("realty_type_id"))
 
         if realty_type is None:
-            raise BadRequestException("Invalid realty_type")
+            raise BadRequestException("Invalid realty_type while getting latest data")
 
         try:
             type_mapper = mapper.get(realty_type.name)
+        except Exception as error:
+            print(error)
+            raise
 
-            page = additional.pop("page")
-            page_ads_number = additional.pop("page_ads_number")
-        except Exception as err:
-            print(err)
-            raise Exception(err.args)
+        params.update(dict((type_mapper.get(key, key), value)
+                          for key, value in characteristics.items()))
 
-        new_params = dict((type_mapper.get(key, key), value)
-                          for key, value in characteristics.items())
-        new_params.update(params)
-
-        items = RealtyRequestToDomria().get(new_params)
-
-        realty_json = process_request(
-            items, page, page_ads_number)
-
-        return realty_json
+        items = RealtyRequestToDomria().get(params)
+        with session_scope() as session:
+            try:
+                return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"))
+            except KeyError as error:
+                print(error.args)
+                raise BadRequestException(error.args) from error
 
 
 # Be careful. Use this links only once!!
 api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
 api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
-api_.add_resource(LatestDataFromDomriaResource,
-                  URLS["GRABBING"]["GET_LATEST_URL"])
+api_.add_resource(LatestDataFromDomriaResource, URLS["GRABBING"]["GET_LATEST_URL"])

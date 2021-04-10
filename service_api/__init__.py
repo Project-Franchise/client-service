@@ -1,3 +1,7 @@
+"""
+Module that contains client_api, grabbing_api, models, schemas
+"""
+
 import os
 from contextlib import contextmanager
 from typing import Iterator
@@ -11,9 +15,12 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 
 class UnicodeApi(Api):
+    """
+    Redefined Api classs to suppoer unicode text responses
+    """
 
     def __init__(self, *args, **kwargs):
-        super(UnicodeApi, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.app.config["RESTFUL_JSON"] = {
             "ensure_ascii": False
         }
@@ -40,6 +47,9 @@ CACHE = redis.Redis(
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
+    """
+    Context manager to handle tranaction to DB
+    """
     try:
         yield session
         session.commit()
@@ -54,6 +64,4 @@ def session_scope() -> Iterator[Session]:
             raise
 
 
-from . import models, schemas
-from service_api import client_api
-from service_api import grabbing_api
+from . import client_api, grabbing_api

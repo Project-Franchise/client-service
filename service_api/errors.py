@@ -7,13 +7,11 @@ from service_api import flask_app
 
 
 class BadRequestException(Exception):
-
     """
     Class for Bad Request Exception(400 status code)
     """
 
     def __init__(self, message="Bad request sent"):
-
         """
         Method to initialize bad request params(status_code, type, message)
         :param: string
@@ -41,13 +39,11 @@ class BadRequestException(Exception):
 
 
 class ServiceUnavailableException(Exception):
-
     """
     Class for Service Unavailable Exception(503 status code)
     """
 
     def __init__(self, message="Service Unavailable"):
-
         """
         Method to initialize Service Unavailable Exception(status_code, type, message)
         :param: string
@@ -60,7 +56,6 @@ class ServiceUnavailableException(Exception):
         self.message = message
 
     def to_dict(self):
-
         """
         Method that turns params into a dictionary
         :param: object itself
@@ -76,13 +71,11 @@ class ServiceUnavailableException(Exception):
 
 
 class TooManyRequestsException(Exception):
-
     """
     Class for Too Many Requests Exception(429 status code)
     """
 
     def __init__(self, message="Too Many Requests"):
-
         """
         Method to initialize Too Many Requests Exception(status_code, type, message)
         :param: string
@@ -95,13 +88,11 @@ class TooManyRequestsException(Exception):
         self.message = message
 
     def to_dict(self):
-
         """
         Method that turns params into a dictionary
         :param: object itself
         :return: dict
         """
-
         resp = {
             "message": self.message,
             "code": self.status_code,

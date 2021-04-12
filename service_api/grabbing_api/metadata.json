@@ -1,20 +1,67 @@
-[
-  {
-    "name": "DOMRIA API",
+{
+  "DOMRIA API": {
     "base_url": "https://developers.ria.com/dom",
-    "required": {
-      "api_key": ""
+    "name": "DOMRIA API",
+    "optional": {
+      "api_key": "ShmQ2MNpxr6T0PXrPi2VHPpzGa29LwnLt6ObOQ9M",
+      "lang_id": 4
     },
     "url_rules": {
       "cities": {
-        "url_prefix": "/cities"
+        "url_prefix": "/cities",
+        "condition": "/"
       },
       "states": {
-        "url_prefix": "/states"
+        "url_prefix": "/states",
+        "condition": ""
       },
       "options": {
-        "url_prefix": "/options"
+        "url_prefix": "/options",
+        "condition": ""
+      },
+      "search": {
+        "url_prefix": "/search"
+      },
+      "single_ad": {
+        "url_prefix": "/info",
+        "condition": "/"
       }
+    },
+    "realty_columns": {
+      "city_id": {
+        "response_key": "city_id",
+        "request_key": "city_id",
+        "model": "City"
+      },
+      "state_id": {
+        "response_key": "state_id",
+        "request_key": "state_id",
+        "model": "State"
+      },
+      "realty_details_id": {
+        "response_key": "realty_id",
+        "request_key": null,
+        "model": "RealtyDetails"
+      },
+      "realty_type_id": {
+        "response_key": "realty_type_id",
+        "request_key": "realty_type",
+        "model": "RealtyType"
+      },
+      "operation_type_id": {
+        "response_key": "advert_type_id",
+        "request_key": "operation_type",
+        "model": "OperationType"
+      }
+    },
+    "realty_details_columns": {
+      "floor": "floor",
+      "floors_number": "floors_count",
+      "square": "total_square_meters",
+      "price": "price",
+      "published_at": "publishing_date",
+      "original_id": "realty_id",
+      "original_url": "beautiful_url"
     }
   }
-]
+}

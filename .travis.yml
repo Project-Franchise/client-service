@@ -1,0 +1,25 @@
+language: python
+python:
+  - "3.9"
+
+services:
+  - docker
+  - postgresql
+  - redis
+
+branches:
+  only:
+    - travis
+
+before_script:
+  - docker compose up
+
+script:
+  - python3 app.py
+
+notifications:
+  email:
+    recipients:
+      - iryna.yarka@gmail.com
+    on_success: never
+    on_failure: always

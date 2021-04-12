@@ -32,10 +32,11 @@ class BadRequestException(Exception):
         :return: dict
         """
 
-        resp = dict()
-        resp["message"] = self.message
-        resp["code"] = self.status_code
-        resp["type"] = self.type
+        resp = {
+            "message": self.message,
+            "code": self.status_code,
+            "type": self.type
+        }
         return resp
 
 
@@ -66,10 +67,11 @@ class ServiceUnavailableException(Exception):
         :return: dict
         """
 
-        resp = dict()
-        resp["message"] = self.message
-        resp["code"] = self.status_code
-        resp["type"] = self.type
+        resp = {
+            "message": self.message,
+            "code": self.status_code,
+            "type": self.type
+        }
         return resp
 
 
@@ -100,10 +102,11 @@ class TooManyRequestsException(Exception):
         :return: dict
         """
 
-        resp = dict()
-        resp["message"] = self.message
-        resp["code"] = self.status_code
-        resp["type"] = self.type
+        resp = {
+            "message": self.message,
+            "code": self.status_code,
+            "type": self.type
+        }
         return resp
 
 

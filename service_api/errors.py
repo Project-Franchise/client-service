@@ -73,6 +73,40 @@ class ServiceUnavailableException(Exception):
         return resp
 
 
+class TooManyRequestsException(Exception):
+
+    """
+    Class for Too Many Requests Exception(429 status code)
+    """
+
+    def __init__(self, message="Too Many Requests"):
+
+        """
+        Method to initialize Too Many Requests Exception(status_code, type, message)
+        :param: string
+        :return:
+        """
+
+        Exception.__init__(self)
+        self.status_code = 429
+        self.type = "Too_Many_Requests"
+        self.message = message
+
+    def to_dict(self):
+
+        """
+        Method that turns params into a dictionary
+        :param: object itself
+        :return: dict
+        """
+
+        resp = dict()
+        resp["message"] = self.message
+        resp["code"] = self.status_code
+        resp["type"] = self.type
+        return resp
+
+
 def handle_error(error):
     """
     Method that handles errors
@@ -101,7 +135,18 @@ def internal_server_error(error="Internal Server Error"):
     return response, 500
 
 
+def conflict(error="Conflict"):
+    """
+    Method that handles Conflict
+    :return: json, status_code
+    """
+    response = jsonify(code=409, type="CONFLICT", message=error)
+    return response, 409
+
+
 flask_app.register_error_handler(404, not_found)
 flask_app.register_error_handler(500, internal_server_error)
+flask_app.register_error_handler(409, conflict)
 flask_app.register_error_handler(BadRequestException, handle_error)
 flask_app.register_error_handler(ServiceUnavailableException, handle_error)
+flask_app.register_error_handler(TooManyRequestsException, handle_error)

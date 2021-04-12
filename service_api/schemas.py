@@ -8,18 +8,19 @@ from marshmallow import Schema, ValidationError, fields, validate
 from service_api.errors import BadRequestException
 from service_api import Base
 
-from service_api.models import (City, OperationType, Realty, RealtyDetails,
-                                RealtyType, State)
-
 
 class IntOrDictField(fields.Field):
+    """
+    Custom field for validating int or dict elements
+    """
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, (float, int)):
             return value
-        elif isinstance(value, dict) and value.get("to") and value.get("from"):
+
+        if isinstance(value, dict) and value.get("to") and value.get("from"):
             return value
-        else:
-            raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
+
+        raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
 
     def _validate(self, value):
         if isinstance(value, dict):
@@ -129,12 +130,12 @@ def filters_validation(params: Dict, list_of_models: List[Base], schemes: List[S
                                 (isinstance(objects, list) and key in objects)})
 
     if sum(map(len, list_of_filters)) != len(params):
-        raise BadRequestException("Undefinded parameters found")
+        raise BadRequestException("Undefined parameters found")
     iter_list = iter(list_of_filters)
     for scheme in schemes:
         dict_to_validate = next(iter_list)
         try:
             scheme().load(dict_to_validate)
-        except ValidationError as err:
-            raise BadRequestException(err.args)
+        except ValidationError as error:
+            raise BadRequestException from error
     return list_of_filters

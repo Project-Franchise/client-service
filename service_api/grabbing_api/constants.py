@@ -1,3 +1,7 @@
+"""
+Constans for grabbing module
+"""
+
 import os
 
 from service_api.models import (City, OperationType, RealtyDetails, RealtyType,

@@ -83,21 +83,21 @@ def handle_error(error):
     return response
 
 
-def not_found(error):
+def not_found(error="Not found"):
     """
     Method that handles Not Found
     :return: json, status_code
     """
-    response = jsonify(code=404, type="NOT_FOUND", message="Not found")
+    response = jsonify(code=404, type="NOT_FOUND", message=error)
     return response, 404
 
 
-def internal_server_error(error):
+def internal_server_error(error="Internal Server Error"):
     """
     Method that handles Internal Server Error
     :return: json, status_code
     """
-    response = jsonify(code=500, type="INTERNAL_SERVER_ERROR", message="Internal Server Error")
+    response = jsonify(code=500, type="INTERNAL_SERVER_ERROR", message=error)
     return response, 500
 
 

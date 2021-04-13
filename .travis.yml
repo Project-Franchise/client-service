@@ -17,6 +17,9 @@ before_script:
 script:
   - python3 app.py
 
+after_script:
+  - exit()
+
 notifications:
   email:
     recipients:

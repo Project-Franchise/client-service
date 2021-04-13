@@ -9,11 +9,20 @@
     "url_rules": {
       "cities": {
         "url_prefix": "/cities",
-        "condition": "/"
+        "condition": "/",
+        "filters": {
+          "name": "name",
+          "city_id": "cityID",
+          "state_id": "stateID"
+        }
       },
       "states": {
         "url_prefix": "/states",
-        "condition": ""
+        "condition": "",
+        "filters": {
+          "name": "name",
+          "state_id": "stateID"
+        }
       },
       "options": {
         "url_prefix": "/options",

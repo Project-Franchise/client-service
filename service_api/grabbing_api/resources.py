@@ -20,10 +20,10 @@ from service_api.schemas import CitySchema, StateSchema
 
 from .characteristics import get_characteristics
 from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
-                        REALTY_KEYS_FOR_REQUEST, REDIS_CHARACTERISTICS,
-                        REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
-                        REDIS_STATES_FETCHED)
-from .realty_requests import RealtyRequestToDomria
+                        REALTY_KEYS_FOR_REQUEST, CACHED_CHARACTERISTICS,
+                        CACHED_CHARACTERISTICS_EXPIRE_TIME, CACHED_CITIES,
+                        CACHED_STATES)
+from .realty_requests import RealtyRequesterToDomriaResource
 from .utils.grabbing_utils import process_request
 
 
@@ -37,12 +37,12 @@ class CitiesFromDomriaResource(Resource):
         Get all cities from all states
         :return: list of serialized cities
         """
-        cached_sates_status = CACHE.get(REDIS_STATES_FETCHED)
+        cached_sates_status = CACHE.get(CACHED_STATES)
         if cached_sates_status is not None and pickle.loads(cached_sates_status):
 
             city_schema = CitySchema(many=True)
 
-            cached_status = CACHE.get(REDIS_CITIES_FETCHED)
+            cached_status = CACHE.get(CACHED_CITIES)
             if cached_status is not None and pickle.loads(cached_status):
                 with session_scope() as session:
                     cities = session.query(City).all()
@@ -59,7 +59,7 @@ class CitiesFromDomriaResource(Resource):
             cities = list(itertools.chain.from_iterable(city_generator))
 
             try:
-                CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
+                CACHE.set(CACHED_CITIES, pickle.dumps(True))
             except RedisError as error:
                 raise RedisError from error
 
@@ -115,7 +115,7 @@ class CitiesFromDomriaResource(Resource):
         """
         with session_scope() as session:
             session.query(City).delete()
-            CACHE.delete(REDIS_CITIES_FETCHED)
+            CACHE.delete(CACHED_CITIES)
 
         return "SUCCESS"
 
@@ -133,7 +133,7 @@ class StatesFromDomriaResource(Resource):
 
         state_schema = StateSchema(many=True)
 
-        cached_status = CACHE.get(REDIS_STATES_FETCHED)
+        cached_status = CACHE.get(CACHED_STATES)
         if cached_status is not None and pickle.loads(cached_status):
             with session_scope() as session:
                 states_from_db = session.query(State).all()
@@ -164,7 +164,7 @@ class StatesFromDomriaResource(Resource):
         with session_scope() as session:
             session.add_all(states)
 
-        CACHE.set(REDIS_STATES_FETCHED, pickle.dumps(True))
+        CACHE.set(CACHED_STATES, pickle.dumps(True))
 
         return {
             "status": "fetched from domria",
@@ -179,8 +179,8 @@ class StatesFromDomriaResource(Resource):
         with session_scope() as session:
             session.query(City).delete()
             session.query(State).delete()
-            CACHE.delete(REDIS_STATES_FETCHED)
-            CACHE.delete(REDIS_CITIES_FETCHED)
+            CACHE.delete(CACHED_STATES)
+            CACHE.delete(CACHED_CITIES)
 
         return "SUCCESS"
 
@@ -222,13 +222,13 @@ class LatestDataFromDomriaResource(Resource):
 
         params = self.named_filed_converter(realty)
 
-        cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)                 # >>>>>>
+        cached_characteristics = CACHE.get(CACHED_CHARACTERISTICS)                 # >>>>>>
         if cached_characteristics is None:
             try:
                 mapper = get_characteristics()
-                CACHE.set(REDIS_CHARACTERISTICS,
+                CACHE.set(CACHED_CHARACTERISTICS,
                           json.dumps(mapper),
-                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
+                          datetime.timedelta(**CACHED_CHARACTERISTICS_EXPIRE_TIME))
             except json.JSONDecodeError as error:
                 raise json.JSONDecodeError from error
             except RedisError as error:
@@ -252,7 +252,7 @@ class LatestDataFromDomriaResource(Resource):
         params.update(dict((type_mapper.get(key, key), value)
                           for key, value in characteristics.items()))
 
-        items = RealtyRequestToDomria().get(params)
+        items = RealtyRequesterToDomriaResource().get(params)
         with session_scope() as session:
             try:
                 return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"))

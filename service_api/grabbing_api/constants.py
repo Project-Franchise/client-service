@@ -47,13 +47,11 @@ REALTY_KEYS_FOR_REQUEST = [
 
 DOMRIA_UKR = 4
 DOMRIA_API_KEY = os.environ["DOMRIA_API_KEY"]
-REDIS_CHARACTERISTICS = "characteristics_avaliable"
-REDIS_CITIES_FETCHED = "cities_upload"
-REDIS_STATES_FETCHED = "states_upload"
+CACHED_CHARACTERISTICS = "characteristics_avaliable"
+CACHED_CITIES = "number_of_cities_by_state"
+CACHED_STATES = "number_of_states"
 
 # must be dict with datetime.timedelta params
-REDIS_CHARACTERISTICS_EX_TIME = {
-    "hours": 2
+CACHED_CHARACTERISTICS_EXPIRE_TIME = {
+    "days": 2
 }
-
-GENERAL_CHARACTERISTICS = ["city_id"]

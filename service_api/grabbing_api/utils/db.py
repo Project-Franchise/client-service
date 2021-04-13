@@ -7,8 +7,8 @@ import requests
 from requests.exceptions import RequestException
 from service_api import session_scope
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, PATH_TO_METADATA
-from service_api.models import City, State
-from service_api.schemas import CitySchema, StateSchema
+from service_api.models import City, RealtyType, State
+from service_api.schemas import CitySchema, RealtyTypeSchema, StateSchema
 
 from .grabbing_utils import load_data, open_metadata
 
@@ -106,3 +106,25 @@ class StateLoader(BaseLoader):
             load_data(data, State, StateSchema)
 
         return len(processed_states)
+
+class RealtyTypeLoader(BaseLoader):
+    """
+    Loads RealtyType from metadata
+    """
+
+    def load_to_db(self, **kwargs) -> int:
+        """
+        Getting realty types from metadata
+        Returns amount of fetched realty types
+        :return: int
+        """
+        domria_meta = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
+        realty_types = domria_meta["url_characteristics"]["realty_type"]
+
+        keys = domria_meta["model_characteristics"]["realty_type"]["filters"].keys()
+
+        for realty_type_name, realty_type_original_id in realty_types.items():
+            data = dict(zip(keys, (realty_type_name, realty_type_original_id)))
+            load_data(data, RealtyType, RealtyTypeSchema)
+
+        return len(realty_types)

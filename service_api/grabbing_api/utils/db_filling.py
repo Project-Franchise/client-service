@@ -2,10 +2,11 @@
 This module has functions that fill db with realty_type and opertation_type
 """
 
-import json
 from typing import Dict
 
+from service_api.grabbing_api.constants import PATH_TO_METADATA
 from service_api.grabbing_api.resources import session_scope
+from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 from service_api.models import OperationType, RealtyType
 
 
@@ -23,10 +24,9 @@ def fill_db(values: Dict, model):
         session.commit()
 
 
-with open("service_api/static data/main_hardcode.json") as json_file:
-    characteristics = json.load(json_file)
+characteristics = open_metadata(PATH_TO_METADATA)["DOMRIA API"]["url_characteristics"]
 
-    rt_values = characteristics["realty_type"]
-    op_values = characteristics["operation_type"]
-    fill_db(rt_values, RealtyType)
-    fill_db(op_values, OperationType)
+rt_values = characteristics["realty_type"]
+op_values = characteristics["operation_type"]
+fill_db(rt_values, RealtyType)
+fill_db(op_values, OperationType)

@@ -48,7 +48,7 @@ CACHE = redis.Redis(
 @contextmanager
 def session_scope() -> Iterator[Session]:
     """
-    Context manager to handle tranaction to DB
+    Context manager to handle transaction to DB
     """
     try:
         yield session

@@ -12,7 +12,7 @@
         "condition": "/",
         "filters": {
           "name": "name",
-          "city_id": "cityID",
+          "original_id": "cityID",
           "state_id": "stateID"
         }
       },
@@ -21,7 +21,7 @@
         "condition": "",
         "filters": {
           "name": "name",
-          "state_id": "stateID"
+          "original_id": "stateID"
         }
       },
       "options": {

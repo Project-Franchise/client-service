@@ -4,8 +4,6 @@ Constants for grabbing module
 
 import os
 
-DOMRIA_DOMAIN: str = "https://developers.ria.com/dom"
-
 DOMRIA_TOKEN = os.environ["DOMRIA_API_KEY"]
 REDIS_CHARACTERISTICS = "characteristics_avaliable"
 REDIS_CITIES_FETCHED = "cities_upload"

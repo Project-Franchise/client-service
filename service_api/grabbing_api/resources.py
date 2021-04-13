@@ -18,7 +18,7 @@ from service_api.grabbing_api.realty_requests import RealtyRequesterToServiceRes
 from .characteristics import process_characteristics
 from .constants import (REDIS_CHARACTERISTICS,
                         REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
-                        REDIS_STATES_FETCHED, PATH_TO_METADATA)
+                        REDIS_STATES_FETCHED, PATH_TO_METADATA, DOMRIA_TOKEN)
 from .utils.grabbing_utils import process_request, open_metadata, load_data
 
 
@@ -79,7 +79,7 @@ class CitiesFromDomriaResource(Resource):
         processed_cities = []
         for service_name in metadata:
             service_metadata = metadata[service_name]
-            params = {}
+            params = {"api_key": DOMRIA_TOKEN}
             for param, val in service_metadata["optional"].items():
                 params[param] = val
 
@@ -101,14 +101,6 @@ class CitiesFromDomriaResource(Resource):
                 return []
 
             load_data(service_cities, models.City, CitySchema)
-            # try:
-            #     valid_data = CitySchema(many=True).load(service_cities)
-            #     cities = [models.City(**valid_city) for valid_city in valid_data]
-            # except ValidationError as error:
-            #     raise BadRequestException(error.args) from error
-            #
-            # with session_scope() as session:
-            #     session.add_all(cities)
 
         return processed_cities
 
@@ -150,7 +142,7 @@ class StatesFromDomriaResource(Resource):
         processed_states = []
         for service_name in metadata:
             service_metadata = metadata[service_name]
-            params = {}
+            params = {"api_key": DOMRIA_TOKEN}
             for param, val in service_metadata["optional"].items():
                 params[param] = val
 
@@ -170,14 +162,6 @@ class StatesFromDomriaResource(Resource):
                 return []
 
             load_data(service_states, models.State, StateSchema)
-            # try:
-            #     valid_data = StateSchema(many=True).load(service_states)
-            #     states = [models.State(**valid_state) for valid_state in valid_data]
-            # except ValidationError as error:
-            #     raise BadRequestException(error.args) from error
-            #
-            # with session_scope() as session:
-            #     session.add_all(states)
 
             CACHE.set(REDIS_STATES_FETCHED, pickle.dumps(True))
 

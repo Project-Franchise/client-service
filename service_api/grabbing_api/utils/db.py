@@ -7,8 +7,8 @@ import requests
 from requests.exceptions import RequestException
 from service_api import session_scope
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, PATH_TO_METADATA
-from service_api.models import City, RealtyType, State
-from service_api.schemas import CitySchema, RealtyTypeSchema, StateSchema
+from service_api.models import City, RealtyType, State, OperationType
+from service_api.schemas import CitySchema, RealtyTypeSchema, StateSchema, OperationTypeSchema
 
 from .grabbing_utils import load_data, open_metadata
 
@@ -107,6 +107,7 @@ class StateLoader(BaseLoader):
 
         return len(processed_states)
 
+
 class RealtyTypeLoader(BaseLoader):
     """
     Loads RealtyType from metadata
@@ -128,3 +129,27 @@ class RealtyTypeLoader(BaseLoader):
             load_data(data, RealtyType, RealtyTypeSchema)
 
         return len(realty_types)
+
+
+class OperationTypeLoader(BaseLoader):
+    """
+    Loads OperationType from metadata
+    """
+
+    def load_to_db(self, **kwargs) -> int:
+        """
+        Getting operation types from metadata
+        Returns amount of fetched operation types
+        :return: int
+        """
+
+        domria_meta = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
+        operation_types = domria_meta["url_characteristics"]["operation_type"]
+
+        keys = domria_meta["model_characteristics"]["operation_type"]["filters"].keys()
+
+        for operation_type_name, operation_type_original_id in operation_types.items():
+            data = dict(zip(keys, (operation_type_name, operation_type_original_id)))
+            load_data(data, OperationType, OperationTypeSchema)
+
+        return len(operation_types)

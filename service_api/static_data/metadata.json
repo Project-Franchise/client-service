@@ -106,6 +106,12 @@
           "name": null,
           "original_id": null
         }
+      },
+      "operation_type":{
+        "filters":{
+          "name": null,
+          "original_id": null
+        }
       }
     },
     "url_characteristics": {

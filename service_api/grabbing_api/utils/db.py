@@ -8,7 +8,7 @@ from requests.exceptions import RequestException
 from service_api import session_scope
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, PATH_TO_METADATA
 from service_api.models import City, State
-from service_api.schemas import CitySchema
+from service_api.schemas import CitySchema, StateSchema
 
 from .grabbing_utils import load_data, open_metadata
 
@@ -70,3 +70,39 @@ class CityLoader(BaseLoader):
             load_data(data, City, CitySchema)
 
         return len(processed_cities)
+
+
+class StateLoader(BaseLoader):
+    """
+    Loads sates to db
+    """
+
+    def load_to_db(self, **kwargs) -> int:
+        """
+        Getting states from DOMRIA
+        Returns amount of fetched states
+        :return: int
+        """
+
+        domria_meta = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
+        domria_states_meta = domria_meta["url_rules"]["states"]
+
+        params = {
+            "lang_id": domria_meta["optional"]["lang_id"],
+            "api_key": DOMRIA_TOKEN
+        }
+
+        url = "{}{}".format(domria_meta["base_url"], domria_states_meta["url_prefix"])
+        response = requests.get(url, params=params)
+        if not response.ok:
+            raise RequestException(response.text)
+
+        states_json = response.json()
+        processed_states = [{key: state[external_service_key]
+                             for key, external_service_key in domria_states_meta["filters"].items()}
+                            for state in states_json]
+
+        for data in processed_states:
+            load_data(data, State, StateSchema)
+
+        return len(processed_states)

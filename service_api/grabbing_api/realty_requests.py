@@ -26,7 +26,7 @@ class RealtyRequesterToServiceResource:
                     value_from = value.get("values")["from"]  # constrains
                     value_to = value.get("values")["to"]
 
-                    char_description = metadata["realty_details_columns"]
+                    char_description = metadata["model_characteristics"]["realty_details_columns"]
                     key_from = char_description[value.get("name")]["gte"].format(value_from=str(parameter))
                     key_to = char_description[value.get("name")]["lte"].format(value_to=str(parameter))
 

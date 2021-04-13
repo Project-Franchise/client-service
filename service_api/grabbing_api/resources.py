@@ -212,7 +212,7 @@ class LatestDataResource(Resource):
         """
         params = {}
         with session_scope() as session:
-            for param, characteristics in service_metadata["realty_columns"].items():
+            for param, characteristics in service_metadata["model_characteristics"]["realty_columns"].items():
                 if not characteristics["request_key"]:
                     continue
 

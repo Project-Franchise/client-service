@@ -16,5 +16,5 @@ REDIS_CHARACTERISTICS_EX_TIME = {
     "hours": 2
 }
 
-PATH_TO_METADATA = os.sep.join(["service_api", "grabbing_api", "metadata.json"])
+PATH_TO_METADATA = os.sep.join(["service_api", "static_data", "metadata.json"])
 GENERAL_CHARACTERISTICS = ["city_id"]

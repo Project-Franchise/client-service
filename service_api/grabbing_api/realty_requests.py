@@ -56,9 +56,3 @@ class RealtyRequesterToServiceResource:
         # if response.status_code == 200:
         items_json = response.json()
         return items_json
-
-# "price": {
-#     "response_key": "price",
-#     "gte": "characteristic%5B{value_from}%5D%5Bfrom%5D",
-#     "lte": "characteristic%5B{value_to}%5D%5Bto%5D"
-#   }

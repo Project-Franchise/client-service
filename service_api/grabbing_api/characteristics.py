@@ -10,6 +10,8 @@ from redis import RedisError
 
 from service_api import models, CACHE, session_scope
 from service_api.errors import BadRequestException
+from service_api.grabbing_api.constants import PATH_TO_METADATA
+from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 
 
 def decode_characteristics(dct: Dict) -> Dict:
@@ -36,8 +38,7 @@ def get_characteristics(metadata: Dict, characteristics: Dict = None) -> Dict:  
     if characteristics is None:
         characteristics = dict()
 
-    with open("service_api/static data/main_hardcode.json") as json_file:
-        characteristics_data_set = json.load(json_file)
+    characteristics_data_set = open_metadata(PATH_TO_METADATA)["DOMRIA API"]["url_characteristics"]
 
     params = {}
     for param, val in metadata["optional"].items():

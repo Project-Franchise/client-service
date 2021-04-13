@@ -93,7 +93,9 @@ def create_records(id_list: List, service_metadata: Dict) -> List[Dict]:
                                 headers={'User-Agent': 'Mozilla/5.0'})
 
         try:
-            realty_details_data = make_realty_details_data(response, service_metadata["realty_details_columns"])
+            realty_details_data = make_realty_details_data(
+                response, service_metadata["model_characteristics"]["realty_details_columns"]
+            )
         except json.JSONDecodeError as error:
             print(error)
             raise
@@ -101,7 +103,7 @@ def create_records(id_list: List, service_metadata: Dict) -> List[Dict]:
         load_data(realty_details_data, models.RealtyDetails, RealtyDetailsSchema)
 
         try:
-            realty_data = make_realty_data(response, service_metadata["realty_columns"])
+            realty_data = make_realty_data(response, service_metadata["model_characteristics"]["realty_columns"])
         except json.JSONDecodeError as error:
             print(error)
             raise

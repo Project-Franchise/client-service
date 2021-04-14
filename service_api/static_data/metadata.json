@@ -1,0 +1,176 @@
+{
+  "DOMRIA API": {
+    "base_url": "https://developers.ria.com/dom",
+    "name": "DOMRIA API",
+    "optional": {
+      "lang_id": 4
+    },
+    "url_rules": {
+      "cities": {
+        "url_prefix": "/cities",
+        "condition": "/"
+      },
+      "states": {
+        "url_prefix": "/states",
+        "condition": ""
+      },
+      "options": {
+        "url_prefix": "/options",
+        "condition": ""
+      },
+      "search": {
+        "url_prefix": "/search"
+      },
+      "single_ad": {
+        "url_prefix": "/info",
+        "condition": "/"
+      }
+    },
+    "model_characteristics": {
+      "realty_columns": {
+        "city_id": {
+          "response_key": "city_id",
+          "request_key": "city_id",
+          "model": "City"
+        },
+        "state_id": {
+          "response_key": "state_id",
+          "request_key": "state_id",
+          "model": "State"
+        },
+        "realty_details_id": {
+          "response_key": "realty_id",
+          "request_key": null,
+          "model": "RealtyDetails"
+        },
+        "realty_type_id": {
+          "response_key": "realty_type_id",
+          "request_key": "realty_type",
+          "model": "RealtyType"
+        },
+        "operation_type_id": {
+          "response_key": "advert_type_id",
+          "request_key": "operation_type",
+          "model": "OperationType"
+        }
+      },
+      "realty_details_columns": {
+        "floor": {
+          "response_key": "floor",
+          "ge": null,
+          "le": null
+        },
+        "floors_number": {
+          "response_key": "floors_count",
+          "ge": null,
+          "le": null
+        },
+        "square": {
+          "response_key": "total_square_meters",
+          "ge": null,
+          "le": null
+        },
+        "price": {
+          "response_key": "price",
+          "ge": "characteristic[{value_from}][from]",
+          "le": "characteristic[{value_to}][to]"
+        },
+        "published_at": {
+          "response_key": "publishing_date",
+          "ge": null,
+          "le": null
+        },
+        "original_id": {
+          "response_key": "realty_id",
+          "ge": null,
+          "le": null
+        },
+        "original_url": {
+          "response_key": "beautiful_url",
+          "ge": null,
+          "le": null
+        }
+      }
+    },
+    "url_characteristics": {
+      "category": {
+        "flats": {
+          "own_id": 1,
+          "flat": 2,
+          "rooms": 3
+        },
+        "houses": {
+          "own_id": 4,
+          "house": 5,
+          "part": 6,
+          "dacha": 7
+        },
+        "offices": {
+          "own_id": 13,
+          "office rooms": 11,
+          "office buildings": 12
+        },
+        "commercial": {
+          "own_id": 10,
+          "squares": 14,
+          "storages": 15,
+          "manufacturing": 16,
+          "restaurants": 17,
+          "objects": 18,
+          "hotels": 19,
+          "pensions": 20,
+          "free premises": 21,
+          "businesses": 22
+        },
+        "areas": {
+          "own_id": 24,
+          "for building": 25,
+          "commercial": 26,
+          "farming": 27,
+          "recreational": 28,
+          "natural": 29
+        },
+        "garages": {
+          "own_id": 30,
+          "box": 31,
+          "parking": 35,
+          "cooperative": 33,
+          "garage": 34
+        }
+      },
+      "realty_type": {
+        "flat": 2,
+        "rooms": 3,
+        "house": 5,
+        "part": 6,
+        "dacha": 7,
+        "office rooms": 11,
+        "office buildings": 12,
+        "squares": 14,
+        "storages": 15,
+        "manufacturing": 16,
+        "restaurants": 17,
+        "objects": 18,
+        "hotels": 19,
+        "pensions": 20,
+        "free premises": 21,
+        "businesses": 22,
+        "for building": 25,
+        "commercial": 26,
+        "farming": 27,
+        "recreational": 28,
+        "natural": 29,
+        "box": 31,
+        "parking": 35,
+        "cooperative": 33,
+        "garage": 34
+      },
+      "operation_type": {
+        "any_operation": 0,
+        "sale": 1,
+        "long_term_rental": 3,
+        "daily_rental": 4
+      }
+    }
+  }
+}

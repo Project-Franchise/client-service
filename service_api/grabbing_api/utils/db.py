@@ -3,7 +3,7 @@ Module with data Loaders
 """
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List
-
+from sqlalchemy import select
 import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
@@ -23,7 +23,7 @@ class BaseLoader(ABC):
     """
 
     @abstractmethod
-    def load_to_db(self, *args, **kwargs) -> None:
+    def load(self, *args, **kwargs) -> None:
         """
         Main function of retrieving and loading data to db
         """
@@ -35,9 +35,11 @@ class CityLoader(BaseLoader):
     Loads cities to db
     """
 
-    def load_to_db(self, *args, **kwargs) -> Dict[int, int]:
+    def load(self, *args, **kwargs) -> Dict[int, int]:
         state_ids: List[int] = args[0]
-        print(state_ids)
+        with session_scope() as session:
+            smt = select(State.id).order_by(State.id)
+            state_ids = state_ids or [state_id for state_id, *_ in session.execute(smt).all()]
         return {state_id: self.load_cities_by_state(state_id=state_id) for state_id in state_ids}
 
     def load_cities_by_state(self, **kwargs: int) -> int:
@@ -49,7 +51,7 @@ class CityLoader(BaseLoader):
         """
 
         if (state_id := kwargs.get("state_id")) is None:
-            raise KeyError("No parameter state_id provided in function load_to_db")
+            raise KeyError("No parameter state_id provided in function load")
 
         with session_scope() as session:
             state = session.query(State).get({"id": state_id})
@@ -94,7 +96,7 @@ class StateLoader(BaseLoader):
     Loads sates to db
     """
 
-    def load_to_db(self, *args, **kwargs) -> int:
+    def load(self, *args, **kwargs) -> int:
         """
         Getting states from DOMRIA
         Returns amount of fetched states
@@ -130,7 +132,7 @@ class RealtyTypeLoader(BaseLoader):
     Loads RealtyType from metadata
     """
 
-    def load_to_db(self, *args, **kwargs) -> int:
+    def load(self, *args, **kwargs) -> int:
         """
         Getting realty types from metadata
         Returns amount of fetched realty types
@@ -153,7 +155,7 @@ class OperationTypeLoader(BaseLoader):
     Loads OperationType from metadata
     """
 
-    def load_to_db(self, *args, **kwargs) -> int:
+    def load(self, *args, **kwargs) -> int:
         """
         Getting operation types from metadata
         Returns amount of fetched operation types
@@ -176,7 +178,7 @@ class LoadersFactory:
     """
     Load core data to db based on str input
     """
-    __mapper: dict[str, BaseLoader] = {
+    __mapper: Dict[str, BaseLoader] = {
         "cities": CityLoader,
         "states": StateLoader,
         "realty_types": RealtyTypeLoader,
@@ -202,7 +204,7 @@ class LoadersFactory:
         statuses = {}
         for entity, values in entities_to_load.items():
             try:
-                statuses[entity] = {"status": "SUCCESSFUL", "data": self.__mapper[entity]().load_to_db(values)}
+                statuses[entity] = {"status": "SUCCESSFUL", "data": self.__mapper[entity]().load(values)}
             except ObjectNotFound as error:
                 error_mesaage = error.errors
             except ResponseNotOk as error:
@@ -213,7 +215,6 @@ class LoadersFactory:
                 error_mesaage = error.messages
             else:
                 continue
-            print(error_mesaage)
             statuses[entity] = {"status": "FAILED", "data": error_mesaage}
 
         return statuses

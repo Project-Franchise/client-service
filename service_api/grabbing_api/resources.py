@@ -25,7 +25,7 @@ class CoreDataLoaderResource(Resource):
         """
         Load data to db based on input params
         """
-        params = request.args.to_dict(False)
+        params = {key: list(filter(lambda x: x != "", value)) for key, value in request.args.to_dict(False).items()}
         factory = LoadersFactory()
         return factory.load(**params)
 

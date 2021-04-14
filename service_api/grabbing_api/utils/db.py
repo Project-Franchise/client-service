@@ -2,13 +2,17 @@
 Module with data Loaders
 """
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 
 import requests
+from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from service_api import session_scope
+from service_api.exceptions import ObjectNotFound, ResponseNotOk
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, PATH_TO_METADATA
-from service_api.models import City, RealtyType, State, OperationType
-from service_api.schemas import CitySchema, RealtyTypeSchema, StateSchema, OperationTypeSchema
+from service_api.models import City, OperationType, RealtyType, State
+from service_api.schemas import (CitySchema, OperationTypeSchema,
+                                 RealtyTypeSchema, StateSchema)
 
 from .grabbing_utils import load_data, open_metadata
 
@@ -19,7 +23,7 @@ class BaseLoader(ABC):
     """
 
     @abstractmethod
-    def load_to_db(self, **kwargs) -> None:
+    def load_to_db(self, *args, **kwargs) -> None:
         """
         Main function of retrieving and loading data to db
         """
@@ -31,7 +35,11 @@ class CityLoader(BaseLoader):
     Loads cities to db
     """
 
-    def load_to_db(self, **kwargs) -> int:
+    def load_to_db(self, *args, **kwargs) -> Dict[int, int]:
+        state_ids: List[int] = args[0]
+        return {state_id: self.load_cities_by_state(state_id=state_id) for state_id in state_ids}
+
+    def load_cities_by_state(self, **kwargs: int) -> int:
         """
         Getting cities from DOMRIA by original state_id
         Returns amount of fetched cities
@@ -45,6 +53,9 @@ class CityLoader(BaseLoader):
         with session_scope() as session:
             state = session.query(State).get({"id": state_id})
 
+        if state is None:
+            raise ObjectNotFound(errors=["No such state_id in DB"])
+
         domria_meta = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
         domria_cities_meta = domria_meta["url_rules"]["cities"]
 
@@ -53,21 +64,26 @@ class CityLoader(BaseLoader):
             "api_key": DOMRIA_TOKEN
         }
 
-        url = "{}{}/{}".format(domria_meta["base_url"], domria_cities_meta["url_prefix"], state.original_id)
-        response = requests.get(url, params=params)
+        response = requests.get("{}{}/{}".format(domria_meta["base_url"],
+                                                 domria_cities_meta["url_prefix"],
+                                                 state.original_id),
+                                params=params)
         if not response.ok:
-            raise RequestException(response.text)
-        cities_json = response.json()
+            raise ResponseNotOk(response.text)
 
         processed_cities = []
-        for city in cities_json:
+        for city in response.json():
             processed_city = {key: city[external_service_key]
                               for key, external_service_key in domria_cities_meta["filters"].items()}
             processed_city["state_id"] = state.id
             processed_cities.append(processed_city)
 
         for data in processed_cities:
-            load_data(data, City, CitySchema)
+            try:
+                load_data(data, City, CitySchema)
+            except ValidationError as error:
+                print(error)
+                raise
 
         return len(processed_cities)
 
@@ -77,7 +93,7 @@ class StateLoader(BaseLoader):
     Loads sates to db
     """
 
-    def load_to_db(self, **kwargs) -> int:
+    def load_to_db(self, *args, **kwargs) -> int:
         """
         Getting states from DOMRIA
         Returns amount of fetched states
@@ -113,7 +129,7 @@ class RealtyTypeLoader(BaseLoader):
     Loads RealtyType from metadata
     """
 
-    def load_to_db(self, **kwargs) -> int:
+    def load_to_db(self, *args, **kwargs) -> int:
         """
         Getting realty types from metadata
         Returns amount of fetched realty types
@@ -136,7 +152,7 @@ class OperationTypeLoader(BaseLoader):
     Loads OperationType from metadata
     """
 
-    def load_to_db(self, **kwargs) -> int:
+    def load_to_db(self, *args, **kwargs) -> int:
         """
         Getting operation types from metadata
         Returns amount of fetched operation types
@@ -153,3 +169,49 @@ class OperationTypeLoader(BaseLoader):
             load_data(data, OperationType, OperationTypeSchema)
 
         return len(operation_types)
+
+
+class LoadersFactory:
+    """
+    Load core data to db based on str input
+    """
+    __mapper: dict[str, BaseLoader] = {
+        "cities": CityLoader,
+        "states": StateLoader,
+        "realty_type": RealtyTypeLoader,
+        "operation_type": OperationTypeLoader
+    }
+
+    def get_available_entites(self) -> List[str]:
+        """
+        Returns all possible name of entities stored in mapper
+        :return: list[str] with name of entities
+        """
+        return self.__mapper.keys()
+
+    def load(self, **entities_to_load: List) -> Dict[str, Any]:
+        """
+        Calls mapped loader clasees for keys in params dict input
+        :params: dict[str, List] str - name of entity to load (func get_available_entites)
+                                 List - args for Loader classes
+        :return: dict[str, Any] str - name of entities from input
+                                Any - json-like status info about fetching data to db
+        """
+
+        statuses = {}
+        for entity, values in entities_to_load.items():
+            try:
+                statuses[entity] = {"status": "SUCCESSFUL", "data": self.__mapper[entity]().load_to_db(values)}
+            except ObjectNotFound as error:
+                error_mesaage = error.errors
+            except ResponseNotOk as error:
+                error_mesaage = error.args
+            except KeyError as error:
+                error_mesaage = error.args
+            except ValidationError as error:
+                error_mesaage = error.messages
+            else:
+                continue
+            statuses[entity] = {"status": "FAILED", "data": error_mesaage}
+
+        return statuses

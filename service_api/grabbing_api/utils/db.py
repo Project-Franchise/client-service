@@ -37,6 +37,7 @@ class CityLoader(BaseLoader):
 
     def load_to_db(self, *args, **kwargs) -> Dict[int, int]:
         state_ids: List[int] = args[0]
+        print(state_ids)
         return {state_id: self.load_cities_by_state(state_id=state_id) for state_id in state_ids}
 
     def load_cities_by_state(self, **kwargs: int) -> int:
@@ -47,7 +48,7 @@ class CityLoader(BaseLoader):
         :return: int
         """
 
-        if state_id := kwargs.get("state_id"):
+        if (state_id := kwargs.get("state_id")) is None:
             raise KeyError("No parameter state_id provided in function load_to_db")
 
         with session_scope() as session:
@@ -178,8 +179,8 @@ class LoadersFactory:
     __mapper: dict[str, BaseLoader] = {
         "cities": CityLoader,
         "states": StateLoader,
-        "realty_type": RealtyTypeLoader,
-        "operation_type": OperationTypeLoader
+        "realty_types": RealtyTypeLoader,
+        "operation_types": OperationTypeLoader
     }
 
     def get_available_entites(self) -> List[str]:
@@ -212,6 +213,7 @@ class LoadersFactory:
                 error_mesaage = error.messages
             else:
                 continue
+            print(error_mesaage)
             statuses[entity] = {"status": "FAILED", "data": error_mesaage}
 
         return statuses

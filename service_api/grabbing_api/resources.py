@@ -1,186 +1,33 @@
 """
 Resources and urls for grabbing service
 """
-import itertools
-import pickle
-from typing import Dict, List
+from typing import Dict
 
-import requests
 from flask import request
 from flask_restful import Resource
-from redis.exceptions import RedisError
-from service_api import CACHE, api_, models, session_scope
+from service_api import api_, models, session_scope
 from service_api.constants import URLS
 from service_api.errors import BadRequestException
 from service_api.grabbing_api.realty_requests import RealtyRequesterToServiceResource
-from service_api.models import City, State
-from service_api.schemas import CitySchema, StateSchema
 
 from .characteristics import process_characteristics
-from .constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME, CACHED_CITIES,
-                        CACHED_STATES, PATH_TO_METADATA)
-from .utils.grabbing_utils import load_data, open_metadata, process_request
+from .constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME, PATH_TO_METADATA)
+from .utils.db import LoadersFactory
+from .utils.grabbing_utils import open_metadata, process_request
 
-class CitiesFromDomriaResource(Resource):
+
+class CoreDataLoaderResource(Resource):
     """
-    Retrieving cities from DOMRIA and saving to DB
-    """
-
-    def get(self):
-        """
-        Get all cities from all states
-        :return: list of serialized cities
-        """
-        cached_sates_status = CACHE.get(CACHED_STATES)
-        if cached_sates_status is not None and pickle.loads(cached_sates_status):
-
-            city_schema = CitySchema(many=True)
-
-            cached_status = CACHE.get(CACHED_CITIES)
-            if cached_status is not None and pickle.loads(cached_status):
-                with session_scope() as session:
-                    cities = session.query(models.City).all()
-
-                return {
-                    "status": "Already in db",
-                    "data": city_schema.dump(cities)
-                }
-
-            with session_scope() as session:
-                states = session.query(models.State).all()
-
-            city_generator = (self.get_cities_by_state(state) for state in states)
-            cities = list(itertools.chain.from_iterable(city_generator))
-
-            try:
-                CACHE.set(CACHED_CITIES, pickle.dumps(True))
-            except RedisError as error:
-                raise RedisError from error
-
-            return {
-                "status": "fetched from domria",
-                "data": cities
-            }
-
-        raise BadRequestException("There is no state in db")
-
-    @staticmethod
-    def get_cities_by_state(state: models.State) -> List[dict]:
-        """
-        Getting cities from DOMRIA by original state id.
-        Returns list of serialized cities
-        :param: state: State
-        :return: List[dict]
-        """
-
-        metadata = open_metadata(PATH_TO_METADATA)
-
-        processed_cities = []
-        for service_name in metadata:
-            service_metadata = metadata[service_name]
-            params = {}
-            for param, val in service_metadata["optional"].items():
-                params[param] = val
-
-            url = "{base_url}{cities}{condition}{original_id}".format(
-                base_url=service_metadata["base_url"],
-                cities=service_metadata["url_rules"]["cities"]["url_prefix"],
-                condition=service_metadata["url_rules"]["cities"]["condition"],
-                original_id=state.original_id
-            )
-            response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
-
-            try:
-                service_cities = [{"name": city["name"],
-                                   "original_id": city["cityID"],
-                                   "state_id": state.id}
-                                  for city in response.json()]  # service = service_name if name in db
-                processed_cities += service_cities
-            except KeyError:
-                return []
-
-            load_data(service_cities, models.City, CitySchema)
-
-        return processed_cities
-
-    def delete(self):
-        """
-        Drops all cities from DB
-        and delete redis fetch value too
-        """
-        with session_scope() as session:
-            session.query(City).delete()
-            CACHE.delete(CACHED_CITIES)
-
-        return "SUCCESS"
-
-
-class StatesFromDomriaResource(Resource):
-    """
-    Retrieving states from DOMRIA and saving to DB
+    Resourse for fetching new core data to db
     """
 
     def get(self):
         """
-        Get all states from all states
-        :return: list of serialized states
+        Load data to db based on input params
         """
-
-        state_schema = StateSchema(many=True)
-
-        cached_status = CACHE.get(CACHED_STATES)
-        if cached_status is not None and pickle.loads(cached_status):
-            with session_scope() as session:
-                states_from_db = session.query(models.State).all()
-            return {
-                "status": "Already in db",
-                "data": state_schema.dump(states_from_db)
-            }
-
-        metadata = open_metadata(PATH_TO_METADATA)
-        processed_states = []
-        for service_name in metadata:
-            service_metadata = metadata[service_name]
-            params = {}
-            for param, val in service_metadata["optional"].items():
-                params[param] = val
-
-            url = "{base_url}{states}".format(
-                base_url=service_metadata["base_url"],
-                states=service_metadata["url_rules"]["states"]["url_prefix"],
-            )
-
-            response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
-
-            try:
-                service_states = [{"name": state["name"],
-                                   "original_id": state["stateID"]}
-                                  for state in response.json()]
-                processed_states += service_states
-            except KeyError:
-                return []
-
-            load_data(service_states, models.State, StateSchema)
-
-            CACHE.set(CACHED_STATES, pickle.dumps(True))
-
-        return {
-            "status": "fetched from domria",
-            "data": processed_states
-        }
-
-    def delete(self):
-        """
-        Drops all states and cities from DB
-        and delete redis fetch value for both
-        """
-        with session_scope() as session:
-            session.query(City).delete()
-            session.query(State).delete()
-            CACHE.delete(CACHED_STATES)
-            CACHE.delete(CACHED_CITIES)
-
-        return "SUCCESS"
+        params = request.args.to_dict(False)
+        factory = LoadersFactory()
+        return factory.load(**params)
 
 
 class LatestDataResource(Resource):
@@ -247,7 +94,5 @@ class LatestDataResource(Resource):
                 raise BadRequestException(error.args) from error
 
 
-# Be careful. Use this links only once!!
-api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
-api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
+api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])
 api_.add_resource(LatestDataResource, URLS["GRABBING"]["GET_LATEST_URL"])

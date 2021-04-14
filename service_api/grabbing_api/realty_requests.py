@@ -5,7 +5,7 @@ from typing import Dict
 
 import requests
 
-from .constants import DOMRIA_TOKEN
+from .constants import DOMRIA_TOKEN, GE, LE
 
 
 class RealtyRequesterToServiceResource:
@@ -22,18 +22,18 @@ class RealtyRequesterToServiceResource:
         new_params = {}
         for parameter, value in params.items():
             if isinstance(parameter, int):
+                char_description = metadata["model_characteristics"]["realty_details_columns"]
                 if isinstance(value, dict):
-                    value_from = value.get("values")["from"]  # constrains
-                    value_to = value.get("values")["to"]
+                    value_from = value.get("values")[GE]
+                    value_to = value.get("values")[LE]
 
-                    char_description = metadata["model_characteristics"]["realty_details_columns"]
                     key_from = char_description[value.get("name")]["ge"].format(value_from=str(parameter))
                     key_to = char_description[value.get("name")]["le"].format(value_to=str(parameter))
 
                     new_params[key_from] = value_from
                     new_params[key_to] = value_to
                 else:
-                    key = "characteristic%5B" + str(parameter) + "%5D"  # f""
+                    key = char_description[value.get("name")]["eq"].format(value_from=str(parameter))
                     new_params[key] = value
             else:
                 new_params[parameter] = params.get(parameter)

@@ -1,1 +1,4 @@
-from . import service_api
+"""
+Top level module
+"""
+import service_api

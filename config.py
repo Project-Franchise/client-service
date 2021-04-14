@@ -1,8 +1,14 @@
+"""
+Flask config
+"""
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config(object):
+class Config:
+    """
+    Base config class
+    """
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
@@ -10,18 +16,30 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    """
+    Config for production
+    """
     DEBUG = False
 
 
 class StagingConfig(Config):
+    """
+    Staging config
+    """
     DEVELOPMENT = True
     DEBUG = True
 
 
 class DevelopmentConfig(Config):
+    """
+    Development config
+    """
     DEVELOPMENT = True
     DEBUG = True
 
 
 class TestingConfig(Config):
+    """
+    Config for testing
+    """
     TESTING = True

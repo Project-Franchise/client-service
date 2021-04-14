@@ -15,5 +15,5 @@ repos:
         language: python
         language_version: 3.9.2
         types: [python]
-        args: ["--score=yes", "--reports=n", "--max-line-length=120"]
+        args: ["--score=yes", "--reports=n", "--max-line-length=120",]
         exclude: ^alembic/

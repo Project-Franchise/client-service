@@ -10,7 +10,7 @@ from redis import RedisError
 
 from service_api import models, CACHE, session_scope
 from service_api.errors import BadRequestException
-from service_api.grabbing_api.constants import PATH_TO_METADATA
+from service_api.grabbing_api.constants import PATH_TO_METADATA, DOMRIA_TOKEN
 from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 
 
@@ -40,7 +40,7 @@ def get_characteristics(metadata: Dict, characteristics: Dict = None) -> Dict:  
 
     characteristics_data_set = open_metadata(PATH_TO_METADATA)["DOMRIA API"]["url_characteristics"]
 
-    params = {}
+    params = {"api_key": DOMRIA_TOKEN}
     for param, val in metadata["optional"].items():
         params[param] = val
     params["operation_type"] = 1
@@ -62,6 +62,7 @@ def get_characteristics(metadata: Dict, characteristics: Dict = None) -> Dict:  
         list_of_characteristics = [
             element for element in list_of_characteristics if element != {}]
         dict_of_characteristics = {}
+
         for i in list_of_characteristics:
             dict_of_characteristics.update(i)
         characteristics.update({element: dict_of_characteristics})
@@ -72,7 +73,7 @@ def process_characteristics(service_metadata: Dict, realty: Dict, redis_ex_time:
     """
     Retrieves data from Redis and converts it to the required format for the request
     """
-    cached_characteristics = CACHE.get(redis_characteristics)  # >>>>>>
+    cached_characteristics = CACHE.get(redis_characteristics)
     if cached_characteristics is None:
         try:
             mapper = get_characteristics(metadata=service_metadata)
@@ -84,7 +85,7 @@ def process_characteristics(service_metadata: Dict, realty: Dict, redis_ex_time:
         except RedisError as error:
             raise RedisError(error.args) from error
     else:
-        mapper = json.loads(cached_characteristics)  # <<<<<<<<<
+        mapper = json.loads(cached_characteristics)
 
     with session_scope() as session:
         realty_type = session.query(models.RealtyType).get(

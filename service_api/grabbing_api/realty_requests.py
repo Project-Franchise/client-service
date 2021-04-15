@@ -6,7 +6,7 @@ import requests
 from .constants import DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_URL
 
 
-class RealtyRequestToDomria():
+class RealtyRequesterToDomria():
     """
     Send requests for getting list of id of items
     """
@@ -16,24 +16,19 @@ class RealtyRequestToDomria():
         """
         Method, that forms dictionary with parameters for the request
         """
-        new_params = dict()
-        for parameters in params:
-            if isinstance(parameters, int):
-                if isinstance(params.get(parameters), dict):
-                    new_key_from = "characteristic%5B" + \
-                        str(parameters) + "%5D%5Bfrom%5D"
-                    new_value_from = params[parameters].get("from")
-                    new_key_to = "characteristic%5B" + \
-                        str(parameters) + "%5D%5Bto%5D"
-                    new_value_to = params[parameters].get("to")
-                    new_params[new_key_from] = new_value_from
-                    new_params[new_key_to] = new_value_to
+        new_params = {}
+        for key, value in params.items():
+            if isinstance(key, int):
+                if isinstance(value, dict):
+                    new_key_from = "characteristic[{}][from]".format(key)
+                    new_key_to = "characteristic[{}][to]".format(key)
+                    new_params[new_key_from] = value.get("from")
+                    new_params[new_key_to] = value.get("to")
                 else:
-                    new_key = "characteristic%5B" + str(parameters) + "%5D"
-                    new_value = params.get(parameters)
-                    new_params[new_key] = new_value
+                    new_key = "characteristic[{}]".format(key)
+                    new_params[new_key] = value
             else:
-                new_params[parameters] = params.get(parameters)
+                new_params[key] = value
         return new_params
 
     def get(self, params: dict) -> dict:
@@ -42,9 +37,9 @@ class RealtyRequestToDomria():
         :return: Dict
         """
 
-        params["api_key"] = DOMRIA_API_KEY
-
         new_params = self.form_new_dict(params)
+
+        new_params["api_key"] = DOMRIA_API_KEY
 
         response = requests.get(DOMRIA_DOMAIN + DOMRIA_URL["search"],
                                 params=new_params)

@@ -23,7 +23,7 @@ from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
                         REALTY_KEYS_FOR_REQUEST, REDIS_CHARACTERISTICS,
                         REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
                         REDIS_STATES_FETCHED)
-from .realty_requests import RealtyRequestToDomria
+from .realty_requests import RealtyRequesterToDomria
 from .utils.grabbing_utils import process_request
 
 
@@ -253,7 +253,7 @@ class LatestDataFromDomriaResource(Resource):
         params.update(dict((type_mapper.get(key, key), value)
                           for key, value in characteristics.items()))
 
-        items = RealtyRequestToDomria().get(params)
+        items = RealtyRequesterToDomria().get(params)
         with session_scope() as session:
             try:
                 return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"))

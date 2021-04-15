@@ -77,21 +77,21 @@ class CityLoader(BaseLoader):
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
-        processed_cities = []
+        seen_cities = []
         for city in response.json():
-            processed_city = {key: city[external_service_key]
+            seen_city = {key: city[external_service_key]
                               for key, external_service_key in domria_cities_meta["filters"].items()}
-            processed_city["state_id"] = state.id
-            processed_cities.append(processed_city)
+            seen_city["state_id"] = state.id
+            seen_cities.append(seen_city)
 
-        for data in processed_cities:
+        for data in seen_cities:
             try:
                 load_data(data, City, CitySchema)
             except ValidationError as error:
                 print(error)
                 raise
 
-        return len(processed_cities)
+        return len(seen_cities)
 
 
 class StateLoader(BaseLoader):
@@ -120,14 +120,14 @@ class StateLoader(BaseLoader):
             raise RequestException(response.text)
 
         states_json = response.json()
-        processed_states = [{key: state[external_service_key]
+        seen_states = [{key: state[external_service_key]
                              for key, external_service_key in domria_states_meta["filters"].items()}
                             for state in states_json]
 
-        for data in processed_states:
+        for data in seen_states:
             load_data(data, State, StateSchema)
 
-        return len(processed_states)
+        return len(seen_states)
 
 
 class RealtyTypeLoader(BaseLoader):

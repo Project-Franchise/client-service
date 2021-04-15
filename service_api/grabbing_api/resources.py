@@ -7,9 +7,9 @@ from flask import request
 from flask_restful import Resource
 from service_api import api_, models, session_scope
 from service_api.constants import URLS
-from service_api.errors import BadRequestException
+from service_api.errors import BadRequestException, InternalServerErrorException
 from service_api.grabbing_api.realty_requests import RealtyRequesterToServiceResource
-
+from service_api.exceptions import MetaDataError
 from .characteristics import process_characteristics
 from .constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME, PATH_TO_METADATA)
 from .utils.db import LoadersFactory
@@ -27,7 +27,11 @@ class CoreDataLoaderResource(Resource):
         """
         params = {key: list(filter(lambda x: x != "", value)) for key, value in request.args.to_dict(False).items()}
         factory = LoadersFactory()
-        return factory.load(**params)
+        try:
+            loading_statuses = factory.load(**params)
+        except MetaDataError as error:
+            raise InternalServerErrorException() from error
+        return loading_statuses
 
 
 class LatestDataResource(Resource):

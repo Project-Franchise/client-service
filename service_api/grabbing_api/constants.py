@@ -17,3 +17,4 @@ CACHED_CHARACTERISTICS_EXPIRE_TIME = {
 }
 
 PATH_TO_METADATA = os.sep.join(["service_api", "static_data", "metadata.json"])
+PATH_TO_CORE_DB_METADATA = os.sep.join(["service_api", "static_data", "metadata_for_fetching_db_core.json"])

@@ -72,7 +72,7 @@ def make_realty_data(response: requests.models.Response, realty_keys: Dict) -> D
     return realty_data
 
 
-def create_records(id_list: List, service_metadata: Dict) -> List[Dict]:
+def create_records(ids: List, service_metadata: Dict) -> List[Dict]:
     """
     Creates records in the database on the ID list
     """
@@ -81,13 +81,13 @@ def create_records(id_list: List, service_metadata: Dict) -> List[Dict]:
         params[param] = val
 
     url = "{base_url}{single_ad}{condition}".format(
-            base_url=service_metadata["base_url"],
-            single_ad=service_metadata["url_rules"]["single_ad"]["url_prefix"],
-            condition=service_metadata["url_rules"]["single_ad"]["condition"]
-            )
+        base_url=service_metadata["base_url"],
+        single_ad=service_metadata["url_rules"]["single_ad"]["url_prefix"],
+        condition=service_metadata["url_rules"]["single_ad"]["condition"]
+    )
 
     realty_models = []
-    for realty_id in id_list:
+    for realty_id in ids:
         response = requests.get("{url}{id}".format(url=url, id=str(realty_id)),
                                 params=params,
                                 headers={'User-Agent': 'Mozilla/5.0'})
@@ -124,7 +124,7 @@ def process_request(search_response: Dict, page: int, page_ads_number: int, meta
     """
     page = page % page_ads_number
     current_items = search_response["items"][
-                    page * page_ads_number - page_ads_number: page * page_ads_number
+                    (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
                     ]
 
     return create_records(current_items, metadata)

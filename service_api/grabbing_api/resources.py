@@ -238,8 +238,10 @@ class LatestDataResource(Resource):
                                                   REDIS_CHARACTERISTICS)
             params.update(dict((type_mapper.get(key, key), {"name": key, "values": value})
                                for key, value in characteristics.items()))
+            params["page"] = (additional["page"] // additional["page_ads_number"]) + 1
 
             items = RealtyRequesterToServiceResource().get(params, service_metadata)
+
             try:
                 return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"),
                                        service_metadata)

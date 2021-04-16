@@ -5,7 +5,7 @@ from typing import Dict
 
 import requests
 
-from .constants import DOMRIA_TOKEN
+from .constants import DOMRIA_TOKEN, GE, LE
 
 
 class RealtyRequesterToServiceResource:
@@ -22,18 +22,18 @@ class RealtyRequesterToServiceResource:
         new_params = {}
         for parameter, value in params.items():
             if isinstance(parameter, int):
-                if isinstance(params.get(parameter), dict):
-                    value_from = value.get("values")["from"]  # constrains
-                    value_to = value.get("values")["to"]
+                char_description = metadata["model_characteristics"]["realty_details_columns"]
+                if isinstance(value, dict):
+                    value_from = value.get("values")[GE]
+                    value_to = value.get("values")[LE]
 
-                    char_description = metadata["model_characteristics"]["realty_details_columns"]
-                    key_from = char_description[value.get("name")]["gte"].format(value_from=str(parameter))
-                    key_to = char_description[value.get("name")]["lte"].format(value_to=str(parameter))
+                    key_from = char_description[value.get("name")]["ge"].format(value_from=str(parameter))
+                    key_to = char_description[value.get("name")]["le"].format(value_to=str(parameter))
 
                     new_params[key_from] = value_from
                     new_params[key_to] = value_to
                 else:
-                    key = "characteristic%5B" + str(parameter) + "%5D"  # f""
+                    key = char_description[value.get("name")]["eq"].format(value_from=str(parameter))
                     new_params[key] = value
             else:
                 new_params[parameter] = params.get(parameter)
@@ -56,9 +56,3 @@ class RealtyRequesterToServiceResource:
         # if response.status_code == 200:
         items_json = response.json()
         return items_json
-
-# "price": {
-#     "response_key": "price",
-#     "gte": "characteristic%5B{value_from}%5D%5Bfrom%5D",
-#     "lte": "characteristic%5B{value_to}%5D%5Bto%5D"
-#   }

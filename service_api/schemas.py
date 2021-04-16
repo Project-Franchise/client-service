@@ -5,8 +5,9 @@ from datetime import datetime
 from typing import Dict, List
 
 from marshmallow import Schema, ValidationError, fields, validate
-from service_api.errors import BadRequestException
+
 from service_api import Base
+from service_api.errors import BadRequestException
 
 
 class IntOrDictField(fields.Field):
@@ -115,27 +116,27 @@ class RealtySchema(Schema):
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
 
-def filters_validation(params: Dict, list_of_models: List[Base], schemes: List[Schema]) -> List[Dict]:
+def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details
     :param: dict
     :return: List[dict]
     """
-    list_of_filters = []
-    for objects in list_of_models:
+    filters = []
+    for objects in models:
 
-        list_of_filters.append({key: params.get(key)
-                                for key in params
-                                if hasattr(objects, key) or
-                                (isinstance(objects, list) and key in objects)})
+        filters.append({key: params.get(key)
+                        for key in params
+                        if hasattr(objects, key) or
+                        (isinstance(objects, list) and key in objects)})
 
-    if sum(map(len, list_of_filters)) != len(params):
+    if sum(map(len, filters)) != len(params):
         raise BadRequestException("Undefined parameters found")
-    iter_list = iter(list_of_filters)
+    iter_filters = iter(filters)
     for scheme in schemes:
-        dict_to_validate = next(iter_list)
+        dict_to_validate = next(iter_filters)
         try:
             scheme().load(dict_to_validate)
         except ValidationError as error:
             raise BadRequestException from error
-    return list_of_filters
+    return filters

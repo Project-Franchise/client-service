@@ -19,9 +19,6 @@ services:
       - REDIS_IP=redis
       - DOMRIA_API_KEY=${DOMRIA_API_KEY}
 
-    external_links:
-      - agregattor:0.0.0.0
-
   db:
     image: postgres:13.2
     ports:

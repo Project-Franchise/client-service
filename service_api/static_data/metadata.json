@@ -8,11 +8,20 @@
     "url_rules": {
       "cities": {
         "url_prefix": "/cities",
-        "condition": "/"
+        "condition": "/",
+        "filters": {
+          "name": "name",
+          "original_id": "cityID",
+          "state_id": "stateID"
+        }
       },
       "states": {
         "url_prefix": "/states",
-        "condition": ""
+        "condition": "",
+        "filters": {
+          "name": "name",
+          "original_id": "stateID"
+        }
       },
       "options": {
         "url_prefix": "/options",
@@ -95,6 +104,18 @@
           "ge": null,
           "le": null,
           "eq": "characteristic[{value}]"
+        }
+      },
+      "realty_type":{
+        "filters":{
+          "name": null,
+          "original_id": null
+        }
+      },
+      "operation_type":{
+        "filters":{
+          "name": null,
+          "original_id": null
         }
       }
     },

@@ -29,11 +29,11 @@ class IntOrDictField(fields.Field):
         return super()._validate(value)
 
 
-def validate_positive_field(value):
+def validate_non_negative_field(value):
     """
     Function for validation of positive fields
     """
-    if value <= 0:
+    if value < 0:
         raise ValidationError("This field must be non negative")
 
 
@@ -42,7 +42,7 @@ class OperationTypeSchema(Schema):
     Schema for OperationType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_positive_field)
+    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
 
 
@@ -50,8 +50,8 @@ class AdditionalFilterParametersSchema(Schema):
     """
     Schema for additional filter parameters
     """
-    page = fields.Integer(validate=validate_positive_field, required=True)
-    page_ads_number = fields.Integer(validate=validate_positive_field, required=True)
+    page = fields.Integer(validate=validate_non_negative_field, required=True)
+    page_ads_number = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class RealtyTypeSchema(Schema):
@@ -59,7 +59,7 @@ class RealtyTypeSchema(Schema):
     Schema for RealtyType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_positive_field)
+    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
 
 
@@ -72,11 +72,11 @@ class RealtyDetailsSchema(Schema):
         min=0, max=50), allow_none=True)
     floors_number = fields.Integer(
         validate=validate.Range(min=1, max=50), allow_none=True)
-    square = IntOrDictField(validate=validate_positive_field, allow_none=True)
-    price = IntOrDictField(validate=validate_positive_field)
+    square = IntOrDictField(validate=validate_non_negative_field, allow_none=True)
+    price = IntOrDictField(validate=validate_non_negative_field)
     published_at = fields.DateTime(
         validate=validate.Range(min=datetime(1990, 1, 1)))
-    original_id = fields.Integer(validate=validate_positive_field)
+    original_id = fields.Integer(validate=validate_non_negative_field)
     original_url = fields.String(validate=validate.Length(max=255))
 
 
@@ -87,7 +87,7 @@ class CitySchema(Schema):
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
-    original_id = fields.Integer(validate=validate_positive_field)
+    original_id = fields.Integer(validate=validate_non_negative_field)
 
 
 class StateSchema(Schema):
@@ -96,7 +96,7 @@ class StateSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
-    original_id = fields.Integer(validate=validate_positive_field)
+    original_id = fields.Integer(validate=validate_non_negative_field)
 
 
 class RealtySchema(Schema):

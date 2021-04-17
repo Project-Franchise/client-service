@@ -101,6 +101,37 @@ class TooManyRequestsException(Exception):
         return resp
 
 
+class InternalServerErrorException(Exception):
+    """
+    Class for Internal Server Error(500 status code)
+    """
+
+    def __init__(self, message="Internal Server Error"):
+        """
+        Method to initialize Internal Server Error Exception(status_code, type, message)
+        :param: string
+        :return:
+        """
+
+        Exception.__init__(self)
+        self.status_code = 500
+        self.type = "Internal_server_error"
+        self.message = message
+
+    def to_dict(self):
+        """
+        Method that turns params into a dictionary
+        :param: object itself
+        :return: dict
+        """
+        resp = {
+            "message": self.message,
+            "code": self.status_code,
+            "type": self.type
+        }
+        return resp
+
+
 def handle_error(error):
     """
     Method that handles errors
@@ -144,3 +175,4 @@ flask_app.register_error_handler(409, conflict)
 flask_app.register_error_handler(BadRequestException, handle_error)
 flask_app.register_error_handler(ServiceUnavailableException, handle_error)
 flask_app.register_error_handler(TooManyRequestsException, handle_error)
+flask_app.register_error_handler(InternalServerErrorException, handle_error)

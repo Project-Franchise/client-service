@@ -2,11 +2,24 @@
 Testing module
 """
 
-from sqlalchemy.orm import Session
 from service_api.models import State
+from service_api import session, Base, engine
 
 
-def test_state_creation(reset_db: Session):
+def setup_function():
+    """
+    Create all table in DB
+    """
+    Base.metadata.create_all(engine)
+
+def teardown_function():
+    """
+    Closes session if its open and drop database
+    """
+    session.close()
+    Base.metadata.drop_all(engine)
+
+def test_state_creation():
     """
     Adding state to db and checking if name is inserted right
     """
@@ -16,9 +29,9 @@ def test_state_creation(reset_db: Session):
     }
     state = State(**data)
 
-    reset_db.add(state)
-    reset_db.commit()
+    session.add(state)
+    session.commit()
 
-    state = reset_db.query(State).first()
+    state = session.query(State).first()
 
     assert state.name == data["name"]

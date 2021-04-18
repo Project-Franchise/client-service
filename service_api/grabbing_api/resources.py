@@ -24,6 +24,16 @@ class CoreDataLoaderResource(Resource):
     def get(self):
         """
         Load data to db based on input params
+
+        Example of get request to load data to DB
+            /grabbing/core_data?cities=144&states
+        This request trigger fetching states and cities where state_id=144
+
+        All possible entites to load is located in metadata_for_fetching_DB_core.json
+        Only cities can take additional params that will be represented as a list.
+            /grabbing/core_data?operation_types&cities=5&cities=144
+        Here cities: [5, 144] and all cities from such states (if state exists) will be loaded.
+        By default, if none parameters for city is passed, cities from ALL states will be loaded!!!
         """
         params = {key: list(filter(lambda x: x != "", value)) for key, value in request.args.to_dict(False).items()}
         factory = LoadersFactory()

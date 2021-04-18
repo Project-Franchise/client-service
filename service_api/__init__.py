@@ -30,12 +30,12 @@ class UnicodeApi(Api):
 
 
 flask_app = Flask(__name__)
-flask_app.config.from_object("config.DevelopmentConfig")
+flask_app.config.from_object(os.environ.get("FLASK_CONFIG_MODE", "config.DevelopmentConfig"))
 api_ = UnicodeApi(flask_app)
 
 # connecting to DB
-engine = create_engine(os.environ["DATABASE_URL"])
-metadata = MetaData()
+engine = create_engine(flask_app.config.get("SQLALCHEMY_DATABASE_URL"))
+metadata = MetaData(bind=engine)
 Base = declarative_base(metadata)
 Session_factory = sessionmaker(bind=engine)
 session = Session_factory()

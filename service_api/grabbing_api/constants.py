@@ -5,17 +5,17 @@ Constants for grabbing module
 import os
 
 DOMRIA_TOKEN = os.environ["DOMRIA_API_KEY"]
-REDIS_CHARACTERISTICS = "characteristics_avaliable"
-REDIS_CITIES_FETCHED = "cities_upload"
-REDIS_STATES_FETCHED = "states_upload"
+CACHED_CHARACTERISTICS = "characteristics_avaliable"
+CACHED_CITIES = "cities_upload"
+CACHED_STATES = "states_upload"
 
 # must be dict with datetime.timedelta params
-REDIS_CHARACTERISTICS_EX_TIME = {
-    "hours": 2
+CACHED_CHARACTERISTICS_EXPIRE_TIME = {
+    "days": 2
 }
 
 GE = "from"
 LE = "to"
 
 PATH_TO_METADATA = os.sep.join(["service_api", "static_data", "metadata.json"])
-GENERAL_CHARACTERISTICS = ["city_id"]
+PATH_TO_CORE_DB_METADATA = os.sep.join(["service_api", "static_data", "metadata_for_fetching_db_core.json"])

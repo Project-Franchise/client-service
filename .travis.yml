@@ -12,7 +12,7 @@ branches:
     - travis
 
 env:
-  - DOCKER_COMPOSE_VERSION=3.8
+  - DOCKER_COMPOSE_VERSION=1.29.0
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose

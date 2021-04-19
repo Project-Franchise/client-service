@@ -1,0 +1,29 @@
+language: python
+python:
+  - "3.9"
+
+services:
+  - docker
+  - postgresql
+  - redis
+
+branches:
+  only:
+    - travis
+
+before_script:
+  - pip install docker-compose
+  - docker-compose up -d
+
+script:
+  - python3 -m pytest tests/test.py
+
+after_script:
+  - docker-compose down
+
+notifications:
+  email:
+    recipients:
+      - iryna.yarka@gmail.com
+    on_success: never
+    on_failure: always

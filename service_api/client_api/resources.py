@@ -119,7 +119,6 @@ class RealtyResource(Resource):
                     "additional": additional_params_dict
                 })
             if response.status_code >= 400:
-                print(response.text)
                 raise ServiceUnavailableException("GRABBING does not respond")
             return response.json(), 200
 

@@ -1,0 +1,76 @@
+header{
+  text-align: center;
+  background-color: #252422;
+  width: 100%;
+  margin: 0;
+  min-height: 75px;
+  font-size: 38px;
+  position: fixed;
+  left: 0;
+  top:0;
+  h1{
+    margin: 0;
+    padding: 0;
+    color: #f25e20;
+  }
+}
+main{
+  .filter{
+    position: fixed;
+    width: 20%;
+    height: 100%;
+    background-color: #403d38;
+    top: 88px;
+    left: 0;
+    color: #eb5e28;
+    .filter-wrapper{
+      padding: 0 20px;
+      font-size: 20px;
+      h2{
+        text-align: center;
+        padding-top: 0;
+        margin: 10px 0 0 0;
+
+      }
+      .from-to{
+        margin: 10px 0;
+        max-width: 100%;
+        input{
+
+          max-width: 60px;
+          border-radius: 10px;
+          border:0px;
+          background-color: #ccc8bc;
+          text-align: center;
+        }
+      }
+      select{
+        float: right;
+      }
+      input[type="number"]{
+        float:right;
+        border:0px;
+        max-width: 100px;
+        border-radius: 10px;
+        background-color: #252422;
+        padding-left: 10px;
+      }
+    }
+  }
+}
+footer{
+  background-color: #ccc6ba;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 80%;
+  min-height: 50px;
+  color: #fbf5e9;
+  text-align: right;
+  font-size: 30px;
+  .footer-text{
+    padding: 5px;
+    padding-right: 15px;
+  }
+
+}

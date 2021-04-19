@@ -1,3 +1,7 @@
+"""
+Module that contains client_api, grabbing_api, models, schemas
+"""
+
 import os
 from contextlib import contextmanager
 from typing import Iterator
@@ -7,13 +11,16 @@ from flask import Flask
 from flask_restful import Api, output_json
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
 
 
 class UnicodeApi(Api):
+    """
+    Redefined Api classs to suppoer unicode text responses
+    """
 
     def __init__(self, *args, **kwargs):
-        super(UnicodeApi, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.app.config["RESTFUL_JSON"] = {
             "ensure_ascii": False
         }
@@ -23,15 +30,15 @@ class UnicodeApi(Api):
 
 
 flask_app = Flask(__name__)
-flask_app.config.from_object("config.DevelopmentConfig")
+flask_app.config.from_object(os.environ.get("FLASK_CONFIG_MODE", "config.DevelopmentConfig"))
 api_ = UnicodeApi(flask_app)
 
 # connecting to DB
-engine = create_engine(os.environ["DATABASE_URL"])
-metadata = MetaData()
+engine = create_engine(flask_app.config.get("SQLALCHEMY_DATABASE_URL"))
+metadata = MetaData(bind=engine)
 Base = declarative_base(metadata)
-Session = sessionmaker(bind=engine)
-session = Session()
+Session_factory = sessionmaker(bind=engine)
+session = Session_factory()
 
 # entrypoint for caching using redis
 CACHE = redis.Redis(
@@ -40,6 +47,9 @@ CACHE = redis.Redis(
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
+    """
+    Context manager to handle transaction to DB
+    """
     try:
         yield session
         session.commit()
@@ -54,6 +64,4 @@ def session_scope() -> Iterator[Session]:
             raise
 
 
-from . import models, schemas
-from service_api import client_api
-from service_api import grabbing_api
+from . import client_api, grabbing_api

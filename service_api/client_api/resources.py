@@ -5,7 +5,7 @@ Api routes for client api
 import requests
 from flask import request
 from flask_restful import Resource
-from redis.exceptions import ConnectionError
+from redis.exceptions import ConnectionError as RedisConnectionError
 
 from service_api import CACHE, api_, models, schemas, session_scope
 from service_api.constants import URLS, ADDITIONAL_FILTERS
@@ -26,7 +26,7 @@ class IndexResource(Resource):
         """
         try:
             count = CACHE.incr("hits")
-        except ConnectionError as exc:
+        except RedisConnectionError as exc:
             return f"Redis connection error {exc}"
         return f"Project Realty: hits: {count}"
 
@@ -56,6 +56,9 @@ class CityResource(Resource):
 
 
 class StatesResource(Resource):
+    """
+    Route to retrieve states by id
+    """
 
     def get(self):
         """
@@ -101,10 +104,10 @@ class RealtyResource(Resource):
             raise BadRequestException("No filters provided")
         try:
             latest = filters.pop("latest")
-        except KeyError:
-            raise BadRequestException("Flag latest not provided")
+        except KeyError as error:
+            raise BadRequestException(error.args)from error
 
-        realty_dict, realty_details_dict, additional_params_dict = filters_validation(
+        realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
             filters,
             [Realty, RealtyDetails, ADDITIONAL_FILTERS],
             [RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema])
@@ -117,7 +120,6 @@ class RealtyResource(Resource):
                     "additional": additional_params_dict
                 })
             if response.status_code >= 400:
-                print(response.text)
                 raise ServiceUnavailableException("GRABBING does not respond")
             return response.json(), 200
 
@@ -125,10 +127,10 @@ class RealtyResource(Resource):
             try:
                 page = int(additional_params_dict["page"])
                 per_page = int(additional_params_dict["page_ads_number"])
-            except KeyError:
-                raise BadRequestException("No page data")
-            except ValueError:
-                raise BadRequestException("Page number must be an integer")
+            except KeyError as error:
+                raise BadRequestException(error.args)from error
+            except ValueError as error:
+                raise BadRequestException(error.args)from error
 
             offset = (page-1)*per_page
 
@@ -173,8 +175,7 @@ class RealtyTypeResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            realty_type = session.query(models.RealtyType).filter_by(
-                id=realty_type_id).first()
+            realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
         return schemas.RealtyTypeSchema().dump(realty_type), 200
 
 
@@ -190,8 +191,7 @@ class OperationTypesResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            operation_types = session.query(
-                models.OperationType).filter_by().all()
+            operation_types = session.query(models.OperationType).filter_by().all()
         return schemas.OperationTypeSchema(many=True).dump(operation_types), 200
 
 
@@ -218,9 +218,6 @@ api_.add_resource(RealtyResource, URLS["CLIENT"]["GET_REALTY_URL"])
 api_.add_resource(StatesResource, URLS["CLIENT"]["GET_STATES_URL"])
 api_.add_resource(StateResource, URLS["CLIENT"]["GET_STATES_BY_ID_URL"])
 api_.add_resource(RealtyTypesResource, URLS["CLIENT"]["GET_REALTY_TYPES_URL"])
-api_.add_resource(RealtyTypeResource,
-                  URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
-api_.add_resource(OperationTypesResource,
-                  URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
-api_.add_resource(OperationTypeResource,
-                  URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])
+api_.add_resource(RealtyTypeResource, URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
+api_.add_resource(OperationTypesResource, URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
+api_.add_resource(OperationTypeResource, URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])

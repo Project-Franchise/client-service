@@ -1,194 +1,83 @@
 """
 Resources and urls for grabbing service
 """
-import datetime
-import itertools
-import json
-import pickle
-from typing import List
+from typing import Dict
 
-import requests
 from flask import request
 from flask_restful import Resource
-from marshmallow import ValidationError
-from redis.exceptions import RedisError
-from service_api import CACHE, api_, session_scope
+from service_api import api_, models, session_scope
 from service_api.constants import URLS
-from service_api.errors import BadRequestException
-from service_api.models import City, RealtyType, State
-from service_api.schemas import CitySchema, StateSchema
-
-from .characteristics import get_characteristics
-from .constants import (DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_UKR, DOMRIA_URL,
-                        REALTY_KEYS_FOR_REQUEST, REDIS_CHARACTERISTICS,
-                        REDIS_CHARACTERISTICS_EX_TIME, REDIS_CITIES_FETCHED,
-                        REDIS_STATES_FETCHED)
-from .realty_requests import RealtyRequestToDomria
-from .utils.grabbing_utils import process_request
+from service_api.errors import BadRequestException, InternalServerErrorException
+from service_api.grabbing_api.realty_requests import RealtyRequesterToServiceResource
+from service_api.exceptions import MetaDataError
+from .characteristics import process_characteristics
+from .constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME, PATH_TO_METADATA)
+from .utils.db import LoadersFactory
+from .utils.grabbing_utils import open_metadata, process_request
 
 
-class CitiesFromDomriaResource(Resource):
+class CoreDataLoaderResource(Resource):
     """
-    Retrieving cities from DOMRIA and saving to DB
+    Resourse for fetching new core data to db
     """
 
     def get(self):
         """
-        Get all cities from all states
-        :return: list of serialized cities
+        Load data to db based on input params
+
+        Example of get request to load data to DB
+            /grabbing/core_data?cities=144&states
+        This request trigger fetching states and cities where state_id=144
+
+        All possible entites to load is located in metadata_for_fetching_DB_core.json
+        Only cities can take additional params that will be represented as a list.
+            /grabbing/core_data?operation_types&cities=5&cities=144
+        Here cities: [5, 144] and all cities from such states (if state exists) will be loaded.
+        By default, if none parameters for city is passed, cities from ALL states will be loaded!!!
         """
-        cached_sates_status = CACHE.get(REDIS_STATES_FETCHED)
-        if cached_sates_status is not None and \
-           pickle.loads(cached_sates_status):
+        params = {key: list(filter(lambda x: x != "", value)) for key, value in request.args.to_dict(False).items()}
+        factory = LoadersFactory()
+        try:
+            loading_statuses = factory.load(**params)
+        except MetaDataError as error:
+            raise InternalServerErrorException() from error
+        return loading_statuses
 
-            city_schema = CitySchema(many=True)
 
-            cached_status = CACHE.get(REDIS_CITIES_FETCHED)
-            if cached_status is not None and pickle.loads(cached_status):
-                with session_scope() as session:
-                    cities = session.query(City).all()
-
-                return {
-                    "status": "Allready in db",
-                    "data": city_schema.dump(cities)
-                }
-
-            with session_scope() as session:
-                states = session.query(State).all()
-
-            city_generator = (self.get_cities_by_state(state) for state in states)
-            cities = list(itertools.chain.from_iterable(city_generator))
-
-            try:
-                CACHE.set(REDIS_CITIES_FETCHED, pickle.dumps(True))
-            except RedisError as error:
-                raise RedisError(error.args)
-
-            return {
-                "status": "fetched from domria",
-                "data": cities
-            }
-
-        raise BadRequestException("There is no state in db")
+class LatestDataResource(Resource):
+    """
+    Resource that is responsible for manipulation with latest data from resources described on metadata
+    """
 
     @staticmethod
-    def get_cities_by_state(state: State) -> List[dict]:
+    def convert_named_filed(realty: Dict, service_metadata: Dict):
         """
-        Getting cities from DOMRIA by original state id.
-        Returns list of serialized cities
-        :param: state: State
-        :return: List[dict]
+        Convert fields names to service names and replace id for its api
         """
-        params = {
-            "lang_id": DOMRIA_UKR,
-            "api_key": DOMRIA_API_KEY
-        }
-
-        url = DOMRIA_DOMAIN + \
-            DOMRIA_URL["cities"] + f"/{state.original_id}"
-        response = requests.get(url, params=params)
-
-        cities_json = response.json()
-
-        try:
-            processed_cities = [{"name": city["name"],
-                                 "original_id": city["cityID"],
-                                 "state_id": state.id}
-                                for city in cities_json]
-        except KeyError:
-            return []
-
-        try:
-            valid_data = CitySchema(many=True).load(processed_cities)
-            cities = [City(**valid_city) for valid_city in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
-
+        params = {}
         with session_scope() as session:
-            session.add_all(cities)
+            for param, characteristics in service_metadata["model_characteristics"]["realty_columns"].items():
+                if not characteristics["request_key"]:
+                    continue
 
-        return processed_cities
+                model = characteristics["model"]
+                service_param = characteristics["request_key"]
 
-    def delete(self):
-        """
-        Drops all cities from DB
-        and delete redis fetch value too
-        """
-        with session_scope() as session:
-            session.query(City).delete()
-            CACHE.delete(REDIS_CITIES_FETCHED)
+                model = getattr(models, model)
+                if not model:
+                    raise Warning(f"There is no such model named {model}")
 
-        return "SUCCESS"
-
-
-class StatesFromDomriaResource(Resource):
-    """
-    Retrieving states from DOMRIA and saving to DB
-    """
-
-    def get(self):
-        """
-        Get all states from all states
-        :return: list of serialized states
-        """
-
-        state_schema = StateSchema(many=True)
-
-        cached_status = CACHE.get(REDIS_STATES_FETCHED)
-        if cached_status is not None and pickle.loads(cached_status):
-            with session_scope() as session:
-                states_from_db = session.query(State).all()
-            return {
-                "status": "Allready in db",
-                "data": state_schema.dump(states_from_db)
-            }
-
-        params = {
-            "lang_id": DOMRIA_UKR,
-            "api_key": DOMRIA_API_KEY
-        }
-        response = requests.get(
-            DOMRIA_DOMAIN + DOMRIA_URL["states"], params=params)
-
-        states_json = response.json()
-
-        processed_states = [{"name": state["name"],
-                             "original_id": state["stateID"]}
-                            for state in states_json]
-
-        try:
-            valid_data = StateSchema(many=True).load(processed_states)
-            states = [State(**valid_state) for valid_state in valid_data]
-        except ValidationError:
-            raise BadRequestException("Validation failed")
-
-        with session_scope() as session:
-            session.add_all(states)
-
-        CACHE.set(REDIS_STATES_FETCHED, pickle.dumps(True))
-
-        return {
-            "status": "fetched from domria",
-            "data": processed_states
-        }
-
-    def delete(self):
-        """
-        Drops all states and cities from DB
-        and delete redis fetch value for both
-        """
-        with session_scope() as session:
-            session.query(City).delete()
-            session.query(State).delete()
-            CACHE.delete(REDIS_STATES_FETCHED)
-            CACHE.delete(REDIS_CITIES_FETCHED)
-
-        return "SUCCESS"
-
-
-class LatestDataFromDomriaResource(Resource):
+                if param in realty:
+                    obj = session.query(model).get(realty[param])
+                    if obj is None:
+                        raise BadRequestException("No such filters!")
+                    params[service_param] = obj.original_id
+        return params
 
     def post(self):
+        """
+        Returns latest information about realty and save it to DB
+        """
 
         post_body = request.get_json()
 
@@ -196,63 +85,30 @@ class LatestDataFromDomriaResource(Resource):
             characteristics = post_body["characteristics"]
             realty = post_body["realty_filters"]
             additional = post_body["additional"]
-        except KeyError:
-            raise BadRequestException("Some paramteters are missing!")
+        except KeyError as error:
+            raise BadRequestException(error.args) from error
 
-        params = dict()
-        with session_scope() as session:
-            for param, model, domria_param in REALTY_KEYS_FOR_REQUEST:
-                if param in realty:
-                    obj = session.query(model).get(realty[param])
-                    if obj is None:
-                        raise BadRequestException("No such filters!")
-                    params[domria_param] = obj.original_id
+        metadata = open_metadata(PATH_TO_METADATA)
 
-        cached_characteristics = CACHE.get(REDIS_CHARACTERISTICS)
-        if cached_characteristics is None:
+        for service_name in metadata:
+            service_metadata = metadata[service_name]
+            params = self.convert_named_filed(realty, service_metadata)
+
+            type_mapper = process_characteristics(service_metadata, realty, CACHED_CHARACTERISTICS_EXPIRE_TIME,
+                                                  CACHED_CHARACTERISTICS)
+            params.update(dict((type_mapper.get(key, key), {"name": key, "values": value})
+                               for key, value in characteristics.items()))
+            params["page"] = (additional["page"] // additional["page_ads_number"]) + 1
+
+            items = RealtyRequesterToServiceResource().get(params, service_metadata)
+
             try:
-                mapper = get_characteristics()
-                CACHE.set(REDIS_CHARACTERISTICS,
-                          json.dumps(mapper),
-                          datetime.timedelta(**REDIS_CHARACTERISTICS_EX_TIME))
-            except json.JSONDecodeError as error:
-                raise json.JSONDecodeError(error.args)
-            except RedisError as error:
-                raise RedisError(error.args)
-        else:
-            mapper = json.loads(cached_characteristics)
-
-        with session_scope() as session:
-            realty_type = session.query(RealtyType).get(
-                realty.get("realty_type_id"))
-
-        if realty_type is None:
-            raise BadRequestException("Invalid realty_type")
-
-        try:
-            type_mapper = mapper.get(realty_type.name)
-
-            page = additional.pop("page")
-            page_ads_number = additional.pop("page_ads_number")
-        except Exception as err:
-            print(err)
-            raise Exception(err.args)
-
-        new_params = dict((type_mapper.get(key, key), value)
-                          for key, value in characteristics.items())
-        new_params.update(params)
-
-        items = RealtyRequestToDomria().get(new_params)
-
-        with session_scope() as session:
-            realty_json = process_request(
-                items, page, page_ads_number)
-
-        return realty_json
+                return process_request(items, dict(additional).pop("page"), additional.pop("page_ads_number"),
+                                       service_metadata)
+            except KeyError as error:
+                print(error.args)
+                raise BadRequestException(error.args) from error
 
 
-# Be careful. Use this links only once!!
-api_.add_resource(StatesFromDomriaResource, URLS["GRABBING"]["GET_STATES_URL"])
-api_.add_resource(CitiesFromDomriaResource, URLS["GRABBING"]["GET_CITIES_URL"])
-api_.add_resource(LatestDataFromDomriaResource,
-                  URLS["GRABBING"]["GET_LATEST_URL"])
+api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])
+api_.add_resource(LatestDataResource, URLS["GRABBING"]["GET_LATEST_URL"])

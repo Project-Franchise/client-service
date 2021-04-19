@@ -1,9 +1,17 @@
+"""
+Main logic for getting characteristics from domria_api
+"""
+import datetime
 import json
 from typing import Dict
 
 import requests
+from redis import RedisError
 
-from .constants import DOMRIA_API_KEY, DOMRIA_DOMAIN, DOMRIA_URL
+from service_api import models, CACHE, session_scope
+from service_api.errors import BadRequestException
+from service_api.grabbing_api.constants import PATH_TO_METADATA, DOMRIA_TOKEN
+from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 
 
 def decode_characteristics(dct: Dict) -> Dict:
@@ -12,33 +20,85 @@ def decode_characteristics(dct: Dict) -> Dict:
     Used for finding characteristics
     in "items" dict
     """
-    item_list = {}
+    items = {}
     if "items" in dct:
         for fields in dct["items"]:
             if "field_name" in fields:
-                item_list[fields["field_name"]] = fields["characteristic_id"]
-        return item_list
+                items[fields["field_name"]] = fields["characteristic_id"]
+        return items
     return dct
 
 
-def get_characteristics(characteristics: Dict = dict()) -> Dict:
+def get_characteristics(metadata: Dict, characteristics: Dict = None) -> Dict:
     """
     Function to get characteristics
     and retrieve them in dict
     """
-    with open("service_api/static data/main_hardcode.json") as json_file:
-        сharacteristics_data_set = json.load(json_file)
-    for element in сharacteristics_data_set["realty_type"]:
+
+    if characteristics is None:
+        characteristics = {}
+
+    characteristics_data_set = open_metadata(PATH_TO_METADATA)["DOMRIA API"]["url_characteristics"]
+
+    params = {"api_key": DOMRIA_TOKEN}
+    for param, val in metadata["optional"].items():
+        params[param] = val
+    params["operation_type"] = 1
+
+    for element in characteristics_data_set["realty_type"]:
+        url = "{base_url}{options}".format(
+            base_url=metadata["base_url"],
+            options=metadata["url_rules"]["options"]["url_prefix"]
+        )
+
+        params["realty_type"] = characteristics_data_set["realty_type"][element]
         req = requests.get(
-            DOMRIA_DOMAIN + DOMRIA_URL["options"],
-            params={"realty_type": сharacteristics_data_set["realty_type"][element],
-                    "operation_type": 1,
-                    "api_key": DOMRIA_API_KEY})
-        list_of_characteristics = req.json(object_hook=decode_characteristics)
-        list_of_characteristics = [
-            element for element in list_of_characteristics if element != {}]
-        dict_of_characteristics = {}
-        for i in list_of_characteristics:
-            dict_of_characteristics.update(i)
-        characteristics.update({element: dict_of_characteristics})
+            url=url,
+            params=params,
+            headers={'User-Agent': 'Mozilla/5.0'}
+        )
+
+        requested_characteristics = req.json(object_hook=decode_characteristics)
+        requested_characteristics = [
+            element for element in requested_characteristics if element != {}
+        ]
+
+        named_characteristics = {}
+        for character in requested_characteristics:
+            named_characteristics.update(character)
+        characteristics.update({element: named_characteristics})
     return characteristics
+
+
+def process_characteristics(service_metadata: Dict, realty: Dict, redis_ex_time: Dict, redis_characteristics: str):
+    """
+    Retrieves data from Redis and converts it to the required format for the request
+    """
+    cached_characteristics = CACHE.get(redis_characteristics)
+    if cached_characteristics is None:
+        try:
+            characteristics = get_characteristics(metadata=service_metadata)
+            CACHE.set(redis_characteristics,
+                      json.dumps(characteristics),
+                      datetime.timedelta(**redis_ex_time))
+        except json.JSONDecodeError as error:
+            raise json.JSONDecodeError from error
+        except RedisError as error:
+            raise RedisError(error.args) from error
+    else:
+        characteristics = json.loads(cached_characteristics)
+
+    with session_scope() as session:
+        realty_type = session.query(models.RealtyType).get(
+            realty.get("realty_type_id"))
+
+    if realty_type is None:
+        raise BadRequestException("Invalid realty_type while getting latest data")
+
+    try:
+        type_mapper = characteristics.get(realty_type.name)
+    except Exception as error:
+        print(error)
+        raise
+
+    return type_mapper

@@ -21,13 +21,13 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 before_script:
-  - docker compose --file docker-test.yaml up -d
+  - docker compose --file docker_test.yaml up -d
 
 script:
   - python3 -m pytest tests/test.py
 
 after_script:
-  - docke compose down
+  - docker compose down
 
 notifications:
   email:

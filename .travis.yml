@@ -29,7 +29,7 @@ before_script:
   - docker-compose up -d
 
 script:
-  - python3 -m pytest tests/test.py
+  - python3 -m pytest tests/*
 
 after_script:
   - docker-compose down

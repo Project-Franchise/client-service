@@ -11,6 +11,16 @@ branches:
   only:
     - travis
 
+jobs:
+  include:
+    - env: CMD="/usr/local/bin/docker-compose --profile test up -d" DOCKER="true"
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.29.0/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
 before_script:
   - pip install docker-compose
   - docker-compose up -d

@@ -20,6 +20,7 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/1.29.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - psql -c 'create database test;' -U postgres
 
 before_script:
   - pip install docker-compose

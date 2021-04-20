@@ -7,8 +7,8 @@ from typing import Dict, List
 from marshmallow import Schema, ValidationError, fields, validate
 
 from service_api import Base
+from service_api.constants import PARSING_REQUEST
 from service_api.errors import BadRequestException
-
 
 class IntOrDictField(fields.Field):
     """
@@ -35,6 +35,24 @@ def validate_non_negative_field(value):
     """
     if value < 0:
         raise ValidationError("This field must be non negative")
+
+
+def parsing_request(params):
+    params = list(params.getlist("filter"))
+    new_params = {}
+    for items in params:
+        characteristic, operation, value = items.split()
+        if operation not in PARSING_REQUEST.keys():
+            raise BadRequestException("Wrong parameters operations")
+        if PARSING_REQUEST[operation] is not None:
+            if characteristic not in new_params.keys():
+                new_params[characteristic] = {PARSING_REQUEST[operation]: int(value)}
+            else:
+                new_params[characteristic][PARSING_REQUEST[operation]] = int(value)
+        else:
+            new_params[characteristic] = int(value)
+    return new_params
+
 
 
 class OperationTypeSchema(Schema):

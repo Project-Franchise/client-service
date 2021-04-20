@@ -8,6 +8,7 @@ import requests
 from .constants import DOMRIA_TOKEN, GE, LE
 
 
+
 class RealtyRequesterToServiceResource:
     """
     Send requests for getting list of id of items

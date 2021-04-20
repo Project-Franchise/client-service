@@ -20,3 +20,4 @@ URLS = {
 }
 
 ADDITIONAL_FILTERS = ["page", "page_ads_number"]
+PARSING_REQUEST = {"le": "to", "ge": "from", "eq": None}

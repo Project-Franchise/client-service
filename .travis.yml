@@ -5,9 +5,7 @@ python:
 services:
   - docker
   - redis
-
-addons:
-  postgresql: "9.6"
+  - postgresql
 
 branches:
   only:

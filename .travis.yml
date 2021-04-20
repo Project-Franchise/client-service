@@ -7,7 +7,7 @@ services:
   - redis
 
 addons:
-  postgresql: "13.2"
+  postgresql: "9.6"
 
 branches:
   only:

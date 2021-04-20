@@ -37,6 +37,6 @@ after_script:
 notifications:
   email:
     recipients:
-      - iryna.yarka@gmail.com
+      - project.franchise2021@gmail.com
     on_success: never
     on_failure: always

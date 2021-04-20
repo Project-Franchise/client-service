@@ -7,11 +7,11 @@ services:
   - redis
 
 addons:
-  postgresql: "13"
+  postgresql: "13.2"
   apt:
     packages:
-    - postgresql-13
-    - postgresql-client-13
+    - postgresql-13.2
+    - postgresql-client-13.2
 
 branches:
   only:
@@ -30,6 +30,8 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/1.29.0/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - sudo systemctl start postgresql
+  - systemctl status postgresql.service
   - sudo service postgresql start
   - pg_lsclusters
   - psql -c 'create database test;' -U postgres

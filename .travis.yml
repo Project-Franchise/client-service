@@ -8,10 +8,6 @@ services:
 
 addons:
   postgresql: "13.2"
-  apt:
-    packages:
-    - postgresql-13.2
-    - postgresql-client-13.2
 
 branches:
   only:

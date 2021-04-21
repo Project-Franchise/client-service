@@ -60,7 +60,6 @@ class OperationTypeSchema(Schema):
     Schema for OperationType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
 
 
@@ -77,7 +76,6 @@ class RealtyTypeSchema(Schema):
     Schema for RealtyType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
 
 
@@ -92,9 +90,7 @@ class RealtyDetailsSchema(Schema):
         validate=validate.Range(min=1, max=50), allow_none=True)
     square = IntOrDictField(validate=validate_non_negative_field, allow_none=True)
     price = IntOrDictField(validate=validate_non_negative_field)
-    published_at = fields.DateTime(
-        validate=validate.Range(min=datetime(1990, 1, 1)))
-    original_id = fields.Integer(validate=validate_non_negative_field)
+    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
 
 
@@ -105,7 +101,6 @@ class CitySchema(Schema):
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
-    original_id = fields.Integer(validate=validate_non_negative_field)
 
 
 class StateSchema(Schema):
@@ -114,7 +109,6 @@ class StateSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
-    original_id = fields.Integer(validate=validate_non_negative_field)
 
 
 class RealtySchema(Schema):
@@ -132,6 +126,82 @@ class RealtySchema(Schema):
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
+
+
+class ServiceSchema(Schema):
+    """
+    Schema for Service model
+    """
+    id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
+
+
+class CityToServiceSchema(Schema):
+    """
+    Schema for CityToService model
+    """
+    city_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class CityAliasSchema(Schema):
+    """
+    Schema for CityAlias model
+    """
+    city_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class StateToServiceSchema(Schema):
+    """
+    Schema for StateToService model
+    """
+    state_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class StateAliasSchema(Schema):
+    """
+    Schema for StateAlias model
+    """
+    state_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class OperationTypeToServiceSchema(Schema):
+    """
+    Schema for OperationTypeToService model
+    """
+    operation_type_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class OperationTypeAliasSchema(Schema):
+    """
+    Schema for OperationTypeAlias model
+    """
+    operation_type_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyTypeToServiceSchema(Schema):
+    """
+    Schema for RealtyTypeToService model
+    """
+    realty_type_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyTypeAliasSchema(Schema):
+    """
+    Schema for RealtyTypeAlias model
+    """
+    realty_type_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
 
 
 def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:

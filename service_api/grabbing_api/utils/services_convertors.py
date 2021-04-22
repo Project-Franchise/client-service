@@ -4,7 +4,7 @@ Output and input converters for DomRia service
 import datetime
 import json
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, List
 
 import requests
 from redis import RedisError
@@ -83,17 +83,20 @@ class DomRiaOutputConverter(AbstractOutputConverter):
 
         realty_details_meta = self.metadata["model_characteristics"]["realty_details_columns"]
         values = [self.response.get(val["response_key"], None) for val in realty_details_meta.values()]
-
+        print(values)
         realty_details_data = dict(zip(
             realty_details_meta.keys(), values
         ))
 
         return realty_details_data
 
-    def make_realty_data(self) -> Dict:
+    def make_realty_data(self, realty_details: Dict) -> Dict:
         """
         Composes data for Realty model
         """
+        """
+                Composes data for Realty model
+                """
         realty_data = {}
         realty_meta = self.metadata["model_characteristics"]["realty_columns"]
 
@@ -106,9 +109,13 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 if not model:
                     raise Warning(f"There is no such model named {model}")
 
-                realty_data[key] = (session.query(model).filter(
-                    model.original_id == self.response[response_key]
-                ).first()).id  # and service_name == service_name
+                if key != "realty_details_id":
+                    realty_data[key] = (session.query(model).filter(
+                        model.original_id == self.response[response_key]
+                    ).first()).id  # and service_name == service_name
+
+                else:
+                    realty_data[key] = realty_details
 
         return realty_data
 

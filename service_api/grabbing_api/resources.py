@@ -2,19 +2,17 @@
 Resources and urls for grabbing service
 """
 
-import requests
 from flask import request
 from flask_restful import Resource
 
 from service_api import api_
 from service_api.constants import URLS
-from service_api.errors import BadRequestException, InternalServerErrorException
+from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
 from .constants import (PATH_TO_METADATA)
-from .utils.converters.domria_converter import DomRiaInputConverter
 from .utils.db import LoadersFactory
 from .utils.grabbing_utils import open_metadata
-from .utils.handlers.domria_handler import process_request
+from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
 
 
 class CoreDataLoaderResource(Resource):
@@ -60,19 +58,22 @@ class LatestDataResource(Resource):
 
         for service_name in metadata:
             service_metadata = metadata[service_name]
+            request_to_domria = DomriaServiceHandler(post_body, service_metadata)
+            return request_to_domria.get_latest_data()
 
-            url, params = DomRiaInputConverter(post_body, service_metadata).convert()
-            response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
 
-            # if response.status_code == 200:
-            items = response.json()
-
-            try:
-                return process_request(items, post_body["additional"].pop("page"),
-                                       post_body["additional"].pop("page_ads_number"), service_metadata)
-            except KeyError as error:
-                print(error.args)
-                raise BadRequestException(error.args) from error
+            # url, params = DomRiaInputConverter(post_body, service_metadata).convert()
+            # response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
+            #
+            # # if response.status_code == 200:
+            # items = response.json()
+            #
+            # try:
+            #     return process_request(items, post_body["additional"].pop("page"),
+            #                            post_body["additional"].pop("page_ads_number"), service_metadata)
+            # except KeyError as error:
+            #     print(error.args)
+            #     raise BadRequestException(error.args) from error
 
 
 api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])

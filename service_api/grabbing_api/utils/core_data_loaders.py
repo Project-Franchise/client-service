@@ -7,15 +7,14 @@ from typing import Dict, List
 import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
-from sqlalchemy import select
 from service_api import session_scope
-from service_api.exceptions import (ObjectNotFoundException,
+from service_api.exceptions import (ObjectNotFoundException, AlreadyInDbException,
                                     ResponseNotOkException)
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, PATH_TO_METADATA
 from service_api.models import City, OperationType, RealtyType, State
 from service_api.schemas import (CitySchema, OperationTypeSchema,
                                  RealtyTypeSchema, StateSchema)
-
+from sqlalchemy import select
 
 from .grabbing_utils import load_data, open_metadata
 
@@ -80,16 +79,17 @@ class CityLoader(BaseLoader):
         seen_cities = []
         for city in response.json():
             seen_city = {key: city[external_service_key]
-                              for key, external_service_key in domria_cities_meta["filters"].items()}
+                         for key, external_service_key in domria_cities_meta["filters"].items()}
             seen_city["state_id"] = state.id
             seen_cities.append(seen_city)
 
         for data in seen_cities:
             try:
-                load_data(data, City, CitySchema)
+                load_data(CitySchema(), data, City)
             except ValidationError as error:
                 print(error)
-                raise
+            except AlreadyInDbException as error:
+                print(error)
 
         return len(seen_cities)
 
@@ -121,11 +121,11 @@ class StateLoader(BaseLoader):
 
         states_json = response.json()
         seen_states = [{key: state[external_service_key]
-                             for key, external_service_key in domria_states_meta["filters"].items()}
-                            for state in states_json]
+                        for key, external_service_key in domria_states_meta["filters"].items()}
+                       for state in states_json]
 
         for data in seen_states:
-            load_data(data, State, StateSchema)
+            load_data(StateSchema(), data, State)
 
         return len(seen_states)
 
@@ -148,7 +148,7 @@ class RealtyTypeLoader(BaseLoader):
 
         for realty_type_name, realty_type_original_id in realty_types.items():
             data = dict(zip(keys, (realty_type_name, realty_type_original_id)))
-            load_data(data, RealtyType, RealtyTypeSchema)
+            load_data(RealtyTypeSchema(), data, RealtyType)
 
         return len(realty_types)
 
@@ -172,6 +172,6 @@ class OperationTypeLoader(BaseLoader):
 
         for operation_type_name, operation_type_original_id in operation_types.items():
             data = dict(zip(keys, (operation_type_name, operation_type_original_id)))
-            load_data(data, OperationType, OperationTypeSchema)
+            load_data(OperationTypeSchema(), data, OperationType)
 
         return len(operation_types)

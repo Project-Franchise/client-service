@@ -62,19 +62,5 @@ class LatestDataResource(Resource):
             return request_to_domria.get_latest_data()
 
 
-            # url, params = DomRiaInputConverter(post_body, service_metadata).convert()
-            # response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
-            #
-            # # if response.status_code == 200:
-            # items = response.json()
-            #
-            # try:
-            #     return process_request(items, post_body["additional"].pop("page"),
-            #                            post_body["additional"].pop("page_ads_number"), service_metadata)
-            # except KeyError as error:
-            #     print(error.args)
-            #     raise BadRequestException(error.args) from error
-
-
 api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])
 api_.add_resource(LatestDataResource, URLS["GRABBING"]["GET_LATEST_URL"])

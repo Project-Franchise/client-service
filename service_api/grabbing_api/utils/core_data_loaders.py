@@ -99,7 +99,7 @@ class CSVLoader(BaseLoader):
         """
         Open and load info from csv file
         """
-        with open(self.path_to_file, "r") as file:
+        with open(self.path_to_file, encoding="utf-8", mode="r") as file:
             self.data = list(csv.DictReader(file))
 
     def load(self, *args, **kwargs) -> None:

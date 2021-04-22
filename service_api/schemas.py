@@ -10,10 +10,12 @@ from service_api import Base
 from service_api.constants import PARSING_REQUEST
 from service_api.errors import BadRequestException
 
+
 class IntOrDictField(fields.Field):
     """
     Custom field for validating int or dict elements
     """
+
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, (float, int)):
             return value
@@ -38,6 +40,9 @@ def validate_non_negative_field(value):
 
 
 def parsing_request(params):
+    """
+    Parse and convert input params to dict representation
+    """
     params = list(params.getlist("filter"))
     new_params = {}
     for items in params:
@@ -54,13 +59,13 @@ def parsing_request(params):
     return new_params
 
 
-
 class OperationTypeSchema(Schema):
     """
     Schema for OperationType model
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class AdditionalFilterParametersSchema(Schema):
@@ -77,6 +82,7 @@ class RealtyTypeSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class RealtyDetailsSchema(Schema):
@@ -101,6 +107,7 @@ class CitySchema(Schema):
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class StateSchema(Schema):
@@ -109,6 +116,7 @@ class StateSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class RealtySchema(Schema):

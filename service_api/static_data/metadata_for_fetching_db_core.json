@@ -4,17 +4,53 @@
       "loader": "CityLoader",
       "depends_on": ["states"]
     },
+    "city_aliases": {
+      "loader": "CityAliasesLoader",
+      "depends_on": ["cities"]
+    },
+    "city_xref": {
+      "loader": "CityXRefServicesLoader",
+      "depends_on": ["city_aliases", "cities"]
+    },
     "states": {
       "loader": "StateLoader",
+      "depends_on": []
+    },
+    "state_aliases": {
+      "loader": "StateAliasesLoader",
+      "depends_on": ["states"]
+    },
+    "state_xref": {
+      "loader": "StateXRefServicesLoader",
+      "depends_on": ["state_aliases","states"]
+    },
+    "services": {
+      "loader": "ServiceLoader",
       "depends_on": []
     },
     "realty_types": {
       "loader": "RealtyTypeLoader",
       "depends_on": []
     },
+    "realty_type_aliases": {
+      "loader": "RealtyTypeAliasesLoader",
+      "depends_on": ["realty_types"]
+    },
+    "realty_type_xref": {
+      "loader": "RealtyTypeXRefServicesLoader",
+      "depends_on": ["realty_type_aliases", "realty_types", "services"]
+    },
     "operation_types": {
       "loader": "OperationTypeLoader",
       "depends_on": []
+    },
+    "operation_type_aliases": {
+      "loader": "OperationTypeAliasesLoader",
+      "depends_on": ["operation_types"]
+    },
+    "operation_type_xref": {
+      "loader": "OperationTypeXRefServicesLoader",
+      "depends_on": ["operation_type_aliases", "operation_types", "services"]
     }
   }
 }

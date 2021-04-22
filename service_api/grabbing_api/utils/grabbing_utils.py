@@ -11,6 +11,7 @@ from marshmallow.schema import SchemaMeta
 
 from service_api import models, session_scope, Base
 from service_api.errors import BadRequestException
+from service_api.exceptions import ModelNotFoundException, ObjectNotFoundException
 from service_api.grabbing_api.constants import DOMRIA_TOKEN
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
 
@@ -29,8 +30,10 @@ def load_data(data: Union[Dict, List], model: Base, model_schema: SchemaMeta) ->
 
     with session_scope() as session:
         session.add_all(record)
-        session.commit()
+
+    print(data)
     return record[0]
+
 
 
 def make_realty_details_data(response: requests.models.Response, realty_details_meta: Dict) -> Dict:
@@ -144,3 +147,27 @@ def open_metadata(path: str) -> Dict:
         print("Invalid metadata path, or metadata.json file does not exist")
         raise
     return metadata
+
+def recognize_by_alias(model: Base, alias: str, set_= None):
+    """
+    Finds model record by alias. If set param is passed that alias is searched in that set
+    :param model: Base
+    :param alias: str
+    :param set_: optional
+    :returns: model instance
+    :raises: ModelNotFoundException, ObjectNotFoundException
+    """
+
+    try:
+        table_of_aliases = model.aliases.mapper.class_
+    except AttributeError as error:
+        print(error)
+        raise ModelNotFoundException(desc=f"Model {model} doesn't have aliases attribute") from error
+
+    with session_scope() as session:
+        set_ = set_ or session.query(model).join(table_of_aliases)
+        obj = set_.filter(table_of_aliases.alias==alias).first()
+
+    if obj is None:
+        raise ObjectNotFoundException(desc=f"Record for alias: {alias} not found")
+    return obj

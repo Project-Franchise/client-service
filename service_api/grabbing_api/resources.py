@@ -38,7 +38,7 @@ class CoreDataLoaderResource(Resource):
         params = {key: list(filter(lambda x: x != "", value)) for key, value in request.args.to_dict(False).items()}
         factory = LoadersFactory()
         try:
-            loading_statuses = factory.load(**params)
+            loading_statuses = factory.load(params)
         except MetaDataError as error:
             raise InternalServerErrorException() from error
         return loading_statuses

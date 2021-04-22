@@ -1,6 +1,7 @@
 """
 Resources and urls for grabbing service
 """
+
 from flask import request
 from flask_restful import Resource
 
@@ -10,9 +11,8 @@ from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
 from .utils.services_handler import DomriaServiceHandler
 from .constants import (PATH_TO_METADATA)
-from .utils.db import LoadersFactory
+from .utils.db import LoadersFactory, RealtyLoadersFactory
 from .utils.grabbing_utils import open_metadata
-
 
 
 class CoreDataLoaderResource(Resource):
@@ -59,7 +59,16 @@ class LatestDataResource(Resource):
         for service_name in metadata:
             service_metadata = metadata[service_name]
             request_to_domria = DomriaServiceHandler(post_body, service_metadata)
-            return request_to_domria.get_latest_data()
+
+            response = request_to_domria.get_latest_data()
+            factory = RealtyLoadersFactory()
+
+            try:
+                factory.load(response)
+            except MetaDataError as error:
+                raise InternalServerErrorException() from error
+
+            return response
 
 
 api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])

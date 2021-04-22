@@ -76,7 +76,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
 
             service_converter = DomRiaOutputConverter(response, service_metadata)
             try:
-               realty_details = service_converter.make_realty_details_data()
+                realty_details = service_converter.make_realty_details_data()
             except json.JSONDecodeError:
                 print("An error occurred while converting data from Dom Ria for realty_details model")
                 raise
@@ -90,12 +90,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
             realty_realty_details.append(realty_data)
 
         return realty_realty_details
-            # realty = load_data(realty_data, models.Realty, RealtySchema)
-            #
-            # schema = RealtySchema()
-            # elem = schema.dump(realty)
-            #
-            # realty_models.append(elem)
+    
 
     @staticmethod
     def process_request(search_response: Dict, page: int, page_ads_number: int, metadata: Dict) -> List[Dict]:

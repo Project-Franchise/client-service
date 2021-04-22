@@ -68,7 +68,6 @@ class StatesResource(Resource):
         """
         with session_scope() as session:
             states = session.query(models.State).all()
-            print(states)
         return schemas.StateSchema(many=True).dump(states), 200
 
 

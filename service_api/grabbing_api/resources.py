@@ -9,7 +9,7 @@ from service_api import api_
 from service_api.constants import URLS
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
-from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
+from .utils.services_handler import DomriaServiceHandler
 from .constants import (PATH_TO_METADATA)
 from .utils.db import LoadersFactory, RealtyLoadersFactory
 from .utils.grabbing_utils import open_metadata

@@ -4,7 +4,7 @@ Output and input converters for DomRia service
 import datetime
 import json
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict
 
 import requests
 from redis import RedisError
@@ -65,7 +65,7 @@ class AbstractOutputConverter(ABC):
         """
 
     @abstractmethod
-    def make_realty_details_data(self):
+    def make_realty_details_data(self, realty_details: Dict):
         """
         Converts a response to a dictionary ready for writing realty_details in the database
         """
@@ -94,9 +94,6 @@ class DomRiaOutputConverter(AbstractOutputConverter):
         """
         Composes data for Realty model
         """
-        """
-                Composes data for Realty model
-                """
         realty_data = {}
         realty_meta = self.metadata["model_characteristics"]["realty_columns"]
 

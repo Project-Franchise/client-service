@@ -1,0 +1,51 @@
+realty_type_id,alias
+1,Квартира
+2,Кімнати
+3,Будинок
+4,Частина
+5,Дачі
+6,Офісні приміщення
+7,Офісні будівлі
+8,Площі
+9,Склади
+10,Виробництво
+11,Ресторани
+12,Об'єкт
+13,Готель
+14,Пансіонати
+15,Приміщення вільного призначення
+16,Бізнес
+17,Під забудову
+18,Комерційні
+19,Сільськогосподарські
+20,Рекреаційні
+21,Природні
+22,Бокс
+23,Паркінг
+24,Кооператив
+25,Гараж
+1,flat
+2,rooms
+3,house
+4,part
+5,dacha
+6,office rooms
+7,office buildings
+8,squares
+9,storages
+10,manufacturing
+11,restaurants
+12,objects
+13,hotels
+14,pensions
+15,free premises
+16,businesses
+17,for building
+18,commercial
+19,farming
+20,recreational
+21,natural
+22,box
+23,parking
+24,cooperative
+25,garage

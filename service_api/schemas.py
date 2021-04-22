@@ -38,6 +38,9 @@ def validate_non_negative_field(value):
 
 
 def parsing_request(params):
+    """
+    Parse request from user to dictionary
+    """
     params = list(params.getlist("filter"))
     new_params = {}
     for items in params:
@@ -52,7 +55,6 @@ def parsing_request(params):
         else:
             new_params[characteristic] = int(value)
     return new_params
-
 
 
 class OperationTypeSchema(Schema):

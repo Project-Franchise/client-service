@@ -8,9 +8,12 @@ from marshmallow.exceptions import ValidationError
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
                                     ResponseNotOkException)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
+from service_api.models import RealtyDetails, Realty
+from service_api.schemas import RealtyDetailsSchema, RealtySchema
 
+from service_api import session_scope
 from . import core_data_loaders
-from .grabbing_utils import open_metadata
+from .grabbing_utils import open_metadata, load_data
 
 
 class FetchingOrderGenerator:
@@ -65,7 +68,7 @@ class FetchingOrderGenerator:
 
         return visited
 
-    def bfs(self, adj: Dict, node: str,  visited: List) -> List:
+    def bfs(self, adj: Dict, node: str, visited: List) -> List:
         """
         Bypass the graph using bfs
         :params: Dict: adj (Adjacency structure)
@@ -80,6 +83,37 @@ class FetchingOrderGenerator:
             visited.append(node)
 
         return visited
+
+
+class RealtyLoadersFactory:
+    """
+    Load realty data to db
+    """
+
+    def load(self, all_data: List[Dict]) -> None:
+        """
+         Calls mapped loader clasees for keys in params dict input
+        :params: List[Dict] - list of realty
+        :return: None - the only loader's responsibility is to load realty and realty details to the database
+        """
+        for entity in all_data:
+            try:
+                load_data(entity["realty_details_id"], RealtyDetails, RealtyDetailsSchema)
+
+            except KeyError as error:
+                print(error.args)
+
+            with session_scope() as session:
+                realty_details_id = session.query(RealtyDetails). \
+                    filter_by(**entity["realty_details_id"]).first().id
+                entity["realty_details_id"] = realty_details_id
+            try:
+                load_data(entity, Realty, RealtySchema)
+
+            except KeyError as error:
+                print(error.args)
+
+            return None
 
 
 class LoadersFactory:

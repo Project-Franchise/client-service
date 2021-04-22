@@ -9,10 +9,10 @@ from service_api import api_
 from service_api.constants import URLS
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
-from .constants import (PATH_TO_METADATA)
-from .utils.db import LoadersFactory
-from .utils.grabbing_utils import open_metadata
 from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
+from .constants import (PATH_TO_METADATA)
+from .utils.db import LoadersFactory, RealtyLoadersFactory
+from .utils.grabbing_utils import open_metadata
 
 
 class CoreDataLoaderResource(Resource):
@@ -59,21 +59,16 @@ class LatestDataResource(Resource):
         for service_name in metadata:
             service_metadata = metadata[service_name]
             request_to_domria = DomriaServiceHandler(post_body, service_metadata)
-            return request_to_domria.get_latest_data()
 
+            response = request_to_domria.get_latest_data()
+            factory = RealtyLoadersFactory()
 
-            # url, params = DomRiaInputConverter(post_body, service_metadata).convert()
-            # response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
-            #
-            # # if response.status_code == 200:
-            # items = response.json()
-            #
-            # try:
-            #     return process_request(items, post_body["additional"].pop("page"),
-            #                            post_body["additional"].pop("page_ads_number"), service_metadata)
-            # except KeyError as error:
-            #     print(error.args)
-            #     raise BadRequestException(error.args) from error
+            try:
+                factory.load(response)
+            except MetaDataError as error:
+                raise InternalServerErrorException() from error
+
+            return response
 
 
 api_.add_resource(CoreDataLoaderResource, URLS["GRABBING"]["GET_CORE_DATA_URL"])

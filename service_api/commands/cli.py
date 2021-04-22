@@ -7,10 +7,10 @@ from typing import Dict
 
 import click
 
-from service_api import (Base, flask_app, session_scope)
+from service_api import flask_app, session_scope, Base
 from service_api.exceptions import MetaDataError
 
-from .grabbing_api.utils.db import LoadersFactory
+from service_api.grabbing_api.utils.db import LoadersFactory
 
 BASE_ENTITIES = LoadersFactory.get_available_entites()
 

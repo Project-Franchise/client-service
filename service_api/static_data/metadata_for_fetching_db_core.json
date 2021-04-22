@@ -10,7 +10,7 @@
     },
     "city_xref": {
       "loader": "CityXRefServicesLoader",
-      "depends_on": ["city_aliases", "cities"]
+      "depends_on": ["city_aliases", "cities", "services", "state_xref"]
     },
     "states": {
       "loader": "StateLoader",
@@ -22,7 +22,7 @@
     },
     "state_xref": {
       "loader": "StateXRefServicesLoader",
-      "depends_on": ["state_aliases","states"]
+      "depends_on": ["state_aliases","states", "services"]
     },
     "services": {
       "loader": "ServiceLoader",

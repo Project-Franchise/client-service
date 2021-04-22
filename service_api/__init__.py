@@ -64,4 +64,4 @@ def session_scope() -> Iterator[Session]:
             raise
 
 
-from . import client_api, grabbing_api
+from . import commands, client_api, grabbing_api

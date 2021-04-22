@@ -10,8 +10,8 @@ from redis import RedisError
 
 from service_api import models, CACHE, session_scope
 from service_api.errors import BadRequestException
-from service_api.grabbing_api.constants import PATH_TO_METADATA, DOMRIA_TOKEN
-from service_api.grabbing_api.utils.grabbing_utils import open_metadata
+from .constants import PATH_TO_METADATA, DOMRIA_TOKEN
+from .utils.grabbing_utils import open_metadata
 
 
 def decode_characteristics(dct: Dict) -> Dict:

@@ -12,7 +12,7 @@ class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URL = os.environ['DATABASE_URL']
 
 
 class ProductionConfig(Config):
@@ -43,3 +43,4 @@ class TestingConfig(Config):
     Config for testing
     """
     TESTING = True
+    SQLALCHEMY_DATABASE_URL = os.environ['DATABASE_TEST_URL']

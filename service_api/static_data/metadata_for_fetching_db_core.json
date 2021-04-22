@@ -1,0 +1,20 @@
+{
+  "CORE DATA": {
+    "cities": {
+      "loader": "CityLoader",
+      "depends_on": ["states"]
+    },
+    "states": {
+      "loader": "StateLoader",
+      "depends_on": []
+    },
+    "realty_types": {
+      "loader": "RealtyTypeLoader",
+      "depends_on": []
+    },
+    "operation_types": {
+      "loader": "OperationTypeLoader",
+      "depends_on": []
+    }
+  }
+}

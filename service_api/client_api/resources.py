@@ -102,10 +102,9 @@ class RealtyResource(Resource):
         filters = request.get_json()
         if not filters:
             raise BadRequestException("No filters provided")
-        try:
-            latest = filters.pop("latest")
-        except KeyError as error:
-            raise BadRequestException(error.args)from error
+        latest = filters.pop("latest", False)
+        if not isinstance(latest, bool):
+            raise BadRequestException("Latest field is not bool")
 
         realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
             filters,
@@ -120,7 +119,6 @@ class RealtyResource(Resource):
                     "additional": additional_params_dict
                 })
             if response.status_code >= 400:
-                print(response.text)
                 raise ServiceUnavailableException("GRABBING does not respond")
             return response.json(), 200
 

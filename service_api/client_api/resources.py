@@ -3,7 +3,7 @@ Api routes for client api
 """
 
 import requests
-from flask import request
+from flask import request, render_template
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
 
@@ -211,6 +211,12 @@ class OperationTypeResource(Resource):
         return schemas.OperationTypeSchema().dump(operation_type), 200
 
 
+class MainPage(Resource):
+    def get(self):
+        return render_template('index.html')
+
+
+api_.add_resource(MainPage, "/main")
 api_.add_resource(IndexResource, URLS["CLIENT"]["INDEX_URL"])
 api_.add_resource(CityResource, URLS["CLIENT"]["GET_CITIES_URL"])
 api_.add_resource(RealtyResource, URLS["CLIENT"]["GET_REALTY_URL"])
@@ -220,3 +226,4 @@ api_.add_resource(RealtyTypesResource, URLS["CLIENT"]["GET_REALTY_TYPES_URL"])
 api_.add_resource(RealtyTypeResource, URLS["CLIENT"]["GET_REALTY_TYPE_BY_ID_URL"])
 api_.add_resource(OperationTypesResource, URLS["CLIENT"]["GET_OPERATION_TYPES_URL"])
 api_.add_resource(OperationTypeResource, URLS["CLIENT"]["GET_OPERATION_TYPE_BY_ID_URL"])
+

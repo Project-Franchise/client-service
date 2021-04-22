@@ -1,4 +1,4 @@
 """
 Client service api
 """
-from . import resources
+from . import resources, ui

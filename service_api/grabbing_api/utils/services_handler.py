@@ -76,7 +76,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
 
             service_converter = DomRiaOutputConverter(response, service_metadata)
             try:
-               realty_details = service_converter.make_realty_details_data()
+                realty_details = service_converter.make_realty_details_data()
             except json.JSONDecodeError:
                 print("An error occurred while converting data from Dom Ria for realty_details model")
                 raise

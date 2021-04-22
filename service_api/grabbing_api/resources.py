@@ -1,7 +1,6 @@
 """
 Resources and urls for grabbing service
 """
-
 from flask import request
 from flask_restful import Resource
 
@@ -9,10 +8,11 @@ from service_api import api_
 from service_api.constants import URLS
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
+from .utils.services_handler import DomriaServiceHandler
 from .constants import (PATH_TO_METADATA)
 from .utils.db import LoadersFactory
 from .utils.grabbing_utils import open_metadata
-from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
+
 
 
 class CoreDataLoaderResource(Resource):

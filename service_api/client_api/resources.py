@@ -1,6 +1,7 @@
 """
 Api routes for client api
 """
+import json
 import requests
 from flask import request
 from flask_restful import Resource
@@ -9,6 +10,7 @@ from sqlalchemy.dialects import postgresql
 
 from service_api import CACHE, api_, models, schemas, session_scope
 from service_api.constants import URLS, ADDITIONAL_FILTERS
+from service_api.client_api.cashing_requests import get_hash, make_hash
 from service_api.errors import BadRequestException, ServiceUnavailableException
 from service_api.grabbing_api.constants import GE, LE
 from service_api.models import Realty, RealtyDetails
@@ -113,16 +115,22 @@ class RealtyResource(Resource):
             [Realty, RealtyDetails, ADDITIONAL_FILTERS],
             [RealtySchema, RealtyDetailsInputSchema, AdditionalFilterParametersSchema])
 
+        request_filters = {
+            "realty_filters": realty_dict,
+            "characteristics": realty_details_dict,
+            "additional": additional_params_dict
+        }
         if latest:
+            if cached_responce := get_hash(request_filters):
+                print("___hashed stuff___")
+                return json.loads(cached_responce), 200
             response = requests.post(
-                "http://127.0.0.1:5000/grabbing/latest", json={
-                    "realty_filters": realty_dict,
-                    "characteristics": realty_details_dict,
-                    "additional": additional_params_dict
-                })
+                "http://127.0.0.1:5000/grabbing/latest", json=request_filters)
             if response.status_code >= 400:
                 raise ServiceUnavailableException("GRABBING does not respond")
-            return response.json(), 200
+            result = response.json()
+            make_hash(request_filters, result, )
+            return result, 200
 
         with session_scope() as session:
             try:
@@ -133,7 +141,7 @@ class RealtyResource(Resource):
             except ValueError as error:
                 raise BadRequestException(error.args)from error
 
-            offset = (page-1)*per_page
+            offset = (page - 1) * per_page
             print(realty_dict)
             print(realty_details_dict)
             realty = session.query(Realty).filter_by(**realty_dict).filter(
@@ -147,7 +155,7 @@ class RealtyResource(Resource):
             ).join(RealtyDetails)
             print(realty.statement.compile(dialect=postgresql.dialect()))
 
-            return RealtySchema(many=True).dump(realty.all()[offset: offset+per_page])
+            return RealtySchema(many=True).dump(realty.all()[offset: offset + per_page])
 
 
 class RealtyTypesResource(Resource):

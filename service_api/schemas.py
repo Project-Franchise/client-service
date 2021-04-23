@@ -113,6 +113,7 @@ class RealtyDetailsInputSchema(Schema):
     price = fields.Dict(allow_none=True)
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
+    version = fields.String()
 
 
 class CitySchema(Schema):
@@ -149,6 +150,7 @@ class RealtySchema(Schema):
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
+    version = fields.String()
 
 
 class ServiceSchema(Schema):

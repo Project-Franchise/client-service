@@ -33,6 +33,7 @@ class RealtyDetails(Base):
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False, unique=True)
+    version = Column(TIMESTAMP, nullable=True)
 
 
 class Realty(Base):
@@ -50,10 +51,12 @@ class Realty(Base):
     id = Column(BIGINT, primary_key=True)
     city_id = Column(BIGINT, ForeignKey("city.id", ondelete="SET NULL"), nullable=True, unique=False)
     state_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False, unique=False)
-    realty_details_id = Column(BIGINT, ForeignKey("realty_details.id", ondelete="CASCADE"), nullable=False, unique=True)
+    realty_details_id = Column(BIGINT, ForeignKey(
+        "realty_details.id", ondelete="CASCADE"), nullable=False, unique=False)
     realty_type_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False, unique=False)
     operation_type_id = Column(BIGINT, ForeignKey("operation_type.id",
                                                   ondelete="SET NULL"), nullable=True, unique=False)
+    version = Column(TIMESTAMP, nullable=True)
 
     __table_args__ = (
         UniqueConstraint(city_id, state_id, realty_details_id,
@@ -174,7 +177,7 @@ class StateToService(Base):
 
     __tablename__ = "state_to_service"
 
-    state_id = Column(BIGINT,  nullable=False)
+    state_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
@@ -196,7 +199,7 @@ class StateAlias(Base):
 
     __tablename__ = "state_alias"
 
-    state_id = Column(BIGINT,  nullable=False)
+    state_id = Column(BIGINT, nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
@@ -299,7 +302,7 @@ class RealtyTypeToService(Base):
 
     __tablename__ = "realty_type_to_service"
 
-    realty_type_id = Column(BIGINT,  nullable=False)
+    realty_type_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
     original_id = Column(VARCHAR(255), nullable=False)

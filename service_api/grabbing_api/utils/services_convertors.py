@@ -59,7 +59,7 @@ class AbstractOutputConverter(ABC):
         self.metadata = service_metadata
 
     @abstractmethod
-    def make_realty_data(self,  realty_details: Dict) -> Dict:
+    def make_realty_data(self, realty_details: Dict) -> Dict:
         """
         Converts a response to a dictionary ready for writing realty in the database
         """
@@ -83,7 +83,7 @@ class DomRiaOutputConverter(AbstractOutputConverter):
 
         realty_details_meta = self.metadata["model_characteristics"]["realty_details_columns"]
         values = [self.response.get(val["response_key"], None) for val in realty_details_meta.values()]
-        
+
         realty_details_data = dict(zip(
             realty_details_meta.keys(), values
         ))

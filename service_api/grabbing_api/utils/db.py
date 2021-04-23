@@ -8,7 +8,7 @@ from marshmallow.exceptions import ValidationError
 
 from service_api import session_scope
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
-                                    ResponseNotOkException)
+                                    ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
 from service_api.models import RealtyDetails, Realty
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
@@ -60,7 +60,7 @@ class FetchingOrderGenerator:
 
         return visited
 
-    def dfs(self, adj: Dict, node: str,  visited: List, route: List) -> List:
+    def dfs(self, adj: Dict, node: str, visited: List, route: List) -> List:
         """
         Bypass the graph using dfs
         :param: adj (Adjacency structure) Dict
@@ -93,19 +93,25 @@ class RealtyLoadersFactory:
         """
         for entity in all_data:
             try:
-                load_data(entity["realty_details_id"], RealtyDetails, RealtyDetailsSchema)
+                load_data(RealtyDetailsSchema(), entity["realty_details_id"], RealtyDetails)
             except KeyError as error:
                 print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
             with session_scope() as session:
                 realty_details_id = session.query(RealtyDetails). \
                     filter_by(**entity["realty_details_id"]).first().id
                 entity["realty_details_id"] = realty_details_id
             try:
-                load_data(entity, Realty, RealtySchema)
+                load_data(RealtySchema(), entity, Realty)
 
             except KeyError as error:
                 print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class LoadersFactory:

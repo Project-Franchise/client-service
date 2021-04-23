@@ -59,13 +59,13 @@ class AbstractOutputConverter(ABC):
         self.metadata = service_metadata
 
     @abstractmethod
-    def make_realty_data(self):
+    def make_realty_data(self,  realty_details: Dict) -> Dict:
         """
         Converts a response to a dictionary ready for writing realty in the database
         """
 
     @abstractmethod
-    def make_realty_details_data(self, realty_details: Dict):
+    def make_realty_details_data(self):
         """
         Converts a response to a dictionary ready for writing realty_details in the database
         """
@@ -83,6 +83,7 @@ class DomRiaOutputConverter(AbstractOutputConverter):
 
         realty_details_meta = self.metadata["model_characteristics"]["realty_details_columns"]
         values = [self.response.get(val["response_key"], None) for val in realty_details_meta.values()]
+        
         realty_details_data = dict(zip(
             realty_details_meta.keys(), values
         ))
@@ -106,9 +107,13 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                     raise Warning(f"There is no such model named {model}")
 
                 if key != "realty_details_id":
-                    realty_data[key] = (session.query(model).filter(
-                        model.original_id == self.response[response_key]
-                    ).first()).id  # and service_name == service_name
+                    model_to_service = model.service_repr.mapper.class_
+                    service_repr = session.query(model_to_service).filter(
+                        str(self.response[response_key]) == model_to_service.original_id
+                    ).first()
+                    realty_data[key] = session.query(model).filter(
+                        model.service_repr.contains(service_repr)
+                    ).first().self_id
 
                 else:
                     realty_data[key] = realty_details
@@ -130,9 +135,10 @@ class DomRiaInputConverter(AbstractInputConverter):
         type_mapper = self.process_characteristics(CACHED_CHARACTERISTICS_EXPIRE_TIME, CACHED_CHARACTERISTICS)
         params.update(dict((type_mapper.get(key, key), {"name": key, "values": value})
                            for key, value in self.characteristics.items()))
-        params["page"] = (self.additional["page"] // self.additional["page_ads_number"]) + 1
 
+        params["page"] = (self.additional["page"] // self.additional["page_ads_number"]) + 1
         url, params = self.get_url(params)
+
         return url, params
 
     def convert_named_filed(self):
@@ -147,16 +153,16 @@ class DomRiaInputConverter(AbstractInputConverter):
 
                 model = characteristics["model"]
                 service_param = characteristics["request_key"]
-
                 model = getattr(models, model)
                 if not model:
                     raise Warning(f"There is no such model named {model}")
 
                 if param in self.realty:
-                    obj = session.query(model).get(self.realty[param])
+                    obj = session.query(model).filter(model.id == self.realty[param]).first()
                     if obj is None:
                         raise BadRequestException("No such filters!")
-                    params[service_param] = obj.original_id  # change to aliases logic
+                    params[service_param] = obj.service_repr[0].original_id  # change to aliases logic
+
         return params
 
     def get_url(self, params: Dict) -> tuple[str, dict]:
@@ -281,7 +287,24 @@ class DomRiaInputConverter(AbstractInputConverter):
             raise BadRequestException("Invalid realty_type while getting latest data")
 
         try:
-            type_mapper = characteristics.get(realty_type.name)
+            with session_scope() as session:
+                realty_to_service = session.query(models.RealtyTypeToService).filter(
+                    self.realty["realty_type_id"] == models.RealtyTypeToService.realty_type_id
+                ).first()
+            if realty_to_service is None:
+                raise BadRequestException("Invalid realty_type while getting latest data")
+
+            rt_name = None
+            for realty_type, id_ in self.metadata["url_characteristics"]["realty_type"].items():
+                if str(id_) == realty_to_service.original_id:
+                    rt_name = realty_type
+                    break
+
+            if rt_name is None:
+                raise BadRequestException("Invalid realty_type while getting latest data")
+
+            type_mapper = characteristics.get(rt_name)
+
         except Exception as error:
             print(error)
             raise

@@ -11,7 +11,6 @@
         "condition": "/",
         "filters": {
           "name": "name",
-          "original_id": "cityID",
           "state_id": "stateID"
         }
       },
@@ -19,8 +18,7 @@
         "url_prefix": "/states",
         "condition": "",
         "filters": {
-          "name": "name",
-          "original_id": "stateID"
+          "name": "name"
         }
       },
       "options": {
@@ -93,12 +91,6 @@
           "le": null,
           "eq": "characteristic[{value}]"
         },
-        "original_id": {
-          "response_key": "realty_id",
-          "ge": null,
-          "le": null,
-          "eq": "characteristic[{value}]"
-        },
         "original_url": {
           "response_key": "beautiful_url",
           "ge": null,
@@ -108,14 +100,12 @@
       },
       "realty_type":{
         "filters":{
-          "name": null,
-          "original_id": null
+          "name": null
         }
       },
       "operation_type":{
         "filters":{
-          "name": null,
-          "original_id": null
+          "name": null
         }
       }
     },

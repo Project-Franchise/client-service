@@ -25,7 +25,7 @@ def test_state_creation():
     """
     data = {
         "name": "TestStateName",
-        "original_id": 3,
+        "self_id": 3,
     }
     state = State(**data)
 

@@ -5,25 +5,25 @@ from collections import defaultdict
 from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
+
+from service_api import session_scope
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
                                     ResponseNotOkException)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
 from service_api.models import RealtyDetails, Realty
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
-
-from service_api import session_scope
 from . import core_data_loaders
 from .grabbing_utils import open_metadata, load_data
 
 
 class FetchingOrderGenerator:
     """
-    Create an sequence ready for fetching that consist of ordered entities based on entites dependencies
+    Create an sequence ready for fetching that consist of ordered entities based on entities dependencies
     """
 
     def __init__(self, dependencies: Dict[str, List]) -> None:
         """
-        Inithializer of class
+        Initializer of class
         :params: Dict[str, List] dependencies
             Example:
                 {
@@ -44,7 +44,7 @@ class FetchingOrderGenerator:
 
         At first, Adjacency structure is created from all dependencies and entities.
         During first step collection of all roots (All entities without dependencies) is filled.
-        Then directed graph is build and BFS is used for finding nedded order of entities.
+        Then directed graph is build and BFS is used for finding needed order of entities.
         """
 
         adj = defaultdict(list)
@@ -87,14 +87,13 @@ class RealtyLoadersFactory:
 
     def load(self, all_data: List[Dict]) -> None:
         """
-         Calls mapped loader clasees for keys in params dict input
+         Calls mapped loader classes for keys in params dict input
         :params: List[Dict] - list of realty
         :return: None - the only loader's responsibility is to load realty and realty details to the database
         """
         for entity in all_data:
             try:
                 load_data(entity["realty_details_id"], RealtyDetails, RealtyDetailsSchema)
-
             except KeyError as error:
                 print(error.args)
 
@@ -108,8 +107,6 @@ class RealtyLoadersFactory:
             except KeyError as error:
                 print(error.args)
 
-            return None
-
 
 class LoadersFactory:
     """
@@ -119,7 +116,7 @@ class LoadersFactory:
 
     def __init__(self) -> None:
         """
-        Initialization of LoadersFactory thst uses metadata for configuration
+        Initialization of LoadersFactory that uses metadata for configuration
         This class can raise MetaDataError
         """
 
@@ -127,7 +124,7 @@ class LoadersFactory:
             info["loader"] = getattr(core_data_loaders, info.get("loader", None), None)
 
     @classmethod
-    def get_available_entites(cls) -> List[str]:
+    def get_available_entities(cls) -> List[str]:
         """
         Returns all possible name of entities that can be loaded
         :return: list[str] with name of entities
@@ -136,7 +133,7 @@ class LoadersFactory:
 
     def divide_input_entities(self, entities: List[str]) -> Tuple[List, List]:
         """
-        This function divides given envities on 2 groups (entities that can be loaded, unknown entities)
+        This function divides given entities on 2 groups (entities that can be loaded, unknown entities)
         :params: List[str]
         :return: tuple[List, List]
         """
@@ -145,8 +142,8 @@ class LoadersFactory:
 
     def load(self, entities_to_load: List) -> Dict[str, Any]:
         """
-        Calls mapped loader clasees for keys in params dict input
-        :params: dict[str, List] str - name of entity to load (func get_available_entites)
+        Calls mapped loader classes for keys in params dict input
+        :params: dict[str, List] str - name of entity to load (func get_available_entities)
                                  List - args for Loader classes
         :return: dict[str, Any] str - name of entities from input
                                 Any - json-like status info about fetching data to db
@@ -160,23 +157,22 @@ class LoadersFactory:
         except CycleReferenceException as error:
             print(error.args, error.desc)
             raise MetaDataError(desc=f"Metadata that is used: {PATH_TO_CORE_DB_METADATA}") from error
-        print(ordered_entities)
+
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
-            print(entity)
             try:
                 statuses[entity] = {"status": "SUCCESSFUL",
                                     "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}
             except ObjectNotFoundException as error:
-                error_mesaage = error.desc or error.args[0]
+                error_message = error.desc or error.args[0]
             except ResponseNotOkException as error:
-                error_mesaage = error.desc or error.args[0]
+                error_message = error.desc or error.args[0]
             except KeyError as error:
-                error_mesaage = error.args
+                error_message = error.args
             except ValidationError as error:
-                error_mesaage = error.messages
+                error_message = error.messages
             else:
                 continue
-            statuses[entity] = {"status": "FAILED", "data": error_mesaage}
+            statuses[entity] = {"status": "FAILED", "data": error_message}
 
         return statuses

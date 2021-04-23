@@ -9,6 +9,7 @@ import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
+
 from service_api import session_scope
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException,
@@ -25,19 +26,18 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema,
                                  StateAliasSchema, StateSchema, StateToServiceSchema)
-
-
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 
 
 class BaseLoader(ABC):
     """
-    Abstract class for loading static base date to DB (exmp. cities, states, realty_types...)
+    Abstract class for loading static base date to DB (exp. cities, states, realty_types...)
     """
 
     def __init__(self) -> None:
         """
         Fetches info from metadata
+        Raise MetaDataError
         """
         self.metadata = open_metadata(PATH_TO_METADATA)
 
@@ -202,7 +202,7 @@ class RealtyTypeAliasesLoader(CSVLoader):
 
 class OperationTypeXRefServicesLoader(XRefBaseLoader):
     """
-    Fill table opertaionTypeXRefServices with original_ids
+    Fill table OperationTypeXRefServices with original_ids
     """
 
     def load(self, *args, **kwargs) -> None:
@@ -289,7 +289,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 status[state_id] = self.load_cities_by_state(state_id=state_id)
             except ObjectNotFoundException as error:
-                print(error)
+                print(error.desc)
             except KeyError as error:
                 print(error)
             except ResponseNotOkException as error:
@@ -323,7 +323,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
                 raise ObjectNotFoundException(desc="No service Domria found")
             state_xref = session.query(StateToService).get({"state_id": state_id, "service_id": service.id})
             if state_xref is None:
-                raise ObjectNotFoundException(desc="No StateXrefServite obj  found")
+                raise ObjectNotFoundException(desc="No StateXrefService obj  found")
 
             set_by_state = session.query(City).join(CityAlias, CityAlias.city_id ==
                                                     City.self_id).where(City.state_id == state_id)
@@ -332,10 +332,10 @@ class CityXRefServicesLoader(XRefBaseLoader):
                                                  domria_cities_meta["url_prefix"],
                                                  state_xref.original_id),
                                 params={
-            "lang_id": self.domria_meta["optional"]["lang_id"],
-            "api_key": DOMRIA_TOKEN
-        }
-        )
+                                    "lang_id": self.domria_meta["optional"]["lang_id"],
+                                    "api_key": DOMRIA_TOKEN
+                                }
+                                )
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
@@ -353,7 +353,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             data = {
                 "city_id": city.self_id,
                 "service_id": service.id,
-                "original_id": str(city_from_service[domria_cities_meta["filters"]["original_id"]])
+                "original_id": str(city_from_service["cityID"])
             }
 
             try:
@@ -409,7 +409,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
             data = {
                 "state_id": state.self_id,
                 "service_id": service.id,
-                "original_id": str(service_state[domria_states_meta["filters"]["original_id"]])
+                "original_id": str(service_state["stateID"])
             }
 
             try:

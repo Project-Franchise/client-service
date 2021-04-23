@@ -22,7 +22,7 @@
     },
     "state_xref": {
       "loader": "StateXRefServicesLoader",
-      "depends_on": ["state_aliases","states", "services"]
+      "depends_on": ["state_aliases", "states", "services"]
     },
     "services": {
       "loader": "ServiceLoader",

@@ -12,9 +12,8 @@ from sqlalchemy import select
 
 from service_api import session_scope
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
-from service_api.exceptions import (ModelNotFoundException,
-                                    ObjectNotFoundException,
-                                    ResponseNotOkException)
+from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
+                                    ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
     DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
@@ -107,7 +106,11 @@ class CSVLoader(BaseLoader):
         Load models from csv file located in path_to_file
         """
         for row in self.data:
-            load_data(row, self.model, self.model_schema)
+            try:
+                load_data(self.model_schema(), row, self.model)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class CityLoader(CSVLoader):
@@ -231,8 +234,11 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
                     "service_id": service.id,
                     "original_id": str(value)
                 }
-
-                load_data(data, OperationTypeToService, OperationTypeToServiceSchema)
+                try:
+                    load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+                except AlreadyInDbException as error:
+                    print(error)
+                    continue
 
 
 class RealtyTypeXRefServicesLoader(XRefBaseLoader):
@@ -266,8 +272,11 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
                     "service_id": service.id,
                     "original_id": str(value)
                 }
-
-                load_data(data, RealtyTypeToService, RealtyTypeToServiceSchema)
+                try:
+                    load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+                except AlreadyInDbException as error:
+                    print(error)
+                    continue
 
 
 class CityXRefServicesLoader(XRefBaseLoader):
@@ -325,8 +334,8 @@ class CityXRefServicesLoader(XRefBaseLoader):
             if state_xref is None:
                 raise ObjectNotFoundException(desc="No StateXrefService obj  found")
 
-            set_by_state = session.query(City).join(CityAlias, CityAlias.city_id ==
-                                                    City.self_id).where(City.state_id == state_id)
+            set_by_state = session.query(City).join(
+                CityAlias, CityAlias.city_id == City.self_id).where(City.state_id == state_id)
 
         response = requests.get("{}{}/{}".format(self.domria_meta["base_url"],
                                                  domria_cities_meta["url_prefix"],
@@ -334,8 +343,8 @@ class CityXRefServicesLoader(XRefBaseLoader):
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
                                     "api_key": DOMRIA_TOKEN
-                                }
-                                )
+        }
+        )
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
@@ -357,9 +366,12 @@ class CityXRefServicesLoader(XRefBaseLoader):
             }
 
             try:
-                load_data(data, CityToService, CityToServiceSchema)
+                load_data(CityToServiceSchema(), data, CityToService)
             except ValidationError as error:
                 print(error)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
             else:
                 counter += 1
 
@@ -413,9 +425,12 @@ class StateXRefServicesLoader(XRefBaseLoader):
             }
 
             try:
-                load_data(data, StateToService, StateToServiceSchema)
+                load_data(StateToServiceSchema(), data, StateToService)
             except ValidationError as error:
                 print(error)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
             else:
                 counter += 1
 

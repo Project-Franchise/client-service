@@ -25,7 +25,7 @@ class ObjectNotFoundException(BaseCustomException):
     Exception which should be used when sqlaclhemy returns None from get function
     """
 
-    def __init__(self, message="Object not found", *args,  **kwargs) -> None:
+    def __init__(self, message="Object not found", *args, **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
 
 
@@ -34,7 +34,7 @@ class ModelNotFoundException(BaseCustomException):
     Exception which should be used when sqlaclhemy returns None from get function
     """
 
-    def __init__(self, message="Model not found", *args,  **kwargs) -> None:
+    def __init__(self, message="Model not found", *args, **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
 
 

@@ -90,7 +90,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
             realty_realty_details.append(realty_data)
 
         return realty_realty_details
-    
+
 
     @staticmethod
     def process_request(search_response: Dict, page: int, page_ads_number: int, metadata: Dict) -> List[Dict]:

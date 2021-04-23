@@ -7,7 +7,6 @@ from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey,
 from sqlalchemy.orm import relationship
 
 from service_api import Base
-
 from .constants import VERSION_DEFAULT_TIMESTAMP
 
 
@@ -30,7 +29,7 @@ class RealtyDetails(Base):
     realty = relationship("Realty", uselist=False, backref="realty_details", cascade="all,delete")
     floor = Column(BIGINT, nullable=True)
     floors_number = Column(BIGINT, nullable=True)
-    square = Column(BIGINT, nullable=True)
+    square = Column(Float, nullable=True)
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False, unique=True)

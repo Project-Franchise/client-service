@@ -94,8 +94,23 @@ class RealtyDetailsSchema(Schema):
         min=0, max=50), allow_none=True)
     floors_number = fields.Integer(
         validate=validate.Range(min=1, max=50), allow_none=True)
-    square = IntOrDictField(validate=validate_non_negative_field, allow_none=True)
-    price = IntOrDictField(validate=validate_non_negative_field)
+    square = fields.Float(validate=validate_non_negative_field, allow_none=True)
+    price = fields.Float(validate=validate_non_negative_field, allow_none=True)
+    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
+    original_url = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyDetailsInputSchema(Schema):
+    """
+    Schema for RealtyDetails input
+    """
+    id = fields.Integer()
+    floor = fields.Integer(validate=validate.Range(
+        min=0, max=50), allow_none=True)
+    floors_number = fields.Integer(
+        validate=validate.Range(min=1, max=50), allow_none=True)
+    square = fields.Dict(allow_none=True)
+    price = fields.Dict(allow_none=True)
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
 

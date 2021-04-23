@@ -1,17 +1,19 @@
 """
 Api routes for client api
 """
-
 import requests
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
+from sqlalchemy.dialects import postgresql
 
 from service_api import CACHE, api_, models, schemas, session_scope
 from service_api.constants import URLS, ADDITIONAL_FILTERS
 from service_api.errors import BadRequestException, ServiceUnavailableException
+from service_api.grabbing_api.constants import GE, LE
 from service_api.models import Realty, RealtyDetails
-from service_api.schemas import filters_validation, RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema
+from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
+    RealtyDetailsInputSchema
 
 
 class IndexResource(Resource):
@@ -109,7 +111,7 @@ class RealtyResource(Resource):
         realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
             filters,
             [Realty, RealtyDetails, ADDITIONAL_FILTERS],
-            [RealtySchema, RealtyDetailsSchema, AdditionalFilterParametersSchema])
+            [RealtySchema, RealtyDetailsInputSchema, AdditionalFilterParametersSchema])
 
         if latest:
             response = requests.post(
@@ -132,18 +134,20 @@ class RealtyResource(Resource):
                 raise BadRequestException(error.args)from error
 
             offset = (page-1)*per_page
-
+            print(realty_dict)
+            print(realty_details_dict)
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
                     getattr(RealtyDetails, key).between(
-                        value["from"], value["to"])
+                        value[GE], value[LE])
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
                 ]
-            ).join(RealtyDetails).all()[offset: offset+per_page]
+            ).join(RealtyDetails)
+            print(realty.statement.compile(dialect=postgresql.dialect()))
 
-            return RealtySchema(many=True).dump(realty)
+            return RealtySchema(many=True).dump(realty.all()[offset: offset+per_page])
 
 
 class RealtyTypesResource(Resource):

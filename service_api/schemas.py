@@ -10,10 +10,12 @@ from service_api import Base
 from service_api.constants import PARSING_REQUEST
 from service_api.errors import BadRequestException
 
+
 class IntOrDictField(fields.Field):
     """
     Custom field for validating int or dict elements
     """
+
     def _deserialize(self, value, attr, data, **kwargs):
         if isinstance(value, (float, int)):
             return value
@@ -39,7 +41,7 @@ def validate_non_negative_field(value):
 
 def parsing_request(params):
     """
-    Parse request from user to dictionary
+    Parse and convert input params to dict representation
     """
     params = list(params.getlist("filter"))
     new_params = {}
@@ -62,8 +64,8 @@ class OperationTypeSchema(Schema):
     Schema for OperationType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class AdditionalFilterParametersSchema(Schema):
@@ -79,8 +81,8 @@ class RealtyTypeSchema(Schema):
     Schema for RealtyType model
     """
     id = fields.Integer()
-    original_id = fields.Integer(validate=validate_non_negative_field)
     name = fields.String(validate=validate.Length(max=255))
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class RealtyDetailsSchema(Schema):
@@ -92,11 +94,24 @@ class RealtyDetailsSchema(Schema):
         min=0, max=50), allow_none=True)
     floors_number = fields.Integer(
         validate=validate.Range(min=1, max=50), allow_none=True)
-    square = IntOrDictField(validate=validate_non_negative_field, allow_none=True)
-    price = IntOrDictField(validate=validate_non_negative_field)
-    published_at = fields.DateTime(
-        validate=validate.Range(min=datetime(1990, 1, 1)))
-    original_id = fields.Integer(validate=validate_non_negative_field)
+    square = fields.Float(validate=validate_non_negative_field, allow_none=True)
+    price = fields.Float(validate=validate_non_negative_field, allow_none=True)
+    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
+    original_url = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyDetailsInputSchema(Schema):
+    """
+    Schema for RealtyDetails input
+    """
+    id = fields.Integer()
+    floor = fields.Integer(validate=validate.Range(
+        min=0, max=50), allow_none=True)
+    floors_number = fields.Integer(
+        validate=validate.Range(min=1, max=50), allow_none=True)
+    square = fields.Dict(allow_none=True)
+    price = fields.Dict(allow_none=True)
+    published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
     version = fields.String()
 
@@ -108,7 +123,7 @@ class CitySchema(Schema):
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
-    original_id = fields.Integer(validate=validate_non_negative_field)
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class StateSchema(Schema):
@@ -117,7 +132,7 @@ class StateSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
-    original_id = fields.Integer(validate=validate_non_negative_field)
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
 class RealtySchema(Schema):
@@ -125,7 +140,7 @@ class RealtySchema(Schema):
     Schema for Realty model
     """
     id = fields.Integer()
-    city_id = fields.Integer(load_only=True)
+    city_id = fields.Integer(load_only=True, required=False)
     city = fields.Nested(CitySchema, dump_only=True)
     state_id = fields.Integer(load_only=True)
     state = fields.Nested(StateSchema, dump_only=True)
@@ -136,6 +151,82 @@ class RealtySchema(Schema):
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
     version = fields.String()
+
+
+class ServiceSchema(Schema):
+    """
+    Schema for Service model
+    """
+    id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
+
+
+class CityToServiceSchema(Schema):
+    """
+    Schema for CityToService model
+    """
+    city_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class CityAliasSchema(Schema):
+    """
+    Schema for CityAlias model
+    """
+    city_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class StateToServiceSchema(Schema):
+    """
+    Schema for StateToService model
+    """
+    state_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class StateAliasSchema(Schema):
+    """
+    Schema for StateAlias model
+    """
+    state_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class OperationTypeToServiceSchema(Schema):
+    """
+    Schema for OperationTypeToService model
+    """
+    operation_type_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class OperationTypeAliasSchema(Schema):
+    """
+    Schema for OperationTypeAlias model
+    """
+    operation_type_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyTypeToServiceSchema(Schema):
+    """
+    Schema for RealtyTypeToService model
+    """
+    realty_type_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class RealtyTypeAliasSchema(Schema):
+    """
+    Schema for RealtyTypeAlias model
+    """
+    realty_type_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
 
 
 def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:

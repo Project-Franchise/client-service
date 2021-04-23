@@ -15,6 +15,7 @@ from service_api.exceptions import AlreadyInDbException
 from service_api.grabbing_api.constants import DOMRIA_TOKEN
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
 import datetime
+from service_api.exceptions import ModelNotFoundException, ObjectNotFoundException, MetaDataError
 
 @singledispatch
 def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
@@ -79,6 +80,9 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
     with session_scope() as session:
         session.add(realty_details_record)
     return realty_details_record
+    #     session.add_all(record)
+
+    # return record[0]
 
 
 def open_metadata(path: str) -> Dict:
@@ -88,10 +92,35 @@ def open_metadata(path: str) -> Dict:
     try:
         with open(path) as meta_file:
             metadata = json.load(meta_file)
-    except json.JSONDecodeError as err:
-        print(err)
-        raise
-    except FileNotFoundError:
+    except json.JSONDecodeError as error:
+        print(error)
+        raise MetaDataError from error
+    except FileNotFoundError as error:
         print("Invalid metadata path, or metadata.json file does not exist")
-        raise
+        raise MetaDataError from error
     return metadata
+
+
+def recognize_by_alias(model: Base, alias: str, set_=None):
+    """
+    Finds model record by alias. If set param is passed that alias is searched in that set
+    :param model: Base
+    :param alias: str
+    :param set_: optional
+    :returns: model instance
+    :raises: ModelNotFoundException, ObjectNotFoundException
+    """
+
+    try:
+        table_of_aliases = model.aliases.mapper.class_
+    except AttributeError as error:
+        print(error)
+        raise ModelNotFoundException(desc=f"Model {model} doesn't have aliases attribute") from error
+
+    with session_scope() as session:
+        set_ = set_ or session.query(model).join(table_of_aliases)
+        obj = set_.filter(table_of_aliases.alias == alias).first()
+
+    if obj is None:
+        raise ObjectNotFoundException(desc=f"Record for alias: {alias} not found")
+    return obj

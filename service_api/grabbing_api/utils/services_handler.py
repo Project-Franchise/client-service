@@ -42,9 +42,10 @@ class DomriaServiceHandler(AbstractServiceHandler):
         :return: List(dict)
         """
         url, params = DomRiaInputConverter(self.post_body, self.metadata).convert()
-
         response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
-        # if response.status_code == 200:
+        if response.status_code != 200:
+            raise BadRequestException("Invalid url")
+
         items = response.json()
         try:
             return DomriaServiceHandler.process_request(items, self.post_body["additional"].pop("page"),
@@ -73,8 +74,8 @@ class DomriaServiceHandler(AbstractServiceHandler):
             response = requests.get("{url}{id}".format(url=url, id=str(realty_id)),
                                     params=params,
                                     headers={'User-Agent': 'Mozilla/5.0'})
-
             service_converter = DomRiaOutputConverter(response, service_metadata)
+
             try:
                 realty_details = service_converter.make_realty_details_data()
             except json.JSONDecodeError:
@@ -86,11 +87,9 @@ class DomriaServiceHandler(AbstractServiceHandler):
             except json.JSONDecodeError:
                 print("An error occurred while converting data from Dom Ria for realty model")
                 raise
-
             realty_realty_details.append(realty_data)
-
         return realty_realty_details
-    
+
 
     @staticmethod
     def process_request(search_response: Dict, page: int, page_ads_number: int, metadata: Dict) -> List[Dict]:
@@ -101,5 +100,4 @@ class DomriaServiceHandler(AbstractServiceHandler):
         current_items = search_response["items"][
                         (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
                         ]
-
         return DomriaServiceHandler.create_records(current_items, metadata)

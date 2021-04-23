@@ -1,12 +1,15 @@
 """
 Utilities for cashing requests and saving them in redis
 """
-from typing import Dict
-from service_api import CACHE
-import json
 import datetime
+import json
+from typing import Dict
 
-def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Dict):
+from service_api import CACHE
+from service_api.constants import CACHED_REQUESTS_EXPIRE_TIME
+
+
+def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Dict = CACHED_REQUESTS_EXPIRE_TIME):
     """
     Hash request to redis
     """

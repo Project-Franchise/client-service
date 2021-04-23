@@ -47,7 +47,8 @@ class CityResource(Resource):
         if not filters:
             raise BadRequestException("No filters provided")
 
-        if errors := schemas.CitySchema().validate(filters):
+        errors = schemas.CitySchema().validate(filters)
+        if errors:
             raise BadRequestException(errors)
 
         with session_scope() as session:

@@ -1,16 +1,32 @@
 """
 Handler module docstring for pylint
 """
+from datetime import datetime
 import json
 from typing import List, Dict
 from abc import ABC, abstractmethod
 
 import requests
 
+from service_api import session_scope
+from service_api.grabbing_api.utils.grabbing_utils import load_data
 from service_api.grabbing_api.utils.services_convertors import DomRiaOutputConverter, DomRiaInputConverter
 from service_api.errors import BadRequestException
-from service_api.grabbing_api.constants import DOMRIA_TOKEN
+from service_api.grabbing_api.constants import DOMRIA_TOKEN, domria_keys_list
+from service_api.models import RequestsHistory
+from service_api.schemas import RequestsHistorySchema
 
+
+def choose_available_token_for_request(tokens_list):
+    with session_scope() as session:
+        tmp = session.query(RequestsHistory).where(RequestsHistory.token_used == hash(tokens_list[0]) and
+                                                   RequestsHistory.request_timestamp.between(
+                                                       datetime.now().replace(hour=datetime.now().hour - 1),
+                                                       datetime.now())).count()
+    if tmp > 990 :
+        tokens_list.insert(0, tokens_list[len(tokens_list)-1])
+        tokens_list.pop()
+    return tokens_list
 
 class AbstractServiceHandler(ABC):
     """
@@ -41,6 +57,9 @@ class DomriaServiceHandler(AbstractServiceHandler):
         Method that realise the logic of sending request to DomRia and getting items
         :return: List(dict)
         """
+        choose_available_token_for_request(domria_keys_list)
+        load_data([datetime.now(), hash(DOMRIA_TOKEN)], RequestsHistory, RequestsHistorySchema)
+
         url, params = DomRiaInputConverter(self.post_body, self.metadata).convert()
 
         response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
@@ -53,6 +72,9 @@ class DomriaServiceHandler(AbstractServiceHandler):
         except KeyError as error:
             print(error.args)
             raise BadRequestException(error.args) from error
+
+
+
 
     @staticmethod
     def create_records(ids: List, service_metadata: Dict) -> List[Dict]:

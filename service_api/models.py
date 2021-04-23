@@ -136,5 +136,5 @@ class RequestsHistory(Base):
     __tablename__ = "requests_history"
 
     id = Column(BIGINT, primary_key=True)
-    token_used = Column(VARCHAR(200), nullable=False)
+    token_used_id = Column(VARCHAR(200), nullable=False)
     request_timestamp = Column(TIMESTAMP, nullable=False)

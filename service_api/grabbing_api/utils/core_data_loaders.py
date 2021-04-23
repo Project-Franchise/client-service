@@ -52,8 +52,8 @@ class CityLoader(BaseLoader):
         :param: state_id: int
         :return: int
         """
-
-        if (state_id := kwargs.get("state_id")) is None:
+        state_id = kwargs.get("state_id")
+        if state_id is None:
             raise KeyError("No parameter state_id provided in function load")
 
         with session_scope() as session:

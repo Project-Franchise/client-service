@@ -4,8 +4,6 @@ Constants for grabbing module
 
 import os
 
-def choose_available_token_for_request(token):
-    pass
 
 domria_keys_list = os.environ.get("DOMRIA_API_KEYS").split(".")
 DOMRIA_TOKEN = domria_keys_list[0]

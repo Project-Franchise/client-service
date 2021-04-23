@@ -141,7 +141,7 @@ class RequestsHistorySchema(Schema):
     Schema for Requests History
     """
     id = fields.Integer()
-    token_used = fields.String(validate=validate.Length(max=255))
+    token_used_id = fields.String(validate=validate.Length(max=255))
     request_timestamp = fields.DateTime(
         validate=validate.Range(min=datetime(1990, 1, 1)))
 

@@ -17,7 +17,7 @@ services:
       - CS_HOST_IP=0.0.0.0
       - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
       - REDIS_IP=redis
-      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - DOMRIA_API_KEYS=${DOMRIA_API_KEYS}
 
   db:
     image: postgres:13.2

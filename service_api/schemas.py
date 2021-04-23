@@ -136,6 +136,16 @@ class RealtySchema(Schema):
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
 
 
+class RequestsHistorySchema(Schema):
+    """
+    Schema for Requests History
+    """
+    id = fields.Integer()
+    request_text = fields.String(validate=validate.Length(max=255))
+    request_timestamp = fields.DateTime(
+        validate=validate.Range(min=datetime(1990, 1, 1)))
+
+
 def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details

@@ -124,3 +124,17 @@ class State(Base):
     original_id = Column(BIGINT, nullable=False, unique=True)
     city = relationship("City", backref="state", lazy=True)
     realty = relationship("Realty", backref="state", lazy=True)
+
+
+class RequestsHistory(Base):
+    """
+    Requests history model
+    :param: request_text str
+    :param: request_timestamp datetime
+    """
+
+    __tablename__ = "requests_history"
+
+    id = Column(BIGINT, primary_key=True)
+    request_text = Column(VARCHAR(200), nullable=False)
+    request_timestamp = Column(TIMESTAMP, nullable=False)

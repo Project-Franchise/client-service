@@ -29,7 +29,9 @@ class UnicodeApi(Api):
         }
 
 
-flask_app = Flask(__name__)
+template_dir = os.path.abspath('D://franchise//client-service//service_api//client_api//templates')
+
+flask_app = Flask(__name__, template_folder=template_dir)
 flask_app.config.from_object(os.environ.get("FLASK_CONFIG_MODE", "config.DevelopmentConfig"))
 api_ = UnicodeApi(flask_app)
 

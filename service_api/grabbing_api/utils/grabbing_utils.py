@@ -11,9 +11,7 @@ from marshmallow import ValidationError
 from marshmallow.schema import Schema
 from sqlalchemy.orm import make_transient
 from service_api import Base, session_scope
-from service_api.exceptions import (AlreadyInDbException, MetaDataError,
-                                    ModelNotFoundException,
-                                    ObjectNotFoundException)
+from service_api.exceptions import AlreadyInDbException, MetaDataError, ModelNotFoundException, ObjectNotFoundException
 from service_api.models import Realty, RealtyDetails
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
 
@@ -31,8 +29,11 @@ def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
         raise
 
     with session_scope() as session:
-        session.add(record)
+        existing_record = session.query(model).filter_by(**valid_data).first()
+        if existing_record is None:
+            session.add(record)
     return record
+
 
 @load_data.register
 def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
@@ -136,8 +137,9 @@ def recognize_by_alias(model: Base, alias: str, set_=None):
         raise ModelNotFoundException(desc=f"Model {model} doesn't have aliases attribute") from error
 
     with session_scope() as session:
-        set_ = set_ or session.query(model).join(table_of_aliases)
-        obj = set_.filter(table_of_aliases.alias == alias).first()
+        set_ = set_ or session.query(model)
+        obj = set_.join(table_of_aliases,
+                        table_of_aliases.entity_id == model.id).filter(table_of_aliases.alias == alias).first()
 
     if obj is None:
         raise ObjectNotFoundException(desc=f"Record for alias: {alias} not found")

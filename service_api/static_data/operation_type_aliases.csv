@@ -1,9 +1,10 @@
-operation_type_id,alias
-1,Будь-яка операція
-2,Продаж
-3,Довгострокова оредна
-4,Подобова оренда
-1,any_operation
-2,sale
-3,long_term_rental
-4,daily_rental
+entity_id,alias
+1,Продаж
+2,Довгострокова оредна
+3,Подобова оренда
+1,sale
+2,long_term_rental
+3,daily_rental
+1,Продажа
+2,Долгострочная аренда
+3,Посуточная аренда

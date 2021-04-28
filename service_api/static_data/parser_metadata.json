@@ -1,0 +1,252 @@
+{
+  "OLX": {
+    "base_url": "https://www.olx.ua/uk/",
+    "name": "OLX",
+    "optional": {},
+    "urls": {
+      "search_realty": {
+        "url_prefix": "/nedvizhimost",
+        "url_order": ["realty_category", "operation_type", "realty_type", "location"],
+        "depends_on": [
+          "realty_category",
+          "operation_type",
+          "realty_category_operation_type_alias",
+          "realty_type",
+          "location"
+        ],
+        "required": ["realty_category"],
+        "condition": "/",
+        "models": {
+          "realty": {
+            "city_id": {
+              "request_key": "{original_id}",
+              "condition": "/",
+              "model": "CityToService"
+            },
+            "state_id": {
+              "request_key": "{original_id}",
+              "condition": "/",
+              "model": "StateToService"
+            },
+            "realty_category_id": {
+              "request_key": "{original_id}",
+              "condition": "/",
+              "model": "RealtyCategoryToService"
+            },
+            "realty_type_id": {
+                "request_key": "{original_id}",
+                "condition": "/",
+                "model": "RealtyTypeToService"
+              },
+            "operation_type_id": {
+              "request_key": "{original_id}",
+              "condition": "/",
+              "model": "OperationTypeToService"
+            }
+          },
+          "realty_details": {
+            "floor": {
+              "ge": "search[filter_float_floor:from]",
+              "le": "search[filter_float_floor:to]"
+            },
+            "floors_number": {
+              "ge": "search[filter_float_total_floors:from]",
+              "le": "search[filter_float_total_floors:to]"
+            },
+            "square": {
+              "ge": "search[filter_float_total_area:from]",
+              "le": "search[filter_float_total_area:to]"
+            },
+            "price": {
+              "ge": "search[filter_float_price:from]",
+              "le": "search[filter_float_price:to]"
+            }
+          }
+        }
+      },
+      "single_ad": {
+        "url_prefix": null,
+        "depends_on": [],
+        "condition": null,
+        "models": {
+          "realty": {
+            "model": "Realty",
+            "fields": {
+              "city_id": {
+                "response_key": {
+                  "regex": "",
+                  "parse_marker": ""
+                },
+                "model": "City"
+              },
+              "state_id": {
+                "response_key": {
+                  "regex": "",
+                  "parse_marker": ""
+                },
+                "model": "State"
+              },
+              "realty_details_id": {
+                "response_key": {
+                  "regex": "",
+                  "parse_marker": ""
+                },
+                "model": "RealtyDetails"
+              },
+              "realty_type_id": {
+                "response_key": {
+                  "regex": "",
+                  "parse_marker": ""
+                },
+                "model": "RealtyType"
+              },
+              "operation_type_id": {
+                "response_key": {
+                  "regex": "",
+                  "parse_marker": ""
+                },
+                "model": "OperationType"
+              }
+            }
+          },
+          "realty_details": {
+            "models": "RealtyDetails",
+            "fields": {
+              "floor": "Поверх",
+              "floors_number": "Поверховість",
+              "square": "Загальна площа",
+              "price": "Ціна",
+              "published_at": null,
+              "original_url": null
+            }
+          }
+        }
+      }
+    },
+    "entities": {
+      "category": {
+        "flats": {
+          "url_prefix": "/kvartiry-komnaty",
+          "operation_type_sufix": "kvartir-komnat",
+          "realty_type": ["flat", "rooms"]
+        },
+        "houses": {
+          "url_prefix": "/doma",
+          "operation_type_sufix": "domov",
+          "realty_type": ["house", "dacha", "part"]
+        },
+        "commercial": {
+          "url_prefix": "/kommercheskaya-nedvizhimost",
+          "operation_type_sufix": "kommercheskoy-nedvizhimosti",
+          "realty_type": [
+            "office buildings",
+            "storages",
+            "manufacturing",
+            "restaurants",
+            "objects",
+            "hotels",
+            "pensions",
+            "free premises",
+            "commercial",
+            "farming"
+          ]
+        },
+        "areas": {
+          "url_prefix": "/zemlya",
+          "operation_type_sufix": "zemli",
+          "realty_type": ["recreational", "for building"]
+        },
+        "garages": {
+          "url_prefix": "/garazhy-parkovki",
+          "operation_type_sufix": "garazhey-parkovok",
+          "realty_type": ["parking", "garage"]
+        }
+      },
+      "realty_type": {
+        "flat": {
+          "url_prefix": "kvartira",
+          "condition": "/"
+        },
+        "rooms": {
+          "url_prefix": "komnata",
+          "condition": "/"
+        },
+        "house": {
+          "url_prefix": "dom",
+          "condition": "/"
+        },
+        "part": {
+          "url_prefix": "chast-doma",
+          "condition": "/"
+        },
+        "dacha": {
+          "url_prefix": "dacha/",
+          "condition": "/"
+        },
+
+        "office buildings": {
+          "url_prefix": "ofisnye-pomescheniya",
+          "condition": "/"
+        },
+
+        "storages": {
+          "url_prefix": "sklad-angar",
+          "condition": "/"
+        },
+        "manufacturing": {
+          "url_prefix": "pomescheniya-promyshlennogo-naznacheniya",
+          "condition": "/"
+        },
+        "restaurants": {
+          "url_prefix": "restoran-kafe-bar",
+          "condition": "/"
+        },
+        "objects": {
+          "url_prefix": "maf-malaya-arhitekturnaya-forma",
+          "condition": "/"
+        },
+        "hotels": {
+          "url_prefix": "baza-otdyha-otel",
+          "condition": "/"
+        },
+        "pensions": {
+          "url_prefix": "baza-otdyha-otel",
+          "condition": "/"
+        },
+        "free premises": {
+          "url_prefix": "pomescheniya-svobodnogo-naznacheniya",
+          "condition": "/"
+        },
+        "commercial": {
+          "url_prefix": "pomescheniya-promyshlennogo-naznacheniya",
+          "condition": "/"
+        },
+        "farming": {
+          "url_prefix": "fermerskoe-hozyaystvo",
+          "condition": "/"
+        },
+        "for building": {
+          "url_prefix": "zemlya-zhiloy-i-obschestvennoy-zastroyki",
+          "condition": "/"
+        },
+        "recreational": {
+          "url_prefix": "zemlya-rekreatsionnogo-naznacheniya/",
+          "condition": "/"
+        },
+        "parking": {
+          "url_prefix": "mesto-na-parkinge",
+          "condition": "/"
+        },
+        "garage": {
+          "url_prefix": "garazh",
+          "condition": "/"
+        }
+      },
+      "operation_type": {
+        "sale": "prodazha",
+        "long_term_rental": "arenda",
+        "daily_rental": "posutochno-pochasovo"
+      }
+    }
+  }
+}

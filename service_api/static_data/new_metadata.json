@@ -1,0 +1,236 @@
+{
+  "DOMRIA API": {
+    "base_url": "https://developers.ria.com/dom",
+    "name": "DOMRIA API",
+    "token_name": "api_key",
+    "optional": {
+      "lang_id": 4
+    },
+    "urls": {
+      "cities": {
+        "url_prefix": "cities",
+        "depens_on": ["state_id"],
+        "condition": "/",
+        "model": "CityToService",
+        "fields": {
+          "name": "name",
+          "city_id": null,
+          "service_id": null,
+          "original_id": "cityID"
+        }
+      },
+      "states": {
+        "url_prefix": "states",
+        "depens_on": [],
+        "condition": "/",
+        "model": "StateToService",
+        "fields": {
+          "state_id": null,
+          "service_id": null,
+          "original_id": "stateID",
+          "name": "name"
+        }
+      },
+      "options": {
+        "url_prefix": "options",
+        "condition": "/",
+        "depens_on": [],
+        "fields": {
+          "realty_type": "realty_type"
+        }
+      },
+      "search_realty": {
+        "url_prefix": "search",
+        "required": ["operation_type", "realty_category"],
+        "depens_on": [],
+        "condition": "/",
+        "models": {
+          "realty": {
+            "model": "Realty",
+            "fields": {
+              "city_id": {
+                "request_key": "city_id",
+                "condition": "&",
+                "model": "CityToService"
+              },
+              "state_id": {
+                "request_key": "state_id",
+                "condition": "&",
+                "model": "StateToService"
+              },
+              "realty_type_id": {
+                "request_key": "realty_type",
+                "condition": "&",
+                "model": "RealtyTypeToService"
+              },
+              "operation_type_id": {
+                "request_key": "operation_type",
+                "condition": "&",
+                "model": "OperationTypeToService"
+              }
+            }
+          },
+          "realty_details": {
+            "models": "RealtyDetails",
+            "fields": {
+              "floor": {
+                "response_key": "floor",
+                "ge": null,
+                "le": null,
+                "eq": "characteristic[{value}]"
+              },
+              "floors_number": {
+                "response_key": "floors_count",
+                "ge": null,
+                "le": null,
+                "eq": "characteristic[{value}]"
+              },
+              "square": {
+                "response_key": "total_square_meters",
+                "ge": "characteristic[{value_from}][from]",
+                "le": "characteristic[{value_to}][to]",
+                "eq": null
+              },
+              "price": {
+                "response_key": "price",
+                "ge": "characteristic[{value_from}][from]",
+                "le": "characteristic[{value_to}][to]",
+                "eq": null
+              },
+              "published_at": {
+                "response_key": "publishing_date",
+                "ge": null,
+                "le": null,
+                "eq": "characteristic[{value}]"
+              },
+              "original_url": {
+                "response_key": "beautiful_url",
+                "ge": null,
+                "le": null,
+                "eq": "characteristic[{value}]"
+              }
+            }
+          }
+        }
+      },
+      "single_ad": {
+        "url_prefix": "info/{id}",
+        "depends_on": ["id"],
+        "condition": "/",
+        "models": {
+          "realty": {
+            "model": "Realty",
+            "fields": {
+              "city_id": {
+                "response_key": "city_name_uk",
+                "model": "City"
+              },
+              "state_id": {
+                "response_key": "state_name_uk",
+                "model": "State"
+              },
+              "realty_type_id": {
+                "response_key": "realty_type_name",
+                "model": "RealtyType"
+              },
+              "operation_type_id": {
+                "response_key": "advert_type_name",
+                "model": "OperationType"
+              }
+            }
+          },
+          "realty_details": {
+            "models": "RealtyDetails",
+            "fields": {
+              "floor": "floor",
+              "floors_number": "floors_count",
+              "square": "total_square_meters",
+              "price": "price",
+              "published_at": "publishing_date",
+              "original_url": "beautiful_url"
+            }
+          }
+        }
+      }
+    },
+    "entities": {
+      "category": {
+        "flats": {
+          "own_id": 1,
+          "flat": 2,
+          "rooms": 3
+        },
+        "houses": {
+          "own_id": 4,
+          "house": 5,
+          "part": 6,
+          "dacha": 7
+        },
+        "offices": {
+          "own_id": 13,
+          "office rooms": 11,
+          "office buildings": 12
+        },
+        "commercial": {
+          "own_id": 10,
+          "squares": 14,
+          "storages": 15,
+          "manufacturing": 16,
+          "restaurants": 17,
+          "objects": 18,
+          "hotels": 19,
+          "pensions": 20,
+          "free premises": 21,
+          "businesses": 22
+        },
+        "areas": {
+          "own_id": 24,
+          "for building": 25,
+          "commercial": 26,
+          "farming": 27,
+          "recreational": 28,
+          "natural": 29
+        },
+        "garages": {
+          "own_id": 30,
+          "box": 31,
+          "parking": 35,
+          "cooperative": 33,
+          "garage": 34
+        }
+      },
+      "realty_type": {
+        "flat": 2,
+        "rooms": 3,
+        "house": 5,
+        "part": 6,
+        "dacha": 7,
+        "office rooms": 11,
+        "office buildings": 12,
+        "squares": 14,
+        "storages": 15,
+        "manufacturing": 16,
+        "restaurants": 17,
+        "objects": 18,
+        "hotels": 19,
+        "pensions": 20,
+        "free premises": 21,
+        "businesses": 22,
+        "for building": 25,
+        "commercial": 26,
+        "farming": 27,
+        "recreational": 28,
+        "natural": 29,
+        "box": 31,
+        "parking": 35,
+        "cooperative": 33,
+        "garage": 34
+      },
+      "operation_type": {
+        "sale": 1,
+        "long_term_rental": 3,
+        "daily_rental": 4
+      }
+    }
+  }
+}

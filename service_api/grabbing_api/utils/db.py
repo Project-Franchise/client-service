@@ -91,9 +91,9 @@ class RealtyLoadersFactory:
         :params: List[Dict] - list of realty
         :return: None - the only loader's responsibility is to load realty and realty details to the database
         """
-        for entity in all_data:
+        for realty, realty_details_id in all_data:
             try:
-                load_data(RealtyDetailsSchema(), entity["realty_details_id"], RealtyDetails)
+                load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
             except KeyError as error:
                 print(error.args)
             except AlreadyInDbException as error:
@@ -102,10 +102,10 @@ class RealtyLoadersFactory:
 
             with session_scope() as session:
                 realty_details_id = session.query(RealtyDetails). \
-                    filter_by(**entity["realty_details_id"]).first().id
-                entity["realty_details_id"] = realty_details_id
+                    filter_by(**realty_details_id).first().id
+                realty["realty_details_id"] = realty_details_id
             try:
-                load_data(RealtySchema(), entity, Realty)
+                load_data(RealtySchema(), realty, Realty)
 
             except KeyError as error:
                 print(error.args)
@@ -166,6 +166,7 @@ class LoadersFactory:
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
+            print(entity)
             try:
                 statuses[entity] = {"status": "SUCCESSFUL",
                                     "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}

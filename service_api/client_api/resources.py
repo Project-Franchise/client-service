@@ -1,18 +1,16 @@
 """
 Api routes for client api
 """
-import json
-import requests
+
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
-from sqlalchemy.dialects import postgresql
+
 
 from service_api import CACHE, api_, models, schemas, session_scope
 from service_api.constants import URLS, ADDITIONAL_FILTERS
-from service_api.client_api.cashing_requests import get_hash, make_hash
-from service_api.errors import BadRequestException, ServiceUnavailableException
-from service_api.grabbing_api.constants import GE, LE
+from service_api.client_api.utils import get_latest_data_from_grabbing
+from service_api.errors import BadRequestException
 from service_api.models import Realty, RealtyDetails
 from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
     RealtyDetailsInputSchema
@@ -121,16 +119,7 @@ class RealtyResource(Resource):
             "additional": additional_params_dict
         }
         if latest:
-            if cached_responce := get_hash(request_filters):
-                print("___hashed stuff___")
-                return json.loads(cached_responce), 200
-            response = requests.post(
-                "http://127.0.0.1:5000/grabbing/latest", json=request_filters)
-            if response.status_code >= 400:
-                raise ServiceUnavailableException("GRABBING does not respond")
-            result = response.json()
-            make_hash(request_filters, result, )
-            return result, 200
+            return get_latest_data_from_grabbing(request_filters, "http://127.0.0.1:5000/grabbing/latest")
 
         with session_scope() as session:
             try:
@@ -142,18 +131,15 @@ class RealtyResource(Resource):
                 raise BadRequestException(error.args)from error
 
             offset = (page - 1) * per_page
-            print(realty_dict)
-            print(realty_details_dict)
+
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
-                    getattr(RealtyDetails, key).between(
-                        value[GE], value[LE])
+                    getattr(RealtyDetails, key).between(value["ge"], value["le"])
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
                 ]
             ).join(RealtyDetails)
-            print(realty.statement.compile(dialect=postgresql.dialect()))
 
             return RealtySchema(many=True).dump(realty.all()[offset: offset + per_page])
 

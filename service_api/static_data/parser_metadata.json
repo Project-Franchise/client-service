@@ -46,20 +46,20 @@
           },
           "realty_details": {
             "floor": {
-              "ge": "search[filter_float_floor:from]={value}",
-              "le": "search[filter_float_floor:to]={value}"
+              "ge": "search[filter_float_floor:from]",
+              "le": "search[filter_float_floor:to]"
             },
             "floors_number": {
-              "ge": "search[filter_float_total_floors:from]={value}",
-              "le": "search[filter_float_total_floors:to]={value}"
+              "ge": "search[filter_float_total_floors:from]",
+              "le": "search[filter_float_total_floors:to]"
             },
             "square": {
-              "ge": "search[filter_float_total_area:from]={value}",
-              "le": "search[filter_float_total_area:to]={value}"
+              "ge": "search[filter_float_total_area:from]",
+              "le": "search[filter_float_total_area:to]"
             },
             "price": {
-              "ge": "search[filter_float_price:from]={value}",
-              "le": "search[filter_float_price:to]={value}"
+              "ge": "search[filter_float_price:from]",
+              "le": "search[filter_float_price:to]"
             }
           }
         }
@@ -243,7 +243,6 @@
         }
       },
       "operation_type": {
-        "any_operation": "",
         "sale": "prodazha",
         "long_term_rental": "arenda",
         "daily_rental": "posutochno-pochasovo"

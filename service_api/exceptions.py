@@ -44,6 +44,11 @@ class CycleReferenceException(BaseCustomException):
     """
     ...
 
+class BadFiltersException(BaseCustomException):
+    """
+    Raised when there is a problem in filters
+    """
+    ...
 
 class MetaDataError(BaseCustomException):
     """

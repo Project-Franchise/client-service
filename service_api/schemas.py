@@ -165,7 +165,7 @@ class CityToServiceSchema(Schema):
     """
     Schema for CityToService model
     """
-    city_id = fields.Integer()
+    entity_id = fields.Integer()
     service_id = fields.Integer()
     original_id = fields.String(validate=validate.Length(max=255))
 
@@ -174,7 +174,7 @@ class CityAliasSchema(Schema):
     """
     Schema for CityAlias model
     """
-    city_id = fields.Integer()
+    entity_id = fields.Integer()
     alias = fields.String(validate=validate.Length(max=255))
 
 
@@ -182,7 +182,7 @@ class StateToServiceSchema(Schema):
     """
     Schema for StateToService model
     """
-    state_id = fields.Integer()
+    entity_id = fields.Integer()
     service_id = fields.Integer()
     original_id = fields.String(validate=validate.Length(max=255))
 
@@ -191,7 +191,7 @@ class StateAliasSchema(Schema):
     """
     Schema for StateAlias model
     """
-    state_id = fields.Integer()
+    entity_id = fields.Integer()
     alias = fields.String(validate=validate.Length(max=255))
 
 
@@ -199,7 +199,7 @@ class OperationTypeToServiceSchema(Schema):
     """
     Schema for OperationTypeToService model
     """
-    operation_type_id = fields.Integer()
+    entity_id = fields.Integer()
     service_id = fields.Integer()
     original_id = fields.String(validate=validate.Length(max=255))
 
@@ -208,7 +208,7 @@ class OperationTypeAliasSchema(Schema):
     """
     Schema for OperationTypeAlias model
     """
-    operation_type_id = fields.Integer()
+    entity_id = fields.Integer()
     alias = fields.String(validate=validate.Length(max=255))
 
 
@@ -216,7 +216,7 @@ class RealtyTypeToServiceSchema(Schema):
     """
     Schema for RealtyTypeToService model
     """
-    realty_type_id = fields.Integer()
+    entity_id = fields.Integer()
     service_id = fields.Integer()
     original_id = fields.String(validate=validate.Length(max=255))
 
@@ -225,7 +225,7 @@ class RealtyTypeAliasSchema(Schema):
     """
     Schema for RealtyTypeAlias model
     """
-    realty_type_id = fields.Integer()
+    entity_id = fields.Integer()
     alias = fields.String(validate=validate.Length(max=255))
 
 

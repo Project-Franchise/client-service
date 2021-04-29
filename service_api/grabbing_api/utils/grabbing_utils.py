@@ -10,6 +10,7 @@ from typing import Dict
 from marshmallow import ValidationError
 from marshmallow.schema import Schema
 from sqlalchemy.orm import make_transient
+from sqlalchemy import func
 from service_api import Base, session_scope
 from service_api.exceptions import AlreadyInDbException, MetaDataError, ModelNotFoundException, ObjectNotFoundException
 from service_api.models import Realty, RealtyDetails
@@ -138,9 +139,9 @@ def recognize_by_alias(model: Base, alias: str, set_=None):
 
     with session_scope() as session:
         set_ = set_ or session.query(model)
-        obj = set_.join(table_of_aliases,
-                        table_of_aliases.entity_id == model.id).filter(table_of_aliases.alias == alias).first()
+        obj = set_.join(table_of_aliases, table_of_aliases.entity_id == model.id).filter(
+            func.lower(table_of_aliases.alias) == alias.lower()).first()
 
     if obj is None:
-        raise ObjectNotFoundException(desc="Record for alias: {} not found".format(alias))
+        raise ObjectNotFoundException(message="Record for alias: {} not found".format(alias))
     return obj

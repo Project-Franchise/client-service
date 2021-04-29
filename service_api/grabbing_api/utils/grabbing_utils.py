@@ -134,7 +134,7 @@ def recognize_by_alias(model: Base, alias: str, set_=None):
         table_of_aliases = model.aliases.mapper.class_
     except AttributeError as error:
         print(error)
-        raise ModelNotFoundException(desc=f"Model {model} doesn't have aliases attribute") from error
+        raise ModelNotFoundException(desc="Model {} doesn't have aliases attribute".format(model)) from error
 
     with session_scope() as session:
         set_ = set_ or session.query(model)
@@ -142,5 +142,5 @@ def recognize_by_alias(model: Base, alias: str, set_=None):
                         table_of_aliases.entity_id == model.id).filter(table_of_aliases.alias == alias).first()
 
     if obj is None:
-        raise ObjectNotFoundException(desc=f"Record for alias: {alias} not found")
+        raise ObjectNotFoundException(desc="Record for alias: {} not found".format(alias))
     return obj

@@ -218,7 +218,7 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             service = session.query(Service).filter(Service.name == service_name).first()
 
             if service is None:
-                raise ObjectNotFoundException(desc=f"No service {service_name} found")
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
 
         for name, value in service_meta["entities"]["operation_type"].items():
             try:
@@ -257,7 +257,7 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             service = session.query(Service).filter(Service.name == service_name).first()
 
             if service is None:
-                raise ObjectNotFoundException(desc=f"No service {service_name} found")
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
 
         for name, value in service_meta["entities"]["realty_type"].items():
             try:

@@ -55,9 +55,10 @@ class Realty(Base):
     operation_type_id = Column(BIGINT, ForeignKey("operation_type.id",
                                                   ondelete="SET NULL"), nullable=True, unique=False)
     version = Column(TIMESTAMP, nullable=True)
+    service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False, unique=False)
 
     __table_args__ = (
-        UniqueConstraint(city_id, state_id, realty_details_id,
+        UniqueConstraint(city_id, state_id, realty_details_id, service_id,
                          realty_type_id, operation_type_id),
     )
 
@@ -77,6 +78,7 @@ class Service(Base):
     state_to_service = relationship("StateToService", backref="service", lazy=True)
     operation_type_to_service = relationship("OperationTypeToService", backref="service", lazy=True)
     realty_type_to_service = relationship("RealtyTypeToService", backref="service", lazy=True)
+    realty = relationship("Realty", backref="service", lazy=True)
 
 
 class City(Base):

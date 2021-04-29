@@ -151,6 +151,7 @@ class RealtySchema(Schema):
     operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
     version = fields.String()
+    service_id = fields.Integer(load_only=True)
 
 
 class ServiceSchema(Schema):

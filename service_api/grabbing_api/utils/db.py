@@ -71,7 +71,7 @@ class FetchingOrderGenerator:
 
         if node in route:
             raise CycleReferenceException(
-                "Cycle dependencies detected during generating entities order", desc=f"Route: {route}")
+                "Cycle dependencies detected during generating entities order", desc="Route: {}".format(route))
         for next_node in adj[node]:
             if next_node not in visited:
                 self.dfs(adj, next_node, visited, route)
@@ -162,7 +162,7 @@ class LoadersFactory:
                 {key: info["depends_on"] for key, info in self.__METADATA.items()}).get_order(can_be_loaded)
         except CycleReferenceException as error:
             print(error.args, error.desc)
-            raise MetaDataError(desc=f"Metadata that is used: {PATH_TO_CORE_DB_METADATA}") from error
+            raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:

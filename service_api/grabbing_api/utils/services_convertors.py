@@ -96,6 +96,16 @@ class DomRiaOutputConverter(AbstractOutputConverter):
         realty_meta = self.service_metadata["urls"]["single_ad"]["models"]["realty"]
         fields = realty_meta["fields"].copy()
         with session_scope() as session:
+
+            service = session.query(models.Service).filter(
+                models.Service.name == self.service_metadata["name"]
+            ).first()
+
+            if not service:
+                raise Warning("There is no such service named {}".format(service))
+
+            realty_data["service_id"] = service.id
+
             city_characteristics = fields.pop("city_id", None)
 
             for key, characteristics in fields.items():
@@ -105,9 +115,10 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 model = getattr(models, model)
 
                 if not model:
-                    raise Warning(f"There is no such model named {model}")
+                    raise Warning("There is no such model named {}".format(model))
 
                 obj = recognize_by_alias(model, self.response[response_key].capitalize())
+
                 realty_data[key] = obj.id
 
             if city_characteristics:
@@ -175,7 +186,7 @@ class DomRiaInputConverter(AbstractInputConverter):
 
                 service = session.query(models.Service).filter_by(name=self.service_name).first()
                 if service is None:
-                    raise ObjectNotFoundException(f"Service with name: {self.service_name} not found")
+                    raise ObjectNotFoundException("Service with name: {} not found".format(self.service_name))
 
                 xref_record = session.query(model).get({"entity_id": value, "service_id": service.id})
 
@@ -235,8 +246,7 @@ class DomRiaInputConverter(AbstractInputConverter):
         try:
             type_mapper = characteristics[realty_type_name]
         except KeyError as error:
-            print(f"No such realty type name: {realty_type_name}")
-            raise BadFiltersException(f"No such realty type name: {realty_type_name}") from error
+            raise BadFiltersException("No such realty type name: {}".format(realty_type_name)) from error
 
         return type_mapper
 

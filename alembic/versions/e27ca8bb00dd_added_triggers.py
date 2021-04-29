@@ -12,7 +12,7 @@ from alembic import op
 from service_api.grabbing_api.constants import PATH_TO_TRIGGERS_SQL
 
 revision = 'e27ca8bb00dd'
-down_revision = 'bacd8b480d1c'
+down_revision = '513deced8d8c'
 branch_labels = None
 depends_on = None
 

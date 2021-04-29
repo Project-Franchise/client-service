@@ -8,7 +8,7 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 
 
 from service_api import CACHE, api_, models, schemas, session_scope
-from service_api.constants import URLS, ADDITIONAL_FILTERS
+from service_api.constants import URLS, ADDITIONAL_FILTERS, VERSION_DEFAULT_TIMESTAMP
 from service_api.client_api.utils import get_latest_data_from_grabbing
 from service_api.errors import BadRequestException
 from service_api.grabbing_api.constants import GE, LE
@@ -54,7 +54,7 @@ class CityResource(Resource):
             raise BadRequestException(errors)
 
         with session_scope() as session:
-            city = session.query(models.City).filter_by(**filters).all()
+            city = session.query(models.City).filter_by(**filters, version=VERSION_DEFAULT_TIMESTAMP).all()
         return schemas.CitySchema(many=True).dump(city), 200
 
 
@@ -70,7 +70,7 @@ class StatesResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            states = session.query(models.State).all()
+            states = session.query(models.State).filter_by(version=VERSION_DEFAULT_TIMESTAMP).all()
         return schemas.StateSchema(many=True).dump(states), 200
 
 
@@ -86,7 +86,7 @@ class StateResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            state = session.query(models.State).filter_by(id=state_id).first()
+            state = session.query(models.State).filter_by(id=state_id,version=VERSION_DEFAULT_TIMESTAMP).first()
         return schemas.StateSchema().dump(state), 200
 
 
@@ -140,7 +140,7 @@ class RealtyResource(Resource):
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
                 ]
-            ).join(RealtyDetails)
+            ).filter_by(version=VERSION_DEFAULT_TIMESTAMP).join(RealtyDetails)
 
             return RealtySchema(many=True).dump(realty.all()[offset: offset + per_page])
 
@@ -157,7 +157,7 @@ class RealtyTypesResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            realty_types = session.query(models.RealtyType).all()
+            realty_types = session.query(models.RealtyType).filter_by(version=VERSION_DEFAULT_TIMESTAMP).all()
         return schemas.RealtyTypeSchema(many=True).dump(realty_types), 200
 
 
@@ -173,7 +173,8 @@ class RealtyTypeResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id).first()
+            realty_type = session.query(models.RealtyType).filter_by(id=realty_type_id,
+                                                                     version=VERSION_DEFAULT_TIMESTAMP).first()
         return schemas.RealtyTypeSchema().dump(realty_type), 200
 
 
@@ -189,7 +190,7 @@ class OperationTypesResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            operation_types = session.query(models.OperationType).filter_by().all()
+            operation_types = session.query(models.OperationType).filter_by(version=VERSION_DEFAULT_TIMESTAMP).all()
         return schemas.OperationTypeSchema(many=True).dump(operation_types), 200
 
 
@@ -205,7 +206,7 @@ class OperationTypeResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            operation_type = session.query(models.OperationType).filter_by(
+            operation_type = session.query(models.OperationType).filter_by(version=VERSION_DEFAULT_TIMESTAMP,
                 id=operation_type_id).first()
         return schemas.OperationTypeSchema().dump(operation_type), 200
 

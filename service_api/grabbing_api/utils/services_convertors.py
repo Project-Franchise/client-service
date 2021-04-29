@@ -12,7 +12,7 @@ from service_api import CACHE, models, session_scope
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
-                                                DOMRIA_TOKEN, PATH_TO_METADATA)
+                                                DOMRIA_TOKEN, PATH_TO_METADATA, GE, LE)
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 
 
@@ -196,8 +196,8 @@ class DomRiaInputConverter(AbstractInputConverter):
                 new_params[key] = value
                 continue
 
-            value_from = value.get("values")["ge"]
-            value_to = value.get("values")["le"]
+            value_from = value.get("values")[GE]
+            value_to = value.get("values")[LE]
 
             key_from = char_description["ge"].format(value_from=str(parameter))
             key_to = char_description["le"].format(value_to=str(parameter))

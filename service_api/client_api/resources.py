@@ -11,6 +11,7 @@ from service_api import CACHE, api_, models, schemas, session_scope
 from service_api.constants import URLS, ADDITIONAL_FILTERS
 from service_api.client_api.utils import get_latest_data_from_grabbing
 from service_api.errors import BadRequestException
+from service_api.grabbing_api.constants import GE, LE
 from service_api.models import Realty, RealtyDetails
 from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
     RealtyDetailsInputSchema
@@ -134,7 +135,7 @@ class RealtyResource(Resource):
 
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
-                    getattr(RealtyDetails, key).between(value["ge"], value["le"])
+                    getattr(RealtyDetails, key).between(value[GE], value[LE])
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()

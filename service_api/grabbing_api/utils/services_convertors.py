@@ -117,8 +117,7 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 if not model:
                     raise Warning("There is no such model named {}".format(model))
 
-                obj = recognize_by_alias(model, self.response[response_key].capitalize())
-
+                obj = recognize_by_alias(model, self.response[response_key])
                 realty_data[key] = obj.id
 
             if city_characteristics:

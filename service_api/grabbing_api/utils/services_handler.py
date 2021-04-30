@@ -55,7 +55,8 @@ class DomriaServiceHandler(AbstractServiceHandler):
         )
 
         params = DomRiaInputConverter(self.post_body, search_realty_metadata, service_name=service_name).convert()
-
+        for param, val in search_realty_metadata["optional"].items():
+            params[param] = val
         params[self.metadata["token_name"]] = DOMRIA_TOKEN
         response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
         if response.status_code != 200:

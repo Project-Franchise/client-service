@@ -1,9 +1,7 @@
 """
 Models for service_api
 """
-from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey,
-                        ForeignKeyConstraint, PrimaryKeyConstraint,
-                        UniqueConstraint)
+from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey, PrimaryKeyConstraint, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
 from service_api import Base
@@ -33,6 +31,7 @@ class RealtyDetails(Base):
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False, unique=True)
+    version = Column(TIMESTAMP, nullable=True)
 
 
 class Realty(Base):
@@ -50,13 +49,16 @@ class Realty(Base):
     id = Column(BIGINT, primary_key=True)
     city_id = Column(BIGINT, ForeignKey("city.id", ondelete="SET NULL"), nullable=True, unique=False)
     state_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False, unique=False)
-    realty_details_id = Column(BIGINT, ForeignKey("realty_details.id", ondelete="CASCADE"), nullable=False, unique=True)
+    realty_details_id = Column(BIGINT, ForeignKey(
+        "realty_details.id", ondelete="CASCADE"), nullable=False, unique=False)
     realty_type_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False, unique=False)
     operation_type_id = Column(BIGINT, ForeignKey("operation_type.id",
                                                   ondelete="SET NULL"), nullable=True, unique=False)
+    version = Column(TIMESTAMP, nullable=True)
+    service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False, unique=False)
 
     __table_args__ = (
-        UniqueConstraint(city_id, state_id, realty_details_id,
+        UniqueConstraint(city_id, state_id, realty_details_id, service_id,
                          realty_type_id, operation_type_id),
     )
 
@@ -76,6 +78,7 @@ class Service(Base):
     state_to_service = relationship("StateToService", backref="service", lazy=True)
     operation_type_to_service = relationship("OperationTypeToService", backref="service", lazy=True)
     realty_type_to_service = relationship("RealtyTypeToService", backref="service", lazy=True)
+    realty = relationship("Realty", backref="service", lazy=True)
 
 
 class City(Base):
@@ -91,15 +94,14 @@ class City(Base):
     name = Column(VARCHAR(128), nullable=False)
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
-    state_id = Column(BIGINT, nullable=False)
-    state_version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    state_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     realty = relationship("Realty", backref="city", lazy=True)
-    service_repr = relationship("CityToService", backref="city", lazy=True)
+    service_repr = relationship("CityToService", backref="entity", lazy=True)
     aliases = relationship("CityAlias", backref="city_type", lazy=True)
 
-    __table_args__ = (UniqueConstraint("self_id", "version"),
-                      ForeignKeyConstraint(['state_id', 'state_version'],
-                                           ['state.self_id', 'state.version'], ondelete="CASCADE"),)
+    __table_args__ = (
+        UniqueConstraint("self_id", "version"),
+    )
 
 
 class CityToService(Base):
@@ -112,15 +114,12 @@ class CityToService(Base):
 
     __tablename__ = "city_to_service"
 
-    city_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    entity_id = Column(BIGINT, ForeignKey("city.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
     original_id = Column(VARCHAR(255), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("city_id", "service_id"),
-        ForeignKeyConstraint(['city_id', 'version'],
-                             ['city.self_id', 'city.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "service_id"),
     )
 
 
@@ -133,14 +132,11 @@ class CityAlias(Base):
 
     __tablename__ = "city_alias"
 
-    city_id = Column(BIGINT, nullable=False)
+    entity_id = Column(BIGINT, ForeignKey("city.id", ondelete="CASCADE"), nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
     __table_args__ = (
-        PrimaryKeyConstraint("city_id", "alias"),
-        ForeignKeyConstraint(['city_id', 'version'],
-                             ['city.self_id', 'city.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "alias"),
     )
 
 
@@ -158,7 +154,7 @@ class State(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="state", lazy=True)
-    service_repr = relationship("StateToService", backref="state", lazy=True)
+    service_repr = relationship("StateToService", backref="entity", lazy=True)
     aliases = relationship("StateAlias", backref="state_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
@@ -174,16 +170,12 @@ class StateToService(Base):
 
     __tablename__ = "state_to_service"
 
-    state_id = Column(BIGINT,  nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
-
+    entity_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
     original_id = Column(VARCHAR(255), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("state_id", "service_id"),
-        ForeignKeyConstraint(['state_id', 'version'],
-                             ['state.self_id', 'state.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "service_id"),
     )
 
 
@@ -196,14 +188,11 @@ class StateAlias(Base):
 
     __tablename__ = "state_alias"
 
-    state_id = Column(BIGINT,  nullable=False)
+    entity_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
     __table_args__ = (
-        PrimaryKeyConstraint("state_id", "alias"),
-        ForeignKeyConstraint(['state_id', 'version'],
-                             ['state.self_id', 'state.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "alias"),
     )
 
 
@@ -221,7 +210,7 @@ class OperationType(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="operation_type", lazy=True)
-    service_repr = relationship("OperationTypeToService", backref="operation_type", lazy=True)
+    service_repr = relationship("OperationTypeToService", backref="entity", lazy=True)
     aliases = relationship("OperationTypeAlias", backref="operation_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
@@ -237,15 +226,12 @@ class OperationTypeToService(Base):
 
     __tablename__ = "operation_type_to_service"
 
-    operation_type_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    entity_id = Column(BIGINT, ForeignKey("operation_type.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
     original_id = Column(VARCHAR(255), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("operation_type_id", "service_id"),
-        ForeignKeyConstraint(['operation_type_id', 'version'],
-                             ['operation_type.self_id', 'operation_type.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "service_id"),
     )
 
 
@@ -258,14 +244,11 @@ class OperationTypeAlias(Base):
 
     __tablename__ = "operation_type_alias"
 
-    operation_type_id = Column(BIGINT, nullable=False)
+    entity_id = Column(BIGINT, ForeignKey("operation_type.id", ondelete="CASCADE"), nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
     __table_args__ = (
-        PrimaryKeyConstraint("operation_type_id", "alias"),
-        ForeignKeyConstraint(['operation_type_id', 'version'],
-                             ['operation_type.self_id', 'operation_type.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "alias"),
     )
 
 
@@ -283,7 +266,7 @@ class RealtyType(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="realty_type", lazy=True)
-    service_repr = relationship("RealtyTypeToService", backref="realty_type", lazy=True)
+    service_repr = relationship("RealtyTypeToService", backref="entity", lazy=True)
     aliases = relationship("RealtyTypeAlias", backref="realty_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
@@ -299,15 +282,12 @@ class RealtyTypeToService(Base):
 
     __tablename__ = "realty_type_to_service"
 
-    realty_type_id = Column(BIGINT,  nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    entity_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
     original_id = Column(VARCHAR(255), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("realty_type_id", "service_id"),
-        ForeignKeyConstraint(['realty_type_id', 'version'],
-                             ['realty_type.self_id', 'realty_type.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "service_id"),
     )
 
 
@@ -320,12 +300,9 @@ class RealtyTypeAlias(Base):
 
     __tablename__ = "realty_type_alias"
 
-    realty_type_id = Column(BIGINT, nullable=False)
+    entity_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
 
     __table_args__ = (
-        PrimaryKeyConstraint("realty_type_id", "alias"),
-        ForeignKeyConstraint(['realty_type_id', 'version'],
-                             ['realty_type.self_id', 'realty_type.version'], ondelete="CASCADE"),
+        PrimaryKeyConstraint("entity_id", "alias"),
     )

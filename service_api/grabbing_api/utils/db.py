@@ -8,7 +8,7 @@ from marshmallow.exceptions import ValidationError
 
 from service_api import session_scope
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
-                                    ResponseNotOkException)
+                                    ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
 from service_api.models import RealtyDetails, Realty
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
@@ -60,7 +60,7 @@ class FetchingOrderGenerator:
 
         return visited
 
-    def dfs(self, adj: Dict, node: str,  visited: List, route: List) -> List:
+    def dfs(self, adj: Dict, node: str, visited: List, route: List) -> List:
         """
         Bypass the graph using dfs
         :param: adj (Adjacency structure) Dict
@@ -71,7 +71,7 @@ class FetchingOrderGenerator:
 
         if node in route:
             raise CycleReferenceException(
-                "Cycle dependencies detected during generating entities order", desc=f"Route: {route}")
+                "Cycle dependencies detected during generating entities order", desc="Route: {}".format(route))
         for next_node in adj[node]:
             if next_node not in visited:
                 self.dfs(adj, next_node, visited, route)
@@ -91,21 +91,27 @@ class RealtyLoadersFactory:
         :params: List[Dict] - list of realty
         :return: None - the only loader's responsibility is to load realty and realty details to the database
         """
-        for entity in all_data:
+        for realty, realty_details_id in all_data:
             try:
-                load_data(entity["realty_details_id"], RealtyDetails, RealtyDetailsSchema)
+                load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
             except KeyError as error:
                 print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
             with session_scope() as session:
                 realty_details_id = session.query(RealtyDetails). \
-                    filter_by(**entity["realty_details_id"]).first().id
-                entity["realty_details_id"] = realty_details_id
+                    filter_by(**realty_details_id).first().id
+                realty["realty_details_id"] = realty_details_id
             try:
-                load_data(entity, Realty, RealtySchema)
+                load_data(RealtySchema(), realty, Realty)
 
             except KeyError as error:
                 print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class LoadersFactory:
@@ -156,10 +162,11 @@ class LoadersFactory:
                 {key: info["depends_on"] for key, info in self.__METADATA.items()}).get_order(can_be_loaded)
         except CycleReferenceException as error:
             print(error.args, error.desc)
-            raise MetaDataError(desc=f"Metadata that is used: {PATH_TO_CORE_DB_METADATA}") from error
+            raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
+            print(entity)
             try:
                 statuses[entity] = {"status": "SUCCESSFUL",
                                     "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}

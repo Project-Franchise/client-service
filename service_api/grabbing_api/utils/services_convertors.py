@@ -8,22 +8,25 @@ from typing import Dict
 
 import requests
 from redis import RedisError
-
-from service_api import models, session_scope, CACHE
+from service_api import CACHE, models, session_scope
 from service_api.errors import BadRequestException
-from service_api.grabbing_api.constants import CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME, \
-    DOMRIA_TOKEN, GE, LE
+from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
+from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
+                                                DOMRIA_TOKEN, PATH_TO_METADATA, GE, LE)
+from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 
 
 class AbstractInputConverter(ABC):
     """
     Abstract class for input converters
     """
-    def __init__(self, post_body: Dict, service_metadata: Dict):
+
+    def __init__(self, post_body: Dict, service_metadata: Dict, service_name):
         """
         Sets self values and except parsing errors
         """
-        self.metadata = service_metadata
+        self.search_realty_metadata = service_metadata
+        self.service_name = service_name
         try:
             self.characteristics = post_body["characteristics"]
             self.realty = post_body["realty_filters"]
@@ -39,27 +42,21 @@ class AbstractInputConverter(ABC):
         :return: Dict
         """
 
-    @abstractmethod
-    def get_url(self, params: Dict) -> Dict:
-        """
-        Prepares params to send a request to the server
-        """
-
 
 class AbstractOutputConverter(ABC):
     """
     Abstract class for output converters
     """
 
-    def __init__(self, response: requests.models.Response, service_metadata: Dict):
+    def __init__(self, response: Dict, service_metadata: Dict):
         """
         Sets self values
         """
-        self.response = response.json()
-        self.metadata = service_metadata
+        self.response = response
+        self.service_metadata = service_metadata
 
     @abstractmethod
-    def make_realty_data(self,  realty_details: Dict) -> Dict:
+    def make_realty_data(self) -> Dict:
         """
         Converts a response to a dictionary ready for writing realty in the database
         """
@@ -81,42 +78,54 @@ class DomRiaOutputConverter(AbstractOutputConverter):
         Composes data for RealtyDetails model
         """
 
-        realty_details_meta = self.metadata["model_characteristics"]["realty_details_columns"]
-        values = [self.response.get(val["response_key"], None) for val in realty_details_meta.values()]
-        
+        realty_details_meta = self.service_metadata["urls"]["single_ad"]["models"]["realty_details"]
+
+        values = [self.response.get(val, None) for val in realty_details_meta["fields"].values()]
+
         realty_details_data = dict(zip(
-            realty_details_meta.keys(), values
+            realty_details_meta["fields"].keys(), values
         ))
 
         return realty_details_data
 
-    def make_realty_data(self, realty_details: Dict) -> Dict:
+    def make_realty_data(self) -> Dict:
         """
         Composes data for Realty model
         """
         realty_data = {}
-        realty_meta = self.metadata["model_characteristics"]["realty_columns"]
-
+        realty_meta = self.service_metadata["urls"]["single_ad"]["models"]["realty"]
+        fields = realty_meta["fields"].copy()
         with session_scope() as session:
-            for key, characteristics in realty_meta.items():
+
+            service = session.query(models.Service).filter(
+                models.Service.name == self.service_metadata["name"]
+            ).first()
+
+            if not service:
+                raise Warning("There is no such service named {}".format(service))
+
+            realty_data["service_id"] = service.id
+
+            city_characteristics = fields.pop("city_id", None)
+
+            for key, characteristics in fields.items():
                 model = characteristics["model"]
                 response_key = characteristics["response_key"]
 
                 model = getattr(models, model)
+
                 if not model:
-                    raise Warning(f"There is no such model named {model}")
+                    raise Warning("There is no such model named {}".format(model))
 
-                if key != "realty_details_id":
-                    model_to_service = model.service_repr.mapper.class_
-                    service_repr = session.query(model_to_service).filter(
-                        str(self.response[response_key]) == model_to_service.original_id
-                    ).first()
-                    realty_data[key] = session.query(model).filter(
-                        model.service_repr.contains(service_repr)
-                    ).first().self_id
+                obj = recognize_by_alias(model, self.response[response_key].capitalize())
 
-                else:
-                    realty_data[key] = realty_details
+                realty_data[key] = obj.id
+
+            if city_characteristics:
+                cities_by_state = session.query(models.City).filter_by(state_id=realty_data["state_id"])
+                realty_data["city_id"] = recognize_by_alias(models.City,
+                                                            self.response[city_characteristics["response_key"]],
+                                                            cities_by_state).id
 
         return realty_data
 
@@ -130,81 +139,128 @@ class DomRiaInputConverter(AbstractInputConverter):
         """
         Convert user params to send a request to the server
         """
-        params = self.convert_named_filed()
-
-        type_mapper = self.process_characteristics(CACHED_CHARACTERISTICS_EXPIRE_TIME, CACHED_CHARACTERISTICS)
-        params.update(dict((type_mapper.get(key, key), {"name": key, "values": value})
-                           for key, value in self.characteristics.items()))
-
+        params = self.convert_named_field(self.realty)
+        params.update(self.convert_characteristic_fields(self.characteristics))
         params["page"] = (self.additional["page"] // self.additional["page_ads_number"]) + 1
-        url, params = self.get_url(params)
+        return params
 
-        return url, params
+    def convert_characteristic_fields(self, characteristic_filters: Dict):
+        """
+        Convert domria params (characteristics) to number representation
+        """
+        with session_scope() as session:
+            realty_type_aliases = session.query(models.RealtyType).get(self.realty["realty_type_id"]).aliases
 
-    def convert_named_filed(self):
+        type_mapper = self.process_characteristics(realty_type_aliases, CACHED_CHARACTERISTICS_EXPIRE_TIME,
+                                                   CACHED_CHARACTERISTICS)
+
+        fields, filters = self.search_realty_metadata["models"]["realty_details"]["fields"], {}
+
+        for key, value in characteristic_filters.items():
+            service_key = fields[key]["response_key"]
+            if service_key in type_mapper:
+                filters[type_mapper[service_key]] = {"name": key, "values": value}
+
+        characteristic_filters = self.build_new_dict(filters, self.search_realty_metadata["models"]["realty_details"])
+
+        return characteristic_filters
+
+    def convert_named_field(self, realty_filters: Dict):
         """
         Convert fields names to service names and replace id for its api
         """
         params = {}
         with session_scope() as session:
-            for param, characteristics in self.metadata["model_characteristics"]["realty_columns"].items():
-                if not characteristics["request_key"]:
+
+            realty_meta = self.search_realty_metadata["models"]["realty"]["fields"]
+
+            for param, value in realty_filters.items():
+                if param not in realty_meta:
                     continue
 
-                model = characteristics["model"]
-                service_param = characteristics["request_key"]
-                model = getattr(models, model)
-                if not model:
-                    raise Warning(f"There is no such model named {model}")
+                model = realty_meta[param]["model"]
+                model = getattr(models, model, None)
 
-                if param in self.realty:
-                    obj = session.query(model).filter(model.id == self.realty[param]).first()
-                    if obj is None:
-                        raise BadRequestException("No such filters!")
-                    params[service_param] = obj.service_repr[0].original_id  # change to aliases logic
+                if model is None:
+                    raise MetaDataError(message="No model in {param} field of search for realty model")
+
+                service = session.query(models.Service).filter_by(name=self.service_name).first()
+                if service is None:
+                    raise ObjectNotFoundException("Service with name: {} not found".format(self.service_name))
+
+                xref_record = session.query(model).get({"entity_id": value, "service_id": service.id})
+
+                params[realty_meta[param]["request_key"]] = xref_record.original_id
 
         return params
 
-    def get_url(self, params: Dict) -> tuple[str, dict]:
-        """
-        Get all items from DOMRIA by parameters
-        :return: str
-        :return: Dict
-        """
-        new_params = self.build_new_dict(params)
-
-        new_params["api_key"] = DOMRIA_TOKEN  # RESOURCE_ID
-        url = "{base_url}{search}".format(
-            base_url=self.metadata["base_url"],
-            search=self.metadata["url_rules"]["search"]["url_prefix"],
-        )
-
-        return url, new_params
-
-    def build_new_dict(self, params: dict) -> dict:
+    def build_new_dict(self, params: dict, realty_details_metadata) -> dict:
         """
         Method, that forms dictionary with parameters for the request
         ::
         """
-        new_params = {}
+        new_params, fields_desc = {}, realty_details_metadata["fields"]
         for parameter, value in params.items():
-            if isinstance(parameter, int):
-                char_description = self.metadata["model_characteristics"]["realty_details_columns"]
-                if isinstance(value, dict):
-                    value_from = value.get("values")[GE]
-                    value_to = value.get("values")[LE]
+            char_description = fields_desc[value["name"]]
+            if char_description["eq"] is not None:
+                key = char_description["eq"].format(value=str(parameter))
+                new_params[key] = value
+                continue
 
-                    key_from = char_description[value.get("name")]["ge"].format(value_from=str(parameter))
-                    key_to = char_description[value.get("name")]["le"].format(value_to=str(parameter))
+            value_from = value.get("values")[GE]
+            value_to = value.get("values")[LE]
 
-                    new_params[key_from] = value_from
-                    new_params[key_to] = value_to
-                else:
-                    key = char_description[value.get("name")]["eq"].format(value_from=str(parameter))
-                    new_params[key] = value
-            else:
-                new_params[parameter] = params.get(parameter)
+            key_from = char_description["ge"].format(value_from=str(parameter))
+            key_to = char_description["le"].format(value_to=str(parameter))
+
+            new_params[key_from] = value_from
+            new_params[key_to] = value_to
+
         return new_params
+
+    def process_characteristics(self, realty_type_aliases, redis_ex_time: Dict, redis_characteristics: str):
+        """
+        Retrieves data from Redis and converts it to the required format for the request
+        """
+        cached_characteristics = CACHE.get(redis_characteristics)
+        if cached_characteristics is None:
+            try:
+                characteristics = DomriaCharacteristicLoader().load()
+                CACHE.set(redis_characteristics,
+                          json.dumps(characteristics),
+                          datetime.timedelta(**redis_ex_time))
+            except json.JSONDecodeError as error:
+                raise json.JSONDecodeError from error
+            except RedisError as error:
+                raise RedisError(error.args) from error
+        else:
+            characteristics = json.loads(cached_characteristics)
+
+        for alias in realty_type_aliases:
+            if alias.alias in characteristics:
+                realty_type_name = alias.alias
+                break
+        else:
+            raise ObjectNotFoundException("Name for realty from aliases type not found")
+
+        try:
+            type_mapper = characteristics[realty_type_name]
+        except KeyError as error:
+            raise BadFiltersException("No such realty type name: {}".format(realty_type_name)) from error
+
+        return type_mapper
+
+
+class DomriaCharacteristicLoader:
+    """
+    Loader for domria characteristics
+    """
+
+    def __init__(self) -> None:
+        try:
+            self.metadata = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
+        except MetaDataError:
+            print("Coundn't load metadata")
 
     @staticmethod
     def decode_characteristics(dct: Dict) -> Dict:
@@ -221,7 +277,7 @@ class DomRiaInputConverter(AbstractInputConverter):
             return items
         return dct
 
-    def get_characteristics(self, characteristics: Dict = None) -> Dict:
+    def load(self, characteristics: Dict = None) -> Dict:
         """
         Function to get characteristics
         and retrieve them in dict
@@ -230,25 +286,23 @@ class DomRiaInputConverter(AbstractInputConverter):
         if characteristics is None:
             characteristics = {}
 
-        characteristics_data_set = self.metadata["url_characteristics"]
+        chars_metadata, realty_types = self.metadata["urls"]["options"], self.metadata["entities"]["realty_type"]
 
         params = {"api_key": DOMRIA_TOKEN}
+
         for param, val in self.metadata["optional"].items():
             params[param] = val
         params["operation_type"] = 1
 
-        for element in characteristics_data_set["realty_type"]:
-            url = "{base_url}{options}".format(
+        for element in self.metadata["entities"]["realty_type"]:
+            url = "{base_url}{condition}{options}".format(
                 base_url=self.metadata["base_url"],
-                options=self.metadata["url_rules"]["options"]["url_prefix"]
+                condition=chars_metadata["condition"],
+                options=chars_metadata["url_prefix"]
             )
 
-            params["realty_type"] = characteristics_data_set["realty_type"][element]
-            req = requests.get(
-                url=url,
-                params=params,
-                headers={'User-Agent': 'Mozilla/5.0'}
-            )
+            params[chars_metadata["fields"]["realty_type"]] = realty_types[element]
+            req = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
 
             requested_characteristics = req.json(object_hook=self.decode_characteristics)
             requested_characteristics = [
@@ -260,53 +314,3 @@ class DomRiaInputConverter(AbstractInputConverter):
                 named_characteristics.update(character)
             characteristics.update({element: named_characteristics})
         return characteristics
-
-    def process_characteristics(self, redis_ex_time: Dict, redis_characteristics: str):
-        """
-        Retrieves data from Redis and converts it to the required format for the request
-        """
-        cached_characteristics = CACHE.get(redis_characteristics)
-        if cached_characteristics is None:
-            try:
-                characteristics = self.get_characteristics()
-                CACHE.set(redis_characteristics,
-                          json.dumps(characteristics),
-                          datetime.timedelta(**redis_ex_time))
-            except json.JSONDecodeError as error:
-                raise json.JSONDecodeError from error
-            except RedisError as error:
-                raise RedisError(error.args) from error
-        else:
-            characteristics = json.loads(cached_characteristics)
-
-        with session_scope() as session:
-            realty_type = session.query(models.RealtyType).get(
-                self.realty.get("realty_type_id"))
-
-        if realty_type is None:
-            raise BadRequestException("Invalid realty_type while getting latest data")
-
-        try:
-            with session_scope() as session:
-                realty_to_service = session.query(models.RealtyTypeToService).filter(
-                    self.realty["realty_type_id"] == models.RealtyTypeToService.realty_type_id
-                ).first()
-            if realty_to_service is None:
-                raise BadRequestException("Invalid realty_type while getting latest data")
-
-            rt_name = None
-            for realty_type, id_ in self.metadata["url_characteristics"]["realty_type"].items():
-                if str(id_) == realty_to_service.original_id:
-                    rt_name = realty_type
-                    break
-
-            if rt_name is None:
-                raise BadRequestException("Invalid realty_type while getting latest data")
-
-            type_mapper = characteristics.get(rt_name)
-
-        except Exception as error:
-            print(error)
-            raise
-
-        return type_mapper

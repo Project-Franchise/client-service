@@ -28,8 +28,8 @@ class LatestDataResource(Resource):
         post_body = request.get_json()
         metadata = open_metadata(PATH_TO_METADATA)
         for service_name in metadata:
-            service_metadata = metadata[service_name]
-            request_to_domria = DomriaServiceHandler(post_body, service_metadata)
+            realty_service_metadata = metadata[service_name]
+            request_to_domria = DomriaServiceHandler(post_body, realty_service_metadata)
             response = request_to_domria.get_latest_data()
             factory = RealtyLoadersFactory()
             try:

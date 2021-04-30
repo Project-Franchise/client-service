@@ -12,9 +12,8 @@ from sqlalchemy import select
 
 from service_api import session_scope
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
-from service_api.exceptions import (ModelNotFoundException,
-                                    ObjectNotFoundException,
-                                    ResponseNotOkException)
+from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
+                                    ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
     DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
@@ -107,7 +106,11 @@ class CSVLoader(BaseLoader):
         Load models from csv file located in path_to_file
         """
         for row in self.data:
-            load_data(row, self.model, self.model_schema)
+            try:
+                load_data(self.model_schema(), row, self.model)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class CityLoader(CSVLoader):
@@ -209,30 +212,34 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
         """
         Loads data to operation type cross reference service table
         """
-        for service_name, service_meta in self.metadata.items():
-            with session_scope() as session:
-                service = session.query(Service).filter(Service.name == service_name).first()
+        service_name = "DOMRIA API"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(Service.name == service_name).first()
 
-                if service is None:
-                    raise ObjectNotFoundException(desc=f"No service {service_name} found")
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
 
-            for name, value in service_meta["url_characteristics"]["operation_type"].items():
-                try:
-                    obj = recognize_by_alias(OperationType, name)
-                except ModelNotFoundException as error:
-                    print(error)
-                    continue
-                except ObjectNotFoundException as error:
-                    print(error)
-                    continue
+        for name, value in service_meta["entities"]["operation_type"].items():
+            try:
+                obj = recognize_by_alias(OperationType, name)
+            except ModelNotFoundException as error:
+                print(error)
+                continue
+            except ObjectNotFoundException as error:
+                print(error)
+                continue
 
-                data = {
-                    "operation_type_id": obj.self_id,
-                    "service_id": service.id,
-                    "original_id": str(value)
-                }
-
-                load_data(data, OperationTypeToService, OperationTypeToServiceSchema)
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class RealtyTypeXRefServicesLoader(XRefBaseLoader):
@@ -244,30 +251,34 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
         """
         Loads data to realty type cross reference service table
         """
-        for service_name, service_meta in self.metadata.items():
-            with session_scope() as session:
-                service = session.query(Service).filter(Service.name == service_name).first()
+        service_name = "DOMRIA API"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(Service.name == service_name).first()
 
-                if service is None:
-                    raise ObjectNotFoundException(desc=f"No service {service_name} found")
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
 
-            for name, value in service_meta["url_characteristics"]["realty_type"].items():
-                try:
-                    obj = recognize_by_alias(RealtyType, name)
-                except ModelNotFoundException as error:
-                    print(error)
-                    continue
-                except ObjectNotFoundException as error:
-                    print(error)
-                    continue
+        for name, value in service_meta["entities"]["realty_type"].items():
+            try:
+                obj = recognize_by_alias(RealtyType, name)
+            except ModelNotFoundException as error:
+                print(error)
+                continue
+            except ObjectNotFoundException as error:
+                print(error)
+                continue
 
-                data = {
-                    "realty_type_id": obj.self_id,
-                    "service_id": service.id,
-                    "original_id": str(value)
-                }
-
-                load_data(data, RealtyTypeToService, RealtyTypeToServiceSchema)
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
 
 
 class CityXRefServicesLoader(XRefBaseLoader):
@@ -281,7 +292,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
         """
         state_ids: List[int] = args[0]
         with session_scope() as session:
-            smt = select(State.self_id).order_by(State.self_id)
+            smt = select(State.id).order_by(State.id)
             state_ids = state_ids or [state_id for state_id, *_ in session.execute(smt).all()]
         status = {}
 
@@ -309,40 +320,37 @@ class CityXRefServicesLoader(XRefBaseLoader):
             raise KeyError("No parameter state_id provided in function load")
 
         with session_scope() as session:
-            state = session.query(State).filter(State.self_id == state_id,
+            state = session.query(State).filter(State.id == state_id,
                                                 State.version == VERSION_DEFAULT_TIMESTAMP).first()
 
         if state is None:
             raise ObjectNotFoundException(message="No such state_id in DB")
 
-        domria_cities_meta = self.domria_meta["url_rules"]["cities"]
+        domria_cities_meta = self.domria_meta["urls"]["cities"]
 
         with session_scope() as session:
-            service = session.query(Service).filter_by(name="DOMRIA API").first()
+            service = session.query(Service).filter_by(name=self.domria_meta["name"]).first()
             if service is None:
-                raise ObjectNotFoundException(desc="No service Domria found")
-            state_xref = session.query(StateToService).get({"state_id": state_id, "service_id": service.id})
+                raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
+            state_xref = session.query(StateToService).get({"entity_id": state_id, "service_id": service.id})
             if state_xref is None:
-                raise ObjectNotFoundException(desc="No StateXrefService obj  found")
+                raise ObjectNotFoundException(desc="No StateXrefService obj found")
 
-            set_by_state = session.query(City).join(CityAlias, CityAlias.city_id ==
-                                                    City.self_id).where(City.state_id == state_id)
+            set_by_state = session.query(City).filter_by(state_id=state_id)
 
-        response = requests.get("{}{}/{}".format(self.domria_meta["base_url"],
-                                                 domria_cities_meta["url_prefix"],
+        response = requests.get("{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
                                                  state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
-                                    "api_key": DOMRIA_TOKEN
-                                }
-                                )
+                                    self.domria_meta["token_name"]: DOMRIA_TOKEN})
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
         counter = 0
         for city_from_service in response.json():
+
             try:
-                city = recognize_by_alias(City, city_from_service[domria_cities_meta["filters"]["name"]], set_by_state)
+                city = recognize_by_alias(City, city_from_service[domria_cities_meta["fields"]["name"]], set_by_state)
             except ModelNotFoundException as error:
                 print(error)
                 continue
@@ -351,15 +359,18 @@ class CityXRefServicesLoader(XRefBaseLoader):
                 continue
 
             data = {
-                "city_id": city.self_id,
+                "entity_id": city.id,
                 "service_id": service.id,
-                "original_id": str(city_from_service["cityID"])
+                "original_id": str(city_from_service[domria_cities_meta["fields"]["original_id"]])
             }
 
             try:
-                load_data(data, CityToService, CityToServiceSchema)
+                load_data(CityToServiceSchema(), data, CityToService)
             except ValidationError as error:
                 print(error)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
             else:
                 counter += 1
 
@@ -378,7 +389,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
         :return: int
         """
 
-        domria_states_meta = self.domria_meta["url_rules"]["states"]
+        domria_states_meta = self.domria_meta["urls"]["states"]
 
         params = {
             "lang_id": self.domria_meta["optional"]["lang_id"],
@@ -386,11 +397,11 @@ class StateXRefServicesLoader(XRefBaseLoader):
         }
 
         with session_scope() as session:
-            service = session.query(Service).filter_by(name="DOMRIA API").first()
+            service = session.query(Service).filter_by(name=self.domria_meta["name"]).first()
             if service is None:
-                raise ObjectNotFoundException(desc="No service Domria found")
+                raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
 
-        url = "{}{}".format(self.domria_meta["base_url"], domria_states_meta["url_prefix"])
+        url = "{}/{}".format(self.domria_meta["base_url"], domria_states_meta["url_prefix"])
         response = requests.get(url, params=params)
         if not response.ok:
             raise RequestException(response.text)
@@ -398,7 +409,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
         counter = 0
         for service_state in response.json():
             try:
-                state = recognize_by_alias(State, service_state[domria_states_meta["filters"]["name"]])
+                state = recognize_by_alias(State, service_state[domria_states_meta["fields"]["name"]])
             except ModelNotFoundException as error:
                 print(error)
                 continue
@@ -407,15 +418,18 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 continue
 
             data = {
-                "state_id": state.self_id,
+                "entity_id": state.id,
                 "service_id": service.id,
-                "original_id": str(service_state["stateID"])
+                "original_id": str(service_state[domria_states_meta["fields"]["original_id"]])
             }
 
             try:
-                load_data(data, StateToService, StateToServiceSchema)
+                load_data(StateToServiceSchema(), data, StateToService)
             except ValidationError as error:
                 print(error)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
             else:
                 counter += 1
 

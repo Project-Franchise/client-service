@@ -33,5 +33,3 @@ PATH_TO_STATE_ALIASES_CSV = os.sep.join(["service_api", "static_data", "state_al
 
 PATH_TO_CITIES_CSV = os.sep.join(["service_api", "static_data", "cities.csv"])
 PATH_TO_CITIES_ALIASES_CSV = os.sep.join(["service_api", "static_data", "city_aliases.csv"])
-
-PATH_TO_TRIGGERS_SQL = os.sep.join(["service_api", "static_data", "sql", "triggers.sql"])

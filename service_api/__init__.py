@@ -42,7 +42,7 @@ session = Session_factory()
 
 # entrypoint for caching using redis
 CACHE = redis.Redis(
-    host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"])
+    host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"], decode_responses=True)
 
 
 @contextmanager
@@ -64,4 +64,4 @@ def session_scope() -> Iterator[Session]:
             raise
 
 
-from . import client_api, grabbing_api
+from . import commands, client_api, grabbing_api

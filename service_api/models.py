@@ -78,6 +78,7 @@ class Service(Base):
     state_to_service = relationship("StateToService", backref="service", lazy=True)
     operation_type_to_service = relationship("OperationTypeToService", backref="service", lazy=True)
     realty_type_to_service = relationship("RealtyTypeToService", backref="service", lazy=True)
+    category_to_service = relationship("CategoryToService", backref="service", lazy=True)
     realty = relationship("Realty", backref="service", lazy=True)
 
 
@@ -263,6 +264,7 @@ class RealtyType(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(255), nullable=False)
+    category_id = Column(BIGINT, ForeignKey("category.id", ondelete="CASCADE"), nullable=False)
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="realty_type", lazy=True)
@@ -301,6 +303,62 @@ class RealtyTypeAlias(Base):
     __tablename__ = "realty_type_alias"
 
     entity_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False)
+    alias = Column(VARCHAR(255), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("entity_id", "alias"),
+    )
+
+
+class Category(Base):
+    """
+    Category model
+    :param: name str
+    """
+
+    __tablename__ = "category"
+
+    id = Column(BIGINT, primary_key=True)
+    name = Column(VARCHAR(255), nullable=False)
+    self_id = Column(BIGINT, nullable=False)
+    version = Column(TIMESTAMP, nullable=False,
+                     default=VERSION_DEFAULT_TIMESTAMP)
+    service_repr = relationship(
+        "CategoryToService", backref="entity", lazy=True)
+    aliases = relationship("CategoryAlias", backref="realty_type", lazy=True)
+
+    __table_args__ = (UniqueConstraint("self_id", "version"),)
+
+
+class CategoryToService(Base):
+    """
+    Category to service model
+    :param: category_id int
+    :param: service_id int
+    :param: original_id int
+    """
+
+    __tablename__ = "category_to_service"
+
+    entity_id = Column(BIGINT, ForeignKey("category.id", ondelete="CASCADE"), nullable=False)
+    service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
+    original_id = Column(VARCHAR(255), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint("entity_id", "service_id"),
+    )
+
+
+class CategoryAlias(Base):
+    """
+    Category alias model
+    :param: category int
+    :param: alias str
+    """
+
+    __tablename__ = "category_alias"
+
+    entity_id = Column(BIGINT, ForeignKey("category.id", ondelete="CASCADE"), nullable=False)
     alias = Column(VARCHAR(255), nullable=False)
 
     __table_args__ = (

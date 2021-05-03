@@ -82,6 +82,16 @@ class RealtyTypeSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String(validate=validate.Length(max=255))
+    category_id = fields.Integer(load_only=True)
+    self_id = fields.Integer(validate=validate_non_negative_field, required=True)
+
+
+class CategorySchema(Schema):
+    """
+    Schema for Category model
+    """
+    id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
     self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
@@ -230,6 +240,23 @@ class RealtyTypeAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
+class CategoryToServiceSchema(Schema):
+    """
+    Schema for CategoryToService model
+    """
+    entity_id = fields.Integer()
+    service_id = fields.Integer()
+    original_id = fields.String(validate=validate.Length(max=255))
+
+
+class CategoryAliasSchema(Schema):
+    """
+    Schema for CategoryAlias model
+    """
+    entity_id = fields.Integer()
+    alias = fields.String(validate=validate.Length(max=255))
+
+
 def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details
@@ -241,8 +268,7 @@ def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) 
 
         filters.append({key: params.get(key)
                         for key in params
-                        if hasattr(objects, key) or
-                        (isinstance(objects, list) and key in objects)})
+                        if hasattr(objects, key) or (isinstance(objects, list) and key in objects)})
 
     if sum(map(len, filters)) != len(params):
         raise BadRequestException("Undefined parameters found")

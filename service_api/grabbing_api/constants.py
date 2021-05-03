@@ -26,6 +26,9 @@ PATH_TO_OPERATION_TYPE_ALIASES_CSV = os.sep.join(["service_api", "static_data", 
 PATH_TO_REALTY_TYPE_CSV = os.sep.join(["service_api", "static_data", "realty_type.csv"])
 PATH_TO_REALTY_TYPE_ALIASES_CSV = os.sep.join(["service_api", "static_data", "realty_type_aliases.csv"])
 
+PATH_TO_CATEGORIES_CSV = os.sep.join(["service_api", "static_data", "categories.csv"])
+PATH_TO_CATEGORY_ALIASES_CSV = os.sep.join(["service_api", "static_data", "category_aliases.csv"])
+
 PATH_TO_SERVICES_CSV = os.sep.join(["service_api", "static_data", "services.csv"])
 
 PATH_TO_STATE_CSV = os.sep.join(["service_api", "static_data", "states.csv"])

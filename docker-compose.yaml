@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   app:
-    profiles: ["dev-python"]
+    profiles: ["dev-python", "python-celery"]
     build: .
     ports:
       - "5000:5000"
@@ -18,10 +18,33 @@ services:
       - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
       - REDIS_IP=redis
       - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - CELERY_BACKEND_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+
+  celery_worker:
+    profiles: ["dev-python", "python-celery"]
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .flask_env
+    environment:
+      - CS_HOST_IP=0.0.0.0
+      - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
+      - REDIS_IP=redis
+      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - CELERY_BACKEND_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    command: celery -A tasks worker -B --loglevel=INFO --logfile=./app/logs/celery_logs.log
 
   db:
     image: postgres:13.2
-    profiles: ["dev", "dev-python"]
+    profiles: ["dev", "dev-python", "python-celery"]
     ports:
       - "5482:5432"
     environment:
@@ -34,7 +57,7 @@ services:
       - agregattor:0.0.0.0
 
   redis:
-    profiles: ["dev", "dev-python"]
+    profiles: ["dev", "dev-python", "python-celery"]
     image: redis:6.2
     ports:
       - "6379:6379"

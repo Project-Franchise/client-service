@@ -63,5 +63,4 @@ def session_scope() -> Iterator[Session]:
             session.rollback()
             raise
 
-
-from . import commands, client_api, grabbing_api
+from . import client_api, grabbing_api, celery_tasks

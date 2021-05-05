@@ -26,3 +26,8 @@ CACHED_REQUESTS_EXPIRE_TIME = {
 ADDITIONAL_FILTERS = ["page", "page_ads_number"]
 PARSING_REQUEST = {"le": "to", "ge": "from", "eq": None}
 VERSION_DEFAULT_TIMESTAMP = "01-01-0001"
+
+PAGE_LIMIT = 10_000
+CRONTAB_FILLING_DB_WITH_RALTIES_SCHEDULE = {
+    "minute": "*"
+}

@@ -6,14 +6,15 @@ from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
 
-from service_api import session_scope
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
-                                    ResponseNotOkException, AlreadyInDbException)
+                                    ResponseNotOkException, LimitBoundError)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
-from service_api.models import RealtyDetails, Realty
-from service_api.schemas import RealtyDetailsSchema, RealtySchema
+from service_api.grabbing_api.constants import (PATH_TO_METADATA)
+from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
+from service_api.grabbing_api.utils.grabbing_utils import open_metadata
+from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
 from . import core_data_loaders
-from .grabbing_utils import open_metadata, load_data
+from .grabbing_utils import open_metadata
 
 
 class FetchingOrderGenerator:
@@ -80,41 +81,7 @@ class FetchingOrderGenerator:
         return visited
 
 
-class RealtyLoadersFactory:
-    """
-    Load realty data to db
-    """
-
-    def load(self, all_data: List[Dict]) -> None:
-        """
-         Calls mapped loader classes for keys in params dict input
-        :params: List[Dict] - list of realty
-        :return: None - the only loader's responsibility is to load realty and realty details to the database
-        """
-        for realty, realty_details_id in all_data:
-            try:
-                load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
-            except KeyError as error:
-                print(error.args)
-            except AlreadyInDbException as error:
-                print(error)
-                continue
-
-            with session_scope() as session:
-                realty_details_id = session.query(RealtyDetails). \
-                    filter_by(**realty_details_id).first().id
-                realty["realty_details_id"] = realty_details_id
-            try:
-                load_data(RealtySchema(), realty, Realty)
-
-            except KeyError as error:
-                print(error.args)
-            except AlreadyInDbException as error:
-                print(error)
-                continue
-
-
-class LoadersFactory:
+class CoreDataLoadersFactory:
     """
     Load core data to db based on str input
     """
@@ -183,3 +150,36 @@ class LoadersFactory:
             statuses[entity] = {"status": "FAILED", "data": error_message}
 
         return statuses
+
+
+class RealtyFetcher:
+    """
+    Fetch realties from services based on input filters
+    """
+
+    def __init__(self, filters: Dict) -> None:
+        """
+        Loads metadata
+        :param: filters - data for filtering realties in services
+        """
+        self.filters = filters
+        self.metadata = open_metadata(PATH_TO_METADATA)
+
+    def fetch(self, filters=None) -> List:
+        """
+        Invoke handlers for fetching realties from services
+        :param: filters - data for filtering realties in services
+                by default None or replace filters passed in __init__
+        """
+        self.filters = filters or self.filters
+        for service_name in self.metadata:
+            realty_service_metadata = self.metadata[service_name]
+            request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
+            response = request_to_domria.get_latest_data()
+            loader = RealtyLoader()
+            try:
+                loader.load(response)
+            except LimitBoundError as error:
+                print(error)
+
+        return response

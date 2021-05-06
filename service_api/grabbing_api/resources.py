@@ -4,8 +4,7 @@ Resources and urls for grabbing service
 
 from flask import request
 from flask_restful import Resource
-
-from service_api import api_
+from service_api import API
 from service_api.constants import URLS
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
@@ -40,4 +39,4 @@ class LatestDataResource(Resource):
             return response
 
 
-api_.add_resource(LatestDataResource, URLS["GRABBING"]["GET_LATEST_URL"])
+API.add_resource(LatestDataResource, URLS["GRABBING"]["GET_LATEST_URL"])

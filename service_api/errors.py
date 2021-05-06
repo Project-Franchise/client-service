@@ -1,10 +1,7 @@
 """
 Module to handle HTTP status codes
 """
-from flask import jsonify
-
-from service_api import flask_app
-
+from flask import jsonify, current_app as flask_app
 
 class BadRequestException(Exception):
     """

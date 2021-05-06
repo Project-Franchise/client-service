@@ -4,6 +4,7 @@ Flask config
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+__all__ = ["config_factory"]
 
 class Config:
     """
@@ -44,3 +45,10 @@ class TestingConfig(Config):
     """
     TESTING = True
     SQLALCHEMY_DATABASE_URL = os.environ['DATABASE_TEST_URL']
+
+
+config_factory  = {
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig
+}

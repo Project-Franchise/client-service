@@ -30,7 +30,7 @@
     },
     "realty_types": {
       "loader": "RealtyTypeLoader",
-      "depends_on": []
+      "depends_on": ["categories"]
     },
     "realty_type_aliases": {
       "loader": "RealtyTypeAliasesLoader",
@@ -51,6 +51,18 @@
     "operation_type_xref": {
       "loader": "OperationTypeXRefServicesLoader",
       "depends_on": ["operation_type_aliases", "operation_types", "services"]
+    },
+    "categories": {
+      "loader": "CategoryLoader",
+      "depends_on": []
+    },
+    "category_aliases": {
+      "loader": "CategoryAliasesLoader",
+      "depends_on": ["categories"]
+    },
+    "category_xref": {
+      "loader": "CategoryXRefServicesLoader",
+      "depends_on": ["category_aliases", "categories", "services"]
     }
   }
 }

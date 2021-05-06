@@ -23,7 +23,6 @@ CACHED_REQUESTS_EXPIRE_TIME = {
     "hours": 2
 }
 
-ADDITIONAL_FILTERS = ["page", "page_ads_number"]
 PARSING_REQUEST = {"le": "to", "ge": "from", "eq": None}
 VERSION_DEFAULT_TIMESTAMP = "01-01-0001"
 

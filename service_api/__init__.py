@@ -2,6 +2,7 @@
 Module that contains client_api, grabbing_api, models, schemas
 """
 
+import logging
 import os
 from contextlib import contextmanager
 from typing import Iterator
@@ -11,7 +12,9 @@ from flask import Flask
 from flask_restful import Api, output_json
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+
+from logs.logger import setup_logger
 
 
 class UnicodeApi(Api):
@@ -45,6 +48,9 @@ CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"], decode_responses=True)
 
 
+LOGGER = setup_logger('app_logger', 'logs/service.log', logging.DEBUG)
+
+
 @contextmanager
 def session_scope() -> Iterator[Session]:
     """
@@ -63,4 +69,4 @@ def session_scope() -> Iterator[Session]:
             session.rollback()
             raise
 
-from . import client_api, grabbing_api, celery_tasks, commands
+from . import celery_tasks, client_api, commands, grabbing_api

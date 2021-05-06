@@ -10,7 +10,7 @@ from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
 
-from service_api import session_scope
+from service_api import session_scope, LOGGER
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
@@ -111,7 +111,7 @@ class CSVLoader(BaseLoader):
             try:
                 load_data(self.model_schema(), row, self.model)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -246,10 +246,10 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 obj = recognize_by_alias(OperationType, name)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -260,7 +260,7 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -285,10 +285,10 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 obj = recognize_by_alias(RealtyType, name)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -299,7 +299,7 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -326,10 +326,10 @@ class CategoryXRefServicesLoader(XRefBaseLoader):
             try:
                 obj = recognize_by_alias(Category, name)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -340,7 +340,7 @@ class CategoryXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(CategoryToServiceSchema(), data, CategoryToService)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -363,11 +363,11 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 status[state_id] = self.load_cities_by_state(state_id=state_id)
             except ObjectNotFoundException as error:
-                print(error.desc)
+                LOGGER.error(error.desc)
             except KeyError as error:
-                print(error)
+                LOGGER.error(error)
             except ResponseNotOkException as error:
-                print(error)
+                LOGGER.error(error)
 
         return status
 
@@ -415,10 +415,10 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 city = recognize_by_alias(City, city_from_service[domria_cities_meta["fields"]["name"]], set_by_state)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -430,9 +430,9 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(CityToServiceSchema(), data, CityToService)
             except ValidationError as error:
-                print(error)
+                LOGGER.error(error)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1
@@ -474,10 +474,10 @@ class StateXRefServicesLoader(XRefBaseLoader):
             try:
                 state = recognize_by_alias(State, service_state[domria_states_meta["fields"]["name"]])
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -489,9 +489,9 @@ class StateXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(StateToServiceSchema(), data, StateToService)
             except ValidationError as error:
-                print(error)
+                LOGGER.error(error)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1

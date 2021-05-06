@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
 
+from service_api import LOGGER
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
                                     ResponseNotOkException, LimitBoundError)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
@@ -128,12 +129,12 @@ class CoreDataLoadersFactory:
             ordered_entities = FetchingOrderGenerator(
                 {key: info["depends_on"] for key, info in self.__METADATA.items()}).get_order(can_be_loaded)
         except CycleReferenceException as error:
-            print(error.args, error.desc)
+            LOGGER.critical(error.args, error.desc)
             raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
-            print(entity)
+            LOGGER.debug(entity)
             try:
                 statuses[entity] = {"status": "SUCCESSFUL",
                                     "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}

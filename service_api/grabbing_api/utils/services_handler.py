@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List
 
 import requests
+from service_api import LOGGER
 from service_api.errors import BadRequestException
 from service_api.exceptions import MetaDataError, ResponseNotOkException
 from service_api.grabbing_api.constants import DOMRIA_TOKEN
@@ -47,7 +48,6 @@ class DomriaServiceHandler(AbstractServiceHandler):
         except KeyError as error:
             raise MetaDataError from error
 
-
         url = "{base_url}{condition}{search}".format(
             base_url=self.metadata["base_url"],
             condition=search_realty_metadata["condition"],
@@ -68,7 +68,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
                                                         self.post_body["additional"].pop("page_ads_number"),
                                                         self.metadata)
         except KeyError as error:
-            print(error.args)
+            LOGGER.error(error.args)
             raise BadRequestException(error.args) from error
 
     @staticmethod
@@ -97,13 +97,13 @@ class DomriaServiceHandler(AbstractServiceHandler):
             try:
                 realty_details = service_converter.make_realty_details_data()
             except json.JSONDecodeError:
-                print("An error occurred while converting data from Dom Ria for realty_details model")
+                LOGGER.error("An error occurred while converting data from Dom Ria for realty_details model")
                 raise
 
             try:
                 realty_data = service_converter.make_realty_data()
             except json.JSONDecodeError:
-                print("An error occurred while converting data from Dom Ria for realty model")
+                LOGGER.error("An error occurred while converting data from Dom Ria for realty model")
                 raise
             realty_realty_details.append((realty_data, realty_details))
         return realty_realty_details

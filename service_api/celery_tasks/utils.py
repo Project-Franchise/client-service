@@ -3,6 +3,7 @@ Celery config module
 """
 from celery import Celery
 from celery.schedules import crontab
+from service_api import LOGGER
 from service_api.constants import CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE
 
 
@@ -13,7 +14,7 @@ def setup_periodic_tasks(sender, **kwargs):
     """
     from .tasks import fill_db_with_realties
     sender.add_periodic_task(crontab(**CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE), fill_db_with_realties.s())
-    print("Task sheduled")
+    LOGGER.info("Task sheduled")
 
 def make_celery(flask_app):
     """

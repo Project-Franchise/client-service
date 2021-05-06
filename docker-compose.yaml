@@ -25,12 +25,13 @@ services:
     profiles: ["dev-python", "python-celery"]
     build: .
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:
       - ./:/app
     depends_on:
       - db
       - redis
+      - app
     env_file:
       - .flask_env
     environment:
@@ -40,7 +41,7 @@ services:
       - DOMRIA_API_KEY=${DOMRIA_API_KEY}
       - CELERY_BACKEND_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
-    command: celery -A tasks worker -B --loglevel=INFO --logfile=./app/logs/celery_logs.log
+    command: celery -A service_api.celery_tasks.tasks.celery_app worker -B 
 
   db:
     image: postgres:13.2
@@ -53,8 +54,7 @@ services:
       - POSTGRES_DB=Realty_DB
     volumes:
       - flask_db_volume:/var/lib/postgresql/data
-    external_links:
-      - agregattor:0.0.0.0
+
 
   redis:
     profiles: ["dev", "dev-python", "python-celery"]

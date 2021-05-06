@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
 
-from service_api import session_scope
+from service_api import session_scope, LOGGER
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
@@ -95,9 +95,9 @@ class RealtyLoadersFactory:
             try:
                 load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
             except KeyError as error:
-                print(error.args)
+                LOGGER.error(error.args)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
             with session_scope() as session:
@@ -108,9 +108,9 @@ class RealtyLoadersFactory:
                 load_data(RealtySchema(), realty, Realty)
 
             except KeyError as error:
-                print(error.args)
+                LOGGER.error(error.args)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -161,12 +161,12 @@ class LoadersFactory:
             ordered_entities = FetchingOrderGenerator(
                 {key: info["depends_on"] for key, info in self.__METADATA.items()}).get_order(can_be_loaded)
         except CycleReferenceException as error:
-            print(error.args, error.desc)
+            LOGGER.critical(error.args, error.desc)
             raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
-            print(entity)
+            LOGGER.debug(entity)
             try:
                 statuses[entity] = {"status": "SUCCESSFUL",
                                     "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}

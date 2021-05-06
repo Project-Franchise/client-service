@@ -5,14 +5,20 @@ from typing import Dict
 
 from celery import group
 from sqlalchemy import select
+
 from service_api import flask_app, session_scope
 from service_api.celery_tasks.utils import make_celery
 from service_api.constants import PAGE_LIMIT
+from service_api.errors import BadRequestException
+from service_api.exceptions import BadFiltersException
 from service_api.grabbing_api.utils.db import RealtyFetcher
-from service_api.models import RealtyType, State
+from service_api.models import (AdditionalFilters, Realty, RealtyDetails,RealtyType, State)
+from service_api.schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema,
+                                 filters_validation)
 
 
 celery_app = make_celery(flask_app)
+
 
 @celery_app.task
 def load_realties_by_filters(filters: Dict):
@@ -22,9 +28,27 @@ def load_realties_by_filters(filters: Dict):
     :param filters: Dict - dict of filters
     :returns: None
     """
+
     page = 1
     while page < PAGE_LIMIT:
-        if not RealtyFetcher(filters).fetch():
+        filters["page"] = page
+        filters["page_ads_number"] = 100
+        try:
+            realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
+                filters,
+                [(Realty, RealtySchema),
+                 (RealtyDetails, RealtyDetailsInputSchema),
+                 (AdditionalFilters, AdditionalFilterParametersSchema)])
+        except BadFiltersException as error:
+            raise BadRequestException from error
+
+        request_filters = {
+            "realty_filters": realty_dict,
+            "characteristics": realty_details_dict,
+            "additional": additional_params_dict
+        }
+
+        if not RealtyFetcher(request_filters).fetch(limit_data=True):
             break
         page += 1
 

@@ -3,7 +3,7 @@ Celery config module
 """
 from celery import Celery
 from celery.schedules import crontab
-from service_api.constants import CRONTAB_FILLING_DB_WITH_RALTIES_SCHEDULE
+from service_api.constants import CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE
 
 
 def setup_periodic_tasks(sender, **kwargs):
@@ -12,7 +12,8 @@ def setup_periodic_tasks(sender, **kwargs):
     Should be used in  `on_after_configure.connect`
     """
     from .tasks import fill_db_with_realties
-    sender.add_periodic_task(crontab(**CRONTAB_FILLING_DB_WITH_RALTIES_SCHEDULE), fill_db_with_realties.s())
+    sender.add_periodic_task(crontab(**CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE), fill_db_with_realties.s())
+    print("Task sheduled")
 
 def make_celery(flask_app):
     """
@@ -21,7 +22,7 @@ def make_celery(flask_app):
     :returns: celery app instance
     """
     broker_url, backend_url = flask_app.config.get("CELERY_BROKER_URL"), flask_app.config.get("CELERY_BACKEND_URL")
-   
+
     celery_app = Celery("service_api", backend=backend_url or "redis://127.0.0.1:6379/0",
                         broker=broker_url or "redis://127.0.0.1:6379/0")
     celery_app.conf.update(flask_app.config)

@@ -165,15 +165,27 @@ class RealtyFetcher:
         self.filters = filters
         self.metadata = open_metadata(PATH_TO_METADATA)
 
-    def fetch(self, filters=None) -> List:
+    def fetch(self, filters=None, limit_data=False) -> List:
         """
         Invoke handlers for fetching realties from services
         :param: filters - data for filtering realties in services
                 by default None or replace filters passed in __init__
         """
         self.filters = filters or self.filters
+        realties = []
         for service_name in self.metadata:
             realty_service_metadata = self.metadata[service_name]
+
+            if limit_data:
+                page_numbers_limit = realty_service_metadata["limits"]["page_numbers_limit_le"]
+                page_ads_limit = realty_service_metadata["limits"]["page_ads_number_le"]
+                additional = self.filters["additional"]
+                if page_numbers_limit and page_ads_limit:
+                    if additional["page"] > page_numbers_limit:
+                        continue
+                    additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
+
+
             request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
             response = request_to_domria.get_latest_data()
             loader = RealtyLoader()
@@ -181,5 +193,6 @@ class RealtyFetcher:
                 loader.load(response)
             except LimitBoundError as error:
                 print(error)
+            realties.extend(response)
 
-        return response
+        return realties

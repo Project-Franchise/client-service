@@ -97,7 +97,7 @@ class RealtyLoadersFactory:
             except KeyError as error:
                 LOGGER.error(error.args)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
             with session_scope() as session:
@@ -110,7 +110,7 @@ class RealtyLoadersFactory:
             except KeyError as error:
                 LOGGER.error(error.args)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -161,7 +161,7 @@ class LoadersFactory:
             ordered_entities = FetchingOrderGenerator(
                 {key: info["depends_on"] for key, info in self.__METADATA.items()}).get_order(can_be_loaded)
         except CycleReferenceException as error:
-            LOGGER.error(error.args, error.desc)
+            LOGGER.critical(error.args, error.desc)
             raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
         statuses = {key: {"status": "Unknown entity"} for key in unknown}

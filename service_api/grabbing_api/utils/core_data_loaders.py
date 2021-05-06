@@ -110,7 +110,7 @@ class CSVLoader(BaseLoader):
             try:
                 load_data(self.model_schema(), row, self.model)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -259,7 +259,7 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -298,7 +298,7 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -339,7 +339,7 @@ class CategoryXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(CategoryToServiceSchema(), data, CategoryToService)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -431,7 +431,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1
@@ -490,7 +490,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:
-                LOGGER.error(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1

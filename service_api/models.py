@@ -31,7 +31,7 @@ class RealtyDetails(Base):
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False, unique=True)
-    version = Column(TIMESTAMP, nullable=True)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
 
 
 class Realty(Base):
@@ -54,7 +54,7 @@ class Realty(Base):
     realty_type_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False, unique=False)
     operation_type_id = Column(BIGINT, ForeignKey("operation_type.id",
                                                   ondelete="SET NULL"), nullable=True, unique=False)
-    version = Column(TIMESTAMP, nullable=True)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False, unique=False)
 
     __table_args__ = (
@@ -94,7 +94,7 @@ class City(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     state_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     realty = relationship("Realty", backref="city", lazy=True)
     service_repr = relationship("CityToService", backref="entity", lazy=True)
@@ -153,7 +153,7 @@ class State(Base):
     name = Column(VARCHAR(128), nullable=False)
     city = relationship("City", backref="state", lazy=True)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="state", lazy=True)
     service_repr = relationship("StateToService", backref="entity", lazy=True)
     aliases = relationship("StateAlias", backref="state_type", lazy=True)
@@ -209,7 +209,7 @@ class OperationType(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(255), nullable=False)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="operation_type", lazy=True)
     service_repr = relationship("OperationTypeToService", backref="entity", lazy=True)
     aliases = relationship("OperationTypeAlias", backref="operation_type", lazy=True)
@@ -266,7 +266,7 @@ class RealtyType(Base):
     name = Column(VARCHAR(255), nullable=False)
     category_id = Column(BIGINT, ForeignKey("category.id", ondelete="CASCADE"), nullable=False)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False, default=VERSION_DEFAULT_TIMESTAMP)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="realty_type", lazy=True)
     service_repr = relationship("RealtyTypeToService", backref="entity", lazy=True)
     aliases = relationship("RealtyTypeAlias", backref="realty_type", lazy=True)
@@ -321,7 +321,7 @@ class Category(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(255), nullable=False)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=False,
+    version = Column(TIMESTAMP, nullable=True,
                      default=VERSION_DEFAULT_TIMESTAMP)
     service_repr = relationship(
         "CategoryToService", backref="entity", lazy=True)
@@ -364,3 +364,11 @@ class CategoryAlias(Base):
     __table_args__ = (
         PrimaryKeyConstraint("entity_id", "alias"),
     )
+
+
+class AdditionalFilters:
+    """
+    Class with all additional attributes for filters
+    """
+    page = None
+    page_ads_number = None

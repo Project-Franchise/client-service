@@ -13,6 +13,8 @@ class Config:
     TESTING = False
     CSRF_ENABLED = True
     SQLALCHEMY_DATABASE_URL = os.environ['DATABASE_URL']
+    CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+    CELERY_BACKEND_URL = os.environ['CELERY_BACKEND_URL']
 
 
 class ProductionConfig(Config):

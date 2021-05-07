@@ -49,7 +49,7 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
             original_url=realty_details_record.original_url, version=realty_details_record.version).first()
 
     if realty_details is not None:
-        LOGGER.debug("version: " + str(realty_details.version))
+
         incoming_data = model_schema.dump(realty_details_record)
         db_data = model_schema.dump(realty_details)
         incoming_data.pop("id")
@@ -57,7 +57,7 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
         if incoming_data == db_data:
             raise AlreadyInDbException
         with session_scope() as session:
-            LOGGER.debug("they aren't equal")
+
             session.expire_on_commit = False
             session.query(model).filter_by(
                 original_url=realty_details.original_url, version=realty_details.version).update(
@@ -74,7 +74,7 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
             realty_record.realty_details_id = new_realty_details_id
             realty_record.id = None
             del realty_record.id
-            LOGGER.debug("needed id: " + str(model_schema.dump(realty_details).get("id")))
+
             session.add(realty_record)
 
         with session_scope() as session:
@@ -91,13 +91,12 @@ def _(model_schema: RealtySchema, data: Dict, model: Realty):
     try:
         valid_data = model_schema.load(data)
         realty_record = model(**valid_data)
-        LOGGER.debug("record.realty_details_id: " + str(realty_record.realty_details_id))
+        LOGGER.debug("record.realty_details_id: %s", str(realty_record.realty_details_id))
     except ValidationError as error:
         LOGGER.error(error)
         # raise
     with session_scope() as session:
-        realty = session.query(model).filter_by(
-            realty_details_id=realty_record.realty_details_id).first()
+        realty = session.query(model).filter_by(realty_details_id=realty_record.realty_details_id).first()
     if realty is not None:
         raise AlreadyInDbException
     with session_scope() as session:
@@ -110,7 +109,7 @@ def open_metadata(path: str) -> Dict:
     Open file with metadata and return content
     """
     try:
-        with open(path) as meta_file:
+        with open(path, encoding="utf-8") as meta_file:
             metadata = json.load(meta_file)
     except json.JSONDecodeError as error:
         LOGGER.error(error)

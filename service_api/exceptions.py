@@ -66,3 +66,8 @@ class AlreadyInDbException(BaseCustomException):
 
     def __init__(self, *args, message="Already in db", **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
+
+class LimitBoundError(BaseCustomException):
+    """
+    Raised when limit bound is reached
+    """

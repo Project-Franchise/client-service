@@ -5,3 +5,5 @@ set DATABASE_URL=postgresql://lv-python-mc:575@127.0.0.1:5482/Realty_DB
 set DATABASE_TEST_URL=postgresql://lv-python-mc:575@127.0.0.1:5482/test
 set REDIS_IP=127.0.0.1
 set REDIS_PORT=6379
+set CELERY_BACKEND_URL=redis://127.0.0.1:6379/0
+set CELERY_BROKER_URL=redis://127.0.0.1:6379/0

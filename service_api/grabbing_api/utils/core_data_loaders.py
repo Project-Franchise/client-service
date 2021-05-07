@@ -20,12 +20,13 @@ from service_api.grabbing_api.constants import (
     PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
-                                Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService)
+                                Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
+                                Realty, RealtyDetails)
 from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
-                                 CategoryToServiceSchema)
+                                 CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 
 
@@ -496,3 +497,36 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 counter += 1
 
         return counter
+
+class RealtyLoader:
+    """
+    Load realty data to db
+    """
+
+    def load(self, all_data: List[Dict]) -> None:
+        """
+         Calls mapped loader classes for keys in params dict input
+        :params: List[Dict] - list of realty
+        :return: None - the only loader's responsibility is to load realty and realty details to the database
+        """
+        for realty, realty_details_id in all_data:
+            try:
+                load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
+            except KeyError as error:
+                print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
+
+            with session_scope() as session:
+                realty_details_id = session.query(RealtyDetails). \
+                    filter_by(**realty_details_id).first().id
+                realty["realty_details_id"] = realty_details_id
+            try:
+                load_data(RealtySchema(), realty, Realty)
+
+            except KeyError as error:
+                print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue

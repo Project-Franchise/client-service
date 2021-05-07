@@ -2,33 +2,14 @@
 Schemas for models with fields validation
 """
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from marshmallow import Schema, ValidationError, fields, validate
 
 from service_api import Base
 from service_api.constants import PARSING_REQUEST
 from service_api.errors import BadRequestException
-
-
-class IntOrDictField(fields.Field):
-    """
-    Custom field for validating int or dict elements
-    """
-
-    def _deserialize(self, value, attr, data, **kwargs):
-        if isinstance(value, (float, int)):
-            return value
-
-        if isinstance(value, dict) and value.get("to") and value.get("from"):
-            return value
-
-        raise ValidationError("Field should be int or dict with 'to' and 'from' keys")
-
-    def _validate(self, value):
-        if isinstance(value, dict):
-            return super()._validate(value.get("to")), super()._validate(value.get("from"))
-        return super()._validate(value)
+from service_api.exceptions import BadFiltersException
 
 
 def validate_non_negative_field(value):
@@ -158,7 +139,7 @@ class RealtySchema(Schema):
     realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
     realty_type_id = fields.Integer(load_only=True, required=True)
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
-    operation_type_id = fields.Integer(load_only=True, required=True)
+    operation_type_id = fields.Integer(load_only=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
     version = fields.String()
     service_id = fields.Integer(load_only=True)
@@ -257,26 +238,23 @@ class CategoryAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
-def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) -> List[Dict]:
+def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details
     :param: dict
     :return: List[dict]
     """
     filters = []
-    for objects in models:
-
-        filters.append({key: params.get(key)
-                        for key in params
-                        if hasattr(objects, key) or (isinstance(objects, list) and key in objects)})
+    models, schemes = zip(*validators)
+    filters = [{key: params.get(key) for key in params if hasattr(objects, key)} for objects in models]
 
     if sum(map(len, filters)) != len(params):
-        raise BadRequestException("Undefined parameters found")
+        raise BadFiltersException("Undefined parameters found")
     iter_filters = iter(filters)
     for scheme in schemes:
         dict_to_validate = next(iter_filters)
         try:
             scheme().load(dict_to_validate)
         except ValidationError as error:
-            raise BadRequestException from error
+            raise BadFiltersException("Filters validation error. Bad filters", desc=error.args) from error
     return filters

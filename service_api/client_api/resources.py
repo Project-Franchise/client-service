@@ -8,11 +8,12 @@ from redis.exceptions import ConnectionError as RedisConnectionError
 
 
 from service_api import CACHE, api_, models, schemas, session_scope
-from service_api.constants import URLS, ADDITIONAL_FILTERS, VERSION_DEFAULT_TIMESTAMP
+from service_api.constants import URLS, VERSION_DEFAULT_TIMESTAMP
 from service_api.client_api.utils import get_latest_data_from_grabbing
 from service_api.errors import BadRequestException
+from service_api.exceptions import BadFiltersException
 from service_api.grabbing_api.constants import GE, LE
-from service_api.models import Realty, RealtyDetails
+from service_api.models import Realty, RealtyDetails,  AdditionalFilters
 from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
     RealtyDetailsInputSchema
 
@@ -86,7 +87,7 @@ class StateResource(Resource):
         :return: json(schema)
         """
         with session_scope() as session:
-            state = session.query(models.State).filter_by(id=state_id,version=VERSION_DEFAULT_TIMESTAMP).first()
+            state = session.query(models.State).filter_by(id=state_id, version=VERSION_DEFAULT_TIMESTAMP).first()
         return schemas.StateSchema().dump(state), 200
 
 
@@ -109,10 +110,14 @@ class RealtyResource(Resource):
         if not isinstance(latest, bool):
             raise BadRequestException("Latest field is not bool")
 
-        realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
-            filters,
-            [Realty, RealtyDetails, ADDITIONAL_FILTERS],
-            [RealtySchema, RealtyDetailsInputSchema, AdditionalFilterParametersSchema])
+        try:
+            realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
+                filters,
+                [(Realty, RealtySchema),
+                (RealtyDetails, RealtyDetailsInputSchema),
+                (AdditionalFilters, AdditionalFilterParametersSchema)])
+        except BadFiltersException as error:
+            raise BadRequestException from error
 
         request_filters = {
             "realty_filters": realty_dict,
@@ -207,7 +212,7 @@ class OperationTypeResource(Resource):
         """
         with session_scope() as session:
             operation_type = session.query(models.OperationType).filter_by(version=VERSION_DEFAULT_TIMESTAMP,
-                id=operation_type_id).first()
+                                                                           id=operation_type_id).first()
         return schemas.OperationTypeSchema().dump(operation_type), 200
 
 

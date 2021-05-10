@@ -3,6 +3,10 @@
     "base_url": "https://developers.ria.com/dom",
     "name": "DOMRIA API",
     "token_name": "api_key",
+    "limits": {
+      "page_ads_number_le": 1,
+      "page_numbers_limit_le": 1
+    },
     "optional": {
       "lang_id": 4
     },

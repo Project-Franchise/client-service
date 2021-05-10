@@ -21,7 +21,8 @@ from service_api.grabbing_api.constants import (
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
-                                RealtyDetails, Realty)
+                                Realty, RealtyDetails)
+
 from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,

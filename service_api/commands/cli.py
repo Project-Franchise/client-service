@@ -10,9 +10,9 @@ import click
 from service_api import flask_app, session_scope, Base, LOGGER
 from service_api.exceptions import MetaDataError
 
-from service_api.grabbing_api.utils.db import LoadersFactory
+from service_api.grabbing_api.utils.db import CoreDataLoadersFactory
 
-BASE_ENTITIES = LoadersFactory.get_available_entities()
+BASE_ENTITIES = CoreDataLoadersFactory.get_available_entities()
 
 
 def parse_entities(ctx, param, values) -> Dict:
@@ -59,7 +59,7 @@ def fill_db_with_core_data(columns, load_all) -> None:
 
     entities = dict.fromkeys(BASE_ENTITIES, []) if load_all else {}
     entities.update(columns)
-    factory = LoadersFactory()
+    factory = CoreDataLoadersFactory()
     try:
         loading_statuses = factory.load(entities)
         LOGGER.debug(loading_statuses)
@@ -83,5 +83,5 @@ def clear_db() -> None:
     with session_scope() as session:
         for table in Base.metadata.sorted_tables:
             session.query(table).delete()
-            LOGGER.debug(f"{table} cleared!")
+            LOGGER.debug("%s cleared!", table)
     LOGGER.debug("ALL table cleared")

@@ -22,7 +22,7 @@ def get_session():
 
 def get_single_response(url, params, item_id):
     """
-    Function to make a request to Domria API within a single thread
+    Task to make a request to Domria API within a single thread
     :return: Response
     """
     session = get_session()
@@ -33,11 +33,11 @@ def get_single_response(url, params, item_id):
 
 def get_all_responses(url, params, id_container: List):
     """
-    Main coroutine to make requests to Domria API in parallel
+    Main function to make requests to Domria API in parallel
     :return: List[Dict]
     """
     num = len(id_container)
-    with ThreadPoolExecutor(max_workers=3) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         result = list(executor.map(get_single_response, [url] * num, [params] * num, id_container))
         executor.shutdown(wait=True)
     return result

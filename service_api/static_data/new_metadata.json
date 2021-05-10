@@ -43,6 +43,10 @@
         "url_prefix": "search",
         "required": ["operation_type", "realty_category"],
         "depens_on": [],
+        "optional": {
+          "characteristic[242]": 239,
+          "characteristic[246]": 243
+        },
         "condition": "/",
         "models": {
           "realty": {

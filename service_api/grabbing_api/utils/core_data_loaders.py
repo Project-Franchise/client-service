@@ -10,21 +10,23 @@ from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
 
-from service_api import session_scope
+from service_api import session_scope, LOGGER
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
     DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
-    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV)
+    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
-                                Service, State, StateAlias, StateToService)
+                                Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
+                                Realty, RealtyDetails)
 from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
-                                 RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema,
-                                 StateAliasSchema, StateSchema, StateToServiceSchema)
+                                 RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
+                                 StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
+                                 CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 
 
@@ -109,7 +111,7 @@ class CSVLoader(BaseLoader):
             try:
                 load_data(self.model_schema(), row, self.model)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -183,6 +185,16 @@ class OperationTypeLoader(CSVLoader):
     path_to_file = PATH_TO_OPERATION_TYPE_CSV
 
 
+class CategoryLoader(CSVLoader):
+    """
+    Loads Categories from metadata
+    """
+
+    model = Category
+    model_schema = CategorySchema
+    path_to_file = PATH_TO_CATEGORIES_CSV
+
+
 class OperationTypeAliasesLoader(CSVLoader):
     """
     Loads operation types aliases from csv file
@@ -201,6 +213,16 @@ class RealtyTypeAliasesLoader(CSVLoader):
     model = RealtyTypeAlias
     model_schema = RealtyTypeAliasSchema
     path_to_file = PATH_TO_REALTY_TYPE_ALIASES_CSV
+
+
+class CategoryAliasesLoader(CSVLoader):
+    """
+    Loads realty types aliases from csv file
+    """
+
+    model = CategoryAlias
+    model_schema = CategoryAliasSchema
+    path_to_file = PATH_TO_CATEGORY_ALIASES_CSV
 
 
 class OperationTypeXRefServicesLoader(XRefBaseLoader):
@@ -224,10 +246,10 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 obj = recognize_by_alias(OperationType, name)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -238,7 +260,7 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
 
 
@@ -263,10 +285,10 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 obj = recognize_by_alias(RealtyType, name)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -277,7 +299,48 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
+                continue
+
+
+class CategoryXRefServicesLoader(XRefBaseLoader):
+    """
+    Fill table CategoryXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to category cross reference service table
+        """
+        service_name = "DOMRIA API"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(
+                Service.name == service_name).first()
+
+            if service is None:
+                raise ObjectNotFoundException(
+                    desc="No service {} found".format(service_name))
+
+        for name, value in service_meta["entities"]["category"].items():
+            try:
+                obj = recognize_by_alias(Category, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value["own_id"])
+            }
+            try:
+                load_data(CategoryToServiceSchema(), data, CategoryToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
                 continue
 
 
@@ -300,11 +363,11 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 status[state_id] = self.load_cities_by_state(state_id=state_id)
             except ObjectNotFoundException as error:
-                print(error.desc)
+                LOGGER.error(error.desc)
             except KeyError as error:
-                print(error)
+                LOGGER.error(error)
             except ResponseNotOkException as error:
-                print(error)
+                LOGGER.error(error)
 
         return status
 
@@ -339,7 +402,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             set_by_state = session.query(City).filter_by(state_id=state_id)
 
         response = requests.get("{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
-                                                 state_xref.original_id),
+                                                  state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
                                     self.domria_meta["token_name"]: DOMRIA_TOKEN})
@@ -352,10 +415,10 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 city = recognize_by_alias(City, city_from_service[domria_cities_meta["fields"]["name"]], set_by_state)
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -367,9 +430,9 @@ class CityXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(CityToServiceSchema(), data, CityToService)
             except ValidationError as error:
-                print(error)
+                LOGGER.error(error)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1
@@ -411,10 +474,10 @@ class StateXRefServicesLoader(XRefBaseLoader):
             try:
                 state = recognize_by_alias(State, service_state[domria_states_meta["fields"]["name"]])
             except ModelNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
             except ObjectNotFoundException as error:
-                print(error)
+                LOGGER.error(error)
                 continue
 
             data = {
@@ -426,11 +489,44 @@ class StateXRefServicesLoader(XRefBaseLoader):
             try:
                 load_data(StateToServiceSchema(), data, StateToService)
             except ValidationError as error:
-                print(error)
+                LOGGER.error(error)
             except AlreadyInDbException as error:
-                print(error)
+                LOGGER.warning(error)
                 continue
             else:
                 counter += 1
 
         return counter
+
+class RealtyLoader:
+    """
+    Load realty data to db
+    """
+
+    def load(self, all_data: List[Dict]) -> None:
+        """
+         Calls mapped loader classes for keys in params dict input
+        :params: List[Dict] - list of realty
+        :return: None - the only loader's responsibility is to load realty and realty details to the database
+        """
+        for realty, realty_details_id in all_data:
+            try:
+                load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
+            except KeyError as error:
+                print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue
+
+            with session_scope() as session:
+                realty_details_id = session.query(RealtyDetails). \
+                    filter_by(**realty_details_id).first().id
+                realty["realty_details_id"] = realty_details_id
+            try:
+                load_data(RealtySchema(), realty, Realty)
+
+            except KeyError as error:
+                print(error.args)
+            except AlreadyInDbException as error:
+                print(error)
+                continue

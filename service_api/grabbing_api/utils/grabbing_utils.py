@@ -110,7 +110,7 @@ def open_metadata(path: str) -> Dict:
     Open file with metadata and return content
     """
     try:
-        with open(path) as meta_file:
+        with open(path, encoding="utf-8") as meta_file:
             metadata = json.load(meta_file)
     except json.JSONDecodeError as error:
         LOGGER.error(error)

@@ -19,7 +19,7 @@ from logs.logger import setup_logger
 
 class UnicodeApi(Api):
     """
-    Redefined Api class to suppose unicode text responses
+    Redefined Api classs to suppoer unicode text responses
     """
 
     def __init__(self, *args, **kwargs):
@@ -70,4 +70,4 @@ def session_scope() -> Iterator[Session]:
             raise
 
 
-from . import celery_tasks, client_api, commands, grabbing_api
+from . import celery_tasks, client_api, grabbing_api

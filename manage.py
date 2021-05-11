@@ -1,13 +1,13 @@
 """
-CLI for interation with service_api
+CLI for app management
 """
-
+import os
 import re
 from typing import Dict
 
 import click
 
-from service_api import flask_app, session_scope, Base, LOGGER
+from service_api import Base, session_scope, flask_app
 from service_api.exceptions import MetaDataError
 from service_api.grabbing_api.utils.db import CoreDataLoadersFactory
 
@@ -33,7 +33,32 @@ def parse_entities(ctx, param, values) -> Dict:
     return entities
 
 
-@flask_app.cli.command("load_core_data")
+cli = click.Group(name="commands")
+
+
+@cli.command("runserver")
+@click.option("--port", "-p", show_default=True, type=str, default=os.environ.get("CS_HOST_PORT"), required=True)
+@click.option("--host", "-h", show_default=True, type=str, default=os.environ.get("CS_HOST_IP"), required=True)
+@click.option("--config", "-c", show_default=True, type=str, default=os.environ.get("FLASK_ENV"), required=True)
+def run_app(port, host, config):
+    """
+    Starts flask application in development mode
+    """
+    # flask_app.config.from_object(config)
+    flask_app.run(port=port, host=host)
+
+
+@cli.command("run_celery")
+def run_celery():
+    """
+    Start celery application in `beat` mode
+    `celery_app` defined in service_api
+    `-B` mean beat mode. It's for running periodic tasks
+    """
+    os.system("celery worker -A service_api.celery_app -B --loglevel=info")
+
+
+@cli.command("load_core_data")
 @click.option("--column", "-C", "columns", is_flag=False, default=BASE_ENTITIES, show_default=True,
               metavar="<column>", type=click.STRING,
               help="Set entity to load with additional params if possible\n Syntax: -C cities=1,2,3,4",
@@ -61,20 +86,20 @@ def fill_db_with_core_data(columns, load_all) -> None:
     factory = CoreDataLoadersFactory()
     try:
         loading_statuses = factory.load(entities)
-        LOGGER.debug(loading_statuses)
+        print(loading_statuses)
     except MetaDataError:
-        LOGGER.debug("FAILED")
+        print("FAILED")
 
 
-@flask_app.cli.command("hi")
+@cli.command("hi")
 def printer() -> None:
     """
     Great with you
     """
-    LOGGER.debug("Hi")
+    print("Hi")
 
 
-@flask_app.cli.command("clearDB")
+@cli.command("clearDB")
 def clear_db() -> None:
     """
     Clear all tables from DB
@@ -82,5 +107,9 @@ def clear_db() -> None:
     with session_scope() as session:
         for table in Base.metadata.sorted_tables:
             session.query(table).delete()
-            LOGGER.debug("%s cleared!", table)
-    LOGGER.debug("ALL table cleared")
+            print(f"{table} cleared!")
+    print("ALL table cleared")
+
+
+if __name__ == "__main__":
+    cli()

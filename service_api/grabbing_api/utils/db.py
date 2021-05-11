@@ -191,9 +191,8 @@ class RealtyFetcher:
             response = request_to_domria.get_latest_data()
             loader = RealtyLoader()
             try:
-                loader.load(response)
+                realties.extend(loader.load(response))
             except LimitBoundError as error:
                 print(error)
-            realties.extend(response)
 
         return realties

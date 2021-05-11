@@ -65,9 +65,9 @@ class DomriaServiceHandler(AbstractServiceHandler):
 
         items = response.json()
         try:
-            return DomriaServiceHandler.process_request(items, self.post_body["additional"].pop("page"),
-                                                        self.post_body["additional"].pop("page_ads_number"),
-                                                        self.metadata)
+            return self.process_request(items, self.post_body["additional"].pop("page"),
+                                        self.post_body["additional"].pop("page_ads_number"),
+                                        self.metadata)
         except KeyError as error:
             LOGGER.error(error.args)
             raise BadRequestException(error.args) from error
@@ -107,13 +107,12 @@ class DomriaServiceHandler(AbstractServiceHandler):
             realty_realty_details.append((realty_data, realty_details))
         return realty_realty_details
 
-    @staticmethod
-    def process_request(search_response: Dict, page: int, page_ads_number: int, metadata: Dict) -> List[Dict]:
+    def process_request(self, search_response: Dict, page: int, page_ads_number: int, metadata: Dict) -> List[Dict]:
         """
         Distributes a list of ids to write to the database and return to the user
         """
         page = page % page_ads_number
         current_items = search_response["items"][
-            (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
-        ]
-        return DomriaServiceHandler.create_records(current_items, metadata)
+                        (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
+                        ]
+        return self.create_records(current_items, metadata)

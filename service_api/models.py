@@ -1,6 +1,7 @@
 """
 Models for service_api
 """
+from datetime import datetime
 from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey, PrimaryKeyConstraint, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
@@ -382,5 +383,5 @@ class RequestsHistory(Base):
     __tablename__ = "requests_history"
 
     id = Column(BIGINT, primary_key=True)
-    token_used_id = Column(VARCHAR(200), nullable=False)
-    request_timestamp = Column(TIMESTAMP, nullable=False)
+    hashed_token = Column(VARCHAR(200), nullable=False)
+    request_timestamp = Column(TIMESTAMP, nullable=False, default=datetime.now())

@@ -3,33 +3,63 @@ Handler module docstring for pylint
 """
 import json
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List
 
 import requests
 from service_api import LOGGER, session_scope
 from service_api.async_logic import get_all_responses
 from service_api.errors import BadRequestException
-from service_api.exceptions import MetaDataError, ResponseNotOkException
+from service_api.exceptions import AlreadyInDbException, LimitBoundError, MetaDataError, ResponseNotOkException
 from service_api.grabbing_api.constants import DOMRIA_TOKEN, DOMRIA_TOKENS_LIST
 from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter)
 from service_api.models import RequestsHistory
 from service_api.schemas import RequestsHistorySchema
+from .grabbing_utils import load_data
 
 
-def choose_available_token_for_request(tokens_list=DOMRIA_TOKENS_LIST):
+class DomriaLimitationSystem:
     """
-    limitation function
+    Logic for limitation of requests to domria
     """
-    with session_scope() as session:
-        tmp = session.query(RequestsHistory).where(RequestsHistory.token_used == hash(tokens_list[0]) and
-                                                   RequestsHistory.request_timestamp.between(
-                                                       datetime.now().replace(hour=datetime.now().hour - 1),
-                                                       datetime.now())).count()
-    if tmp > 990 :
-        tokens_list.insert(0, tokens_list[len(tokens_list)-1])
-        tokens_list.pop()
-    return tokens_list
+    TOKENS = DOMRIA_TOKENS_LIST
+    TOKEN_LIMIT = 980
+    EXPIRE_TIME = {
+        "hours": 1,
+        "minutes": 1
+    }
+
+    @classmethod
+    def mark_token_after_requset(cls, url):
+        """
+        Add record to RequestHistory with hased token
+        """
+        try:
+            load_data(RequestsHistorySchema(), {"url": url, "hashed_token": hash(cls.TOKENS[0])},
+                      RequestsHistory)
+        except AlreadyInDbException as error:
+            LOGGER.error("Fail during creating Domria history record: %s", error.args)
+
+    @classmethod
+    def get_token(cls) -> str:
+        """
+        Returns token or raise LimitBoundError
+        """
+        for token in range(2):
+            token = cls.TOKENS[0]
+            with session_scope() as session:
+                tmp = session.query(RequestsHistory).where(RequestsHistory.token_used == hash(token) and
+                                                           RequestsHistory.request_timestamp.between(
+                    datetime.now() - timedelta(**cls.EXPIRE_TIME),
+                    datetime.now())).count()
+
+            if tmp < cls.TOKEN_LIMIT:
+                return token
+
+            cls.TOKENS.append(cls.TOKENS.pop(0))
+
+        raise LimitBoundError("DOMRIA limit reached! Try later!")
+
 
 class AbstractServiceHandler(ABC):
     """
@@ -87,9 +117,6 @@ class DomriaServiceHandler(AbstractServiceHandler):
         except KeyError as error:
             LOGGER.error(error.args)
             raise BadRequestException(error.args) from error
-
-
-
 
     @staticmethod
     def create_records(ids: List, service_metadata: Dict) -> List[Dict]:

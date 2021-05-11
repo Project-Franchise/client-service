@@ -20,6 +20,7 @@ path_to_static_data = ["service_api", "static_data"]
 
 PATH_TO_METADATA = os.sep.join([*path_to_static_data, "new_metadata.json"])
 PATH_TO_CORE_DB_METADATA = os.sep.join([*path_to_static_data, "metadata_for_fetching_db_core.json"])
+PATH_PARSER_METADATA = os.sep.join([*path_to_static_data, "parser_metadata.json"])
 
 PATH_TO_OPERATION_TYPE_CSV = os.sep.join([*path_to_static_data, "operation_type.csv"])
 PATH_TO_OPERATION_TYPE_ALIASES_CSV = os.sep.join([*path_to_static_data, "operation_type_aliases.csv"])

@@ -140,8 +140,8 @@ class RealtyResource(Resource):
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
                     getattr(RealtyDetails, key).between(
-                        GE if not value[GE] else value[GE],
-                        LE if not value[LE] else value[LE])
+                        value.get(GE) or 0,
+                        value.get(LE) or 10^19)
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()

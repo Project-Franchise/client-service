@@ -32,6 +32,7 @@ class RealtyDetails(Base):
     published_at = Column(TIMESTAMP, nullable=False)
     original_url = Column(VARCHAR(255), nullable=False, unique=True)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
+    original_id = Column(BIGINT, nullable=True)
 
 
 class Realty(Base):

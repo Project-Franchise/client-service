@@ -3,6 +3,7 @@ Module with data Loaders
 """
 import csv
 from abc import ABC, abstractmethod
+
 from typing import Dict, List
 
 from marshmallow.exceptions import ValidationError
@@ -15,7 +16,7 @@ from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
-    DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
+    PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
     PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
@@ -27,6 +28,7 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from .grabbing_utils import (load_data, open_metadata, recognize_by_alias)
 
 
@@ -405,7 +407,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
                                                          state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
-                                    self.domria_meta["token_name"]: DOMRIA_TOKEN})
+                                    self.domria_meta["token_name"]: DomriaLimitationSystem.get_token()})
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
@@ -456,7 +458,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
 
         params = {
             "lang_id": self.domria_meta["optional"]["lang_id"],
-            "api_key": DOMRIA_TOKEN
+            "api_key": DomriaLimitationSystem.get_token()
         }
 
         with session_scope() as session:

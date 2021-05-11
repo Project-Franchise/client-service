@@ -383,5 +383,6 @@ class RequestsHistory(Base):
     __tablename__ = "requests_history"
 
     id = Column(BIGINT, primary_key=True)
+    url = Column(VARCHAR(4096), nullable=False)
     hashed_token = Column(VARCHAR(200), nullable=False)
     request_timestamp = Column(TIMESTAMP, nullable=False, default=datetime.now())

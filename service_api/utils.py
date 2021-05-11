@@ -4,6 +4,7 @@ Utils module
 from requests import Session
 
 from service_api import LOGGER
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 
 
 def send_request(method: str, url: str, request_session: Session = None, *args, **kwargs):
@@ -13,4 +14,6 @@ def send_request(method: str, url: str, request_session: Session = None, *args, 
     LOGGER.info("Pre-request method")
 
     request_session = request_session or Session()
-    return request_session.request(method, url, *args, **kwargs)
+    response = request_session.request(method, url, *args, **kwargs)
+    DomriaLimitationSystem.mark_token_after_requset(response.url)
+    return response

@@ -26,8 +26,11 @@ def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
         valid_data = model_schema.load(data)
         record = model(**valid_data)
     except ValidationError as error:
-        LOGGER.error(error)
+        LOGGER.error("Error message:%s, data for validation %s", error, valid_data)
+
         raise
+
+    print(record)
 
     with session_scope() as session:
         existing_record = session.query(model).filter_by(**valid_data).first()

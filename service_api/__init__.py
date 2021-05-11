@@ -5,6 +5,7 @@ Module that contains client_api, grabbing_api, models, schemas
 import logging
 import os
 from contextlib import contextmanager
+import threading
 from typing import Iterator
 
 import redis
@@ -41,7 +42,7 @@ engine = create_engine(flask_app.config.get("SQLALCHEMY_DATABASE_URL"))
 metadata = MetaData(bind=engine)
 Base = declarative_base(metadata)
 Session_factory = sessionmaker(bind=engine)
-session = Session_factory()
+sql_session = Session_factory()
 
 # entrypoint for caching using redis
 CACHE = redis.Redis(
@@ -50,6 +51,8 @@ CACHE = redis.Redis(
 
 LOGGER = setup_logger('app_logger', 'logs/service.log', logging.DEBUG)
 
+thread_local = threading.local()
+
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
@@ -57,6 +60,9 @@ def session_scope() -> Iterator[Session]:
     Context manager to handle transaction to DB
     """
     try:
+        if not hasattr(thread_local, "sql_session"):
+            thread_local.sql_session = Session_factory()
+        session = thread_local.sql_session
         yield session
         session.commit()
     except SQLAlchemyError:

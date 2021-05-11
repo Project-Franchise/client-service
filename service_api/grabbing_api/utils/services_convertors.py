@@ -7,11 +7,12 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 from redis import RedisError
-from service_api import CACHE, LOGGER, models, session_scope
+from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
-                                                DOMRIA_TOKEN, GE, LE, PATH_TO_METADATA)
+                                                GE, LE, PATH_TO_METADATA)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 from service_api.utils import send_request
 
@@ -120,7 +121,7 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 try:
                     obj = recognize_by_alias(model, self.response[response_key])
                 except ObjectNotFoundException as error:
-                    print(error.args)
+                    LOGGER.error("%s",error.args)
                     break
                 realty_data[key] = obj.id
 
@@ -291,7 +292,7 @@ class DomriaCharacteristicLoader:
 
         chars_metadata, realty_types = self.metadata["urls"]["options"], self.metadata["entities"]["realty_type"]
 
-        params = {"api_key": DOMRIA_TOKEN}
+        params = {"api_key": DomriaLimitationSystem.get_token()}
 
         for param, val in self.metadata["optional"].items():
             params[param] = val

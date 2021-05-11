@@ -6,8 +6,6 @@ import os
 
 DOMRIA_TOKEN = os.environ["DOMRIA_API_KEY"]
 CACHED_CHARACTERISTICS = "characteristics_avaliable"
-CACHED_CITIES = "cities_upload"
-CACHED_STATES = "states_upload"
 
 # must be dict with datetime.timedelta params
 CACHED_CHARACTERISTICS_EXPIRE_TIME = {

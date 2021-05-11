@@ -7,7 +7,7 @@ from typing import Dict, List, Tuple
 from marshmallow import Schema, ValidationError, fields, validate
 
 from service_api import Base
-from service_api.constants import PARSING_REQUEST, CHANGE_CONST
+from service_api.constants import PARSING_REQUEST
 from service_api.errors import BadRequestException
 from service_api.exceptions import BadFiltersException
 
@@ -258,10 +258,10 @@ def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> L
     if sum(map(len, filters)) != len(params):
         raise BadFiltersException("Undefined parameters found")
     iter_filters = iter(filters)
+
     for item in filters:
-        for items, values in item.items():
-            if isinstance(values, dict):
-                item[items] = {key: value for key, value in values.items()}
+        item = {key: values for key, values in item.items() if isinstance(values, dict)}
+
     for scheme in schemes:
         dict_to_validate = next(iter_filters)
         try:

@@ -9,6 +9,8 @@ import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
+from selenium import webdriver
+from bs4 import BeautifulSoup
 
 from service_api import session_scope, LOGGER
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
@@ -29,9 +31,6 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
-from selenium import webdriver
-from bs4 import BeautifulSoup
-PATH = 'D://Downloads//chromedriver.exe'
 
 
 class BaseLoader(ABC):

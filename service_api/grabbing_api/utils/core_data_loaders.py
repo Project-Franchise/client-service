@@ -9,6 +9,8 @@ import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
+from selenium import webdriver
+from bs4 import BeautifulSoup
 
 from service_api import session_scope, LOGGER
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
@@ -29,9 +31,6 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
-from selenium import webdriver
-from bs4 import BeautifulSoup
-PATH = 'C://Program Files (x86)//chromedriver.exe'
 
 
 class BaseLoader(ABC):
@@ -635,6 +634,9 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find_all('a', class_="regionSelectA2")
 
+        if not items:
+            return {}
+
         with session_scope() as session:
             state = session.query(State).filter_by(name=state).first()
             cities_object = session.query(City).filter_by(state_id=state.id).all()
@@ -647,7 +649,6 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
                 urls[state.name][item.get_text()] = item.get('data-url')
         return urls
 
-
     def get_all_cities(self):
         """
         getting all cities from olx
@@ -657,17 +658,18 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         olx_states = self.olx_meta["states_id"]
-        cities = {}
+        urls_cities = {}
         for key, value in olx_states.items():
-            driver.execute_script("arguments[0].click();",
-                                  driver.find_element_by_css_selector(f'a[data-id="{value}"]'))
-            if value == 25:
+            cities = {}
+            while not cities:
                 driver.execute_script("arguments[0].click();",
                                       driver.find_element_by_css_selector(f'a[data-id="{value}"]'))
-            cities = self.get_cities_by_state(driver.page_source, key, cities)
+                cities = self.get_cities_by_state(driver.page_source, key, cities)
             driver.execute_script("arguments[0].click();",
                                   driver.find_element_by_css_selector('a[id=back_region_link]'))
-        return cities
+            for state, dict_of_cities in cities.items():
+                urls_cities[state] = dict_of_cities
+        return urls_cities
 
 
     def load(self, *args, **kwargs) -> Dict[int, int]:

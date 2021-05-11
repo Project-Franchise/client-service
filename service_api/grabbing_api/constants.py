@@ -4,7 +4,9 @@ Constants for grabbing module
 
 import os
 
-DOMRIA_TOKEN = os.environ["DOMRIA_API_KEY"]
+
+DOMRIA_TOKENS_LIST = os.environ.get("DOMRIA_API_KEYS").split(".")
+DOMRIA_TOKEN = DOMRIA_TOKENS_LIST[0]
 CACHED_CHARACTERISTICS = "characteristics_avaliable"
 CACHED_CITIES = "cities_upload"
 CACHED_STATES = "states_upload"

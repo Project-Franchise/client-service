@@ -3,17 +3,33 @@ Handler module docstring for pylint
 """
 import json
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Dict, List
 
 import requests
-from service_api import LOGGER
+from service_api import LOGGER, session_scope
 from service_api.async_logic import get_all_responses
 from service_api.errors import BadRequestException
 from service_api.exceptions import MetaDataError, ResponseNotOkException
-from service_api.grabbing_api.constants import DOMRIA_TOKEN
-from service_api.grabbing_api.utils.services_convertors import (
-    DomRiaInputConverter, DomRiaOutputConverter)
+from service_api.grabbing_api.constants import DOMRIA_TOKEN, DOMRIA_TOKENS_LIST
+from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter)
+from service_api.models import RequestsHistory
+from service_api.schemas import RequestsHistorySchema
 
+
+def choose_available_token_for_request(tokens_list=DOMRIA_TOKENS_LIST):
+    """
+    limitation function
+    """
+    with session_scope() as session:
+        tmp = session.query(RequestsHistory).where(RequestsHistory.token_used == hash(tokens_list[0]) and
+                                                   RequestsHistory.request_timestamp.between(
+                                                       datetime.now().replace(hour=datetime.now().hour - 1),
+                                                       datetime.now())).count()
+    if tmp > 990 :
+        tokens_list.insert(0, tokens_list[len(tokens_list)-1])
+        tokens_list.pop()
+    return tokens_list
 
 class AbstractServiceHandler(ABC):
     """
@@ -71,6 +87,9 @@ class DomriaServiceHandler(AbstractServiceHandler):
         except KeyError as error:
             LOGGER.error(error.args)
             raise BadRequestException(error.args) from error
+
+
+
 
     @staticmethod
     def create_records(ids: List, service_metadata: Dict) -> List[Dict]:

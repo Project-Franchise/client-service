@@ -370,3 +370,17 @@ class AdditionalFilters:
     """
     page = None
     page_ads_number = None
+
+
+class RequestsHistory(Base):
+    """
+    Requests history model
+    :param: request_text str
+    :param: request_timestamp datetime
+    """
+
+    __tablename__ = "requests_history"
+
+    id = Column(BIGINT, primary_key=True)
+    token_used_id = Column(VARCHAR(200), nullable=False)
+    request_timestamp = Column(TIMESTAMP, nullable=False)

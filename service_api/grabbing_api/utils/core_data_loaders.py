@@ -5,12 +5,12 @@ import csv
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
 
 from service_api import session_scope, LOGGER
+from service_api.utils import send_request
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
@@ -27,7 +27,7 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
-from .grabbing_utils import load_data, open_metadata, recognize_by_alias
+from .grabbing_utils import (load_data, open_metadata, recognize_by_alias)
 
 
 class BaseLoader(ABC):
@@ -401,8 +401,8 @@ class CityXRefServicesLoader(XRefBaseLoader):
 
             set_by_state = session.query(City).filter_by(state_id=state_id)
 
-        response = requests.get("{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
-                                                  state_xref.original_id),
+        response = send_request("GET", "{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
+                                                         state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
                                     self.domria_meta["token_name"]: DOMRIA_TOKEN})
@@ -465,7 +465,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
 
         url = "{}/{}".format(self.domria_meta["base_url"], domria_states_meta["url_prefix"])
-        response = requests.get(url, params=params)
+        response = send_request("GET", url, params=params)
         if not response.ok:
             raise RequestException(response.text)
 
@@ -497,6 +497,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 counter += 1
 
         return counter
+
 
 class RealtyLoader:
     """

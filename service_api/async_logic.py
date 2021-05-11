@@ -7,6 +7,8 @@ from typing import List
 
 import requests
 
+from service_api.utils import send_request
+
 thread_local = threading.local()
 
 
@@ -26,13 +28,12 @@ def get_single_response(url, params, item_id):
     :return: Response
     """
     session = get_session()
-    with session.get(url.format(id=str(item_id)), params=params,
-                     headers={'User-Agent': 'Mozilla/5.0'}) as response:
-        return response
+    return send_request("GET", url.format(id=str(item_id)), session, params=params,
+                        headers={'User-Agent': 'Mozilla/5.0'})
 
 
 def get_all_responses(url, params, id_container: List):
-    """
+    """∂
     Main function to make requests to Domria API in parallel
     :return: List[Dict]
     """

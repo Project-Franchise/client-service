@@ -8,7 +8,7 @@ from typing import Dict
 
 import requests
 from redis import RedisError
-from service_api import CACHE, models, session_scope
+from service_api import CACHE, LOGGER, models, session_scope
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
@@ -117,7 +117,11 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 if not model:
                     raise Warning("There is no such model named {}".format(model))
 
-                obj = recognize_by_alias(model, self.response[response_key])
+                try:
+                    obj = recognize_by_alias(model, self.response[response_key])
+                except ObjectNotFoundException as error:
+                    print(error.args)
+                    break
                 realty_data[key] = obj.id
 
             if city_characteristics:
@@ -258,7 +262,7 @@ class DomriaCharacteristicLoader:
         try:
             self.metadata = open_metadata(PATH_TO_METADATA)["DOMRIA API"]
         except MetaDataError:
-            print("Coundn't load metadata")
+            LOGGER.error("Couldn't load metadata")
 
     @staticmethod
     def decode_characteristics(dct: Dict) -> Dict:

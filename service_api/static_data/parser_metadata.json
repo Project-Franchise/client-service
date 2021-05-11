@@ -3,10 +3,19 @@
     "base_url": "https://www.olx.ua/uk/",
     "name": "OLX",
     "optional": {},
+    "limits": {
+      "page_ads_number": null,
+      "page_numbers": null
+    },
     "urls": {
       "search_realty": {
         "url_prefix": "/nedvizhimost",
-        "url_order": ["realty_category", "operation_type", "realty_type", "location"],
+        "url_order": [
+          "realty_category",
+          "operation_type",
+          "realty_type",
+          "location"
+        ],
         "depends_on": [
           "realty_category",
           "operation_type",
@@ -34,10 +43,10 @@
               "model": "RealtyCategoryToService"
             },
             "realty_type_id": {
-                "request_key": "{original_id}",
-                "condition": "/",
-                "model": "RealtyTypeToService"
-              },
+              "request_key": "{original_id}",
+              "condition": "/",
+              "model": "RealtyTypeToService"
+            },
             "operation_type_id": {
               "request_key": "{original_id}",
               "condition": "/",

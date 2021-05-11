@@ -325,10 +325,8 @@ class Category(Base):
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(255), nullable=False)
     self_id = Column(BIGINT, nullable=False)
-    version = Column(TIMESTAMP, nullable=True,
-                     default=VERSION_DEFAULT_TIMESTAMP)
-    service_repr = relationship(
-        "CategoryToService", backref="entity", lazy=True)
+    version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
+    service_repr = relationship("CategoryToService", backref="entity", lazy=True)
     aliases = relationship("CategoryAlias", backref="realty_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)

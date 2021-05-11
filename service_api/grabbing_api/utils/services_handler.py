@@ -8,6 +8,7 @@ from typing import Dict, List
 import requests
 
 from service_api import LOGGER
+from service_api.async_logic import get_all_responses
 from service_api.errors import BadRequestException
 from service_api.exceptions import MetaDataError, ResponseNotOkException
 from service_api.grabbing_api.constants import DOMRIA_TOKEN
@@ -87,10 +88,8 @@ class DomriaServiceHandler(AbstractServiceHandler):
             condition=service_metadata["urls"]["single_ad"]["condition"]
         )
         realty_realty_details = []
-        for realty_id in ids:
-            response = requests.get(url.format(id=str(realty_id)),
-                                    params=params,
-                                    headers={'User-Agent': 'Mozilla/5.0'})
+        responses_container = get_all_responses(url, params, ids)
+        for response in responses_container:
             if not response.ok:
                 raise ResponseNotOkException(response.content)
             service_converter = DomRiaOutputConverter(response.json(), service_metadata)

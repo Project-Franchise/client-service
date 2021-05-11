@@ -55,8 +55,6 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
         db_data = model_schema.dump(realty_details)
         incoming_data.pop("id")
         db_data.pop("id")
-        LOGGER.info(incoming_data)
-        LOGGER.info(db_data)
         if incoming_data == db_data:
             raise AlreadyInDbException
         with session_scope() as session:

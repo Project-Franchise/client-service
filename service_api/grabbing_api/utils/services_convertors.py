@@ -446,7 +446,6 @@ class OlxParser:
         :param currency: the currency needed to be converted to USD (for example $, € or грн.)
         :return: float price converted to usd
         """
-
         if currency == "$":
             return price
 

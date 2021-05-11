@@ -2,12 +2,15 @@
 Module with data Loaders
 """
 import csv
+import os
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
 import requests
+from bs4 import BeautifulSoup
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
+from selenium import webdriver
 from sqlalchemy import select
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -24,7 +27,6 @@ from service_api.models import (City, CityAlias, CityToService, OperationType, O
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
                                 Realty, RealtyDetails)
-
 from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
@@ -560,7 +562,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
         Navigating through site olx.com and getting states
         :return: dict
         """
-        driver = webdriver.Chrome(PATH)
+        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"))
         driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -654,7 +656,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        driver = webdriver.Chrome(PATH)
+        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"))
         driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         olx_states = self.olx_meta["states_id"]

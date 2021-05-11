@@ -1,11 +1,12 @@
 """
-Handler module docstring for pylint
+Handlers for Domria service
 """
 import json
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
 import requests
+
 from service_api import LOGGER
 from service_api.async_logic import get_all_responses
 from service_api.errors import BadRequestException

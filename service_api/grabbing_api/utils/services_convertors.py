@@ -8,6 +8,7 @@ from typing import Dict
 
 import requests
 from redis import RedisError
+
 from service_api import CACHE, LOGGER, models, session_scope
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
@@ -200,7 +201,6 @@ class DomRiaInputConverter(AbstractInputConverter):
     def build_new_dict(self, params: dict, realty_details_metadata) -> dict:
         """
         Method, that forms dictionary with parameters for the request
-        ::
         """
         new_params, fields_desc = {}, realty_details_metadata["fields"]
         for parameter, value in params.items():

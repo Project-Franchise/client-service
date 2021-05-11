@@ -64,9 +64,19 @@ alembic revision --autogenerate -m "Migration message"
 ## Run app
 Python version: 3.9.2
 ```
-python app.py
+python manage.py runserver
 ```
 
+## Run Celery
+To run celery_app use command:
+```angular2html
+python manage.py run_celery
+```
+You can use the flower extension to demonstrate the work of celery.
+To do this, run it with the next command and go to the specified address
+```angular2html
+celery -A service_api.celery_app flower
+```
 
 ## Flask Application Structure
 ```

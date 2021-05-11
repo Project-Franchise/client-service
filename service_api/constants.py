@@ -32,5 +32,5 @@ VERSION_DEFAULT_TIMESTAMP = None
 
 PAGE_LIMIT = 10_000
 CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE = {
-    "minute": "*/5"
+    "minute": "*/2"
 }

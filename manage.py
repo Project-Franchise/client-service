@@ -7,7 +7,7 @@ from typing import Dict
 
 import click
 
-from service_api import Base, session_scope, flask_app
+from service_api import Base, session_scope, flask_app, LOGGER
 from service_api.exceptions import MetaDataError
 from service_api.grabbing_api.utils.db import CoreDataLoadersFactory
 
@@ -86,9 +86,9 @@ def fill_db_with_core_data(columns, load_all) -> None:
     factory = CoreDataLoadersFactory()
     try:
         loading_statuses = factory.load(entities)
-        print(loading_statuses)
+        LOGGER.debug(loading_statuses)
     except MetaDataError:
-        print("FAILED")
+        LOGGER.debug("FAILED")
 
 
 @cli.command("hi")
@@ -96,7 +96,7 @@ def printer() -> None:
     """
     Great with you
     """
-    print("Hi")
+    LOGGER.debug("Hi")
 
 
 @cli.command("clearDB")
@@ -107,8 +107,8 @@ def clear_db() -> None:
     with session_scope() as session:
         for table in Base.metadata.sorted_tables:
             session.query(table).delete()
-            print(f"{table} cleared!")
-    print("ALL table cleared")
+            LOGGER.debug(f"{table} cleared!")
+    LOGGER.debug("ALL table cleared")
 
 
 if __name__ == "__main__":

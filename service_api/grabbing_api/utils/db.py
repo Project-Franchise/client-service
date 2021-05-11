@@ -186,9 +186,13 @@ class RealtyFetcher:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
 
-
             request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
-            response = request_to_domria.get_latest_data()
+            try:
+                response = request_to_domria.get_latest_data()
+            except LimitBoundError as error:
+                LOGGER.warning(error.args[0])
+                continue
+
             loader = RealtyLoader()
             try:
                 loader.load(response)

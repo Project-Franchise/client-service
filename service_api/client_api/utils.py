@@ -4,6 +4,7 @@ Utilities for cashing requests and saving them in redis
 import datetime
 import json
 from typing import Dict, Union
+from hashlib import sha256
 import requests
 from sqlalchemy.util.langhelpers import NoneType
 
@@ -16,15 +17,15 @@ def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Union[Dict
     """
     Hash request to redis
     """
-    CACHE.set(str(hash(json.dumps(request_data, sort_keys=True))), json.dumps(response_data),
-              datetime.timedelta(**(redis_ex_time or CACHED_REQUESTS_EXPIRE_TIME)))
+    CACHE.set(str(sha256(json.dumps(request_data, sort_keys=True).encode('utf-8')).hexdigest()),
+              json.dumps(response_data), datetime.timedelta(**(redis_ex_time or CACHED_REQUESTS_EXPIRE_TIME)))
 
 
 def get_hash(request_data: Dict):
     """
     Get hashed request from redis
     """
-    return CACHE.get(str(hash(json.dumps(request_data, sort_keys=True))))
+    return CACHE.get(str(sha256(json.dumps(request_data, sort_keys=True).encode('utf-8')).hexdigest()))
 
 
 def get_latest_data_from_grabbing(request_filters: Dict, url: str):

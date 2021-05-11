@@ -506,7 +506,7 @@ class RealtyLoader:
     Load realty data to db
     """
 
-    def load(self, all_data: List[Dict]) -> List[dict]:
+    def load(self, all_data: List[Dict]) -> List[Dict]:
         """
          Calls mapped loader classes for keys in params dict input
         :params: List[Dict] - list of realty
@@ -527,8 +527,7 @@ class RealtyLoader:
                     filter_by(**realty_details_id).first().id
                 realty["realty_details_id"] = realty_details_id
             try:
-                realty_schema = RealtySchema()
-                result.append(realty_schema.dump(load_data(realty_schema, realty, Realty)))
+                result.append(RealtySchema().dump(load_data(RealtySchema(), realty, Realty)))
             except KeyError as error:
                 print(error.args)
             except AlreadyInDbException as error:

@@ -4,12 +4,13 @@ Utilities for cashing requests and saving them in redis
 import datetime
 import json
 from typing import Dict, Union
+
 import requests
 from sqlalchemy.util.langhelpers import NoneType
 
 from service_api import CACHE, LOGGER
-from service_api.errors import ServiceUnavailableException
 from service_api.constants import CACHED_REQUESTS_EXPIRE_TIME
+from service_api.errors import ServiceUnavailableException
 
 
 def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Union[Dict, NoneType] = None):
@@ -31,9 +32,9 @@ def get_latest_data_from_grabbing(request_filters: Dict, url: str):
     """
     Entrypoint to get latest data from grabbing or from cache
     """
-    if cached_responce := get_hash(request_filters):
+    if cached_response := get_hash(request_filters):
         LOGGER.debug("___hashed stuff___")
-        return json.loads(cached_responce), 200
+        return json.loads(cached_response), 200
     response = requests.post(url, json=request_filters)
     if response.status_code >= 400:
         raise ServiceUnavailableException("GRABBING does not respond")

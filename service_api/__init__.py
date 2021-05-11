@@ -19,7 +19,7 @@ from logs.logger import setup_logger
 
 class UnicodeApi(Api):
     """
-    Redefined Api classs to suppoer unicode text responses
+    Redefined Api class to suppose unicode text responses
     """
 
     def __init__(self, *args, **kwargs):
@@ -47,7 +47,6 @@ session = Session_factory()
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"], decode_responses=True)
 
-
 LOGGER = setup_logger('app_logger', 'logs/service.log', logging.DEBUG)
 
 
@@ -68,5 +67,6 @@ def session_scope() -> Iterator[Session]:
         except SQLAlchemyError:
             session.rollback()
             raise
+
 
 from . import celery_tasks, client_api, commands, grabbing_api

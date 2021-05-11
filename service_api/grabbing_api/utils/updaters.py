@@ -9,12 +9,11 @@ from typing import Dict
 import requests
 from sqlalchemy.engine.row import Row
 
-from service_api import session_scope
+from service_api import session_scope, models, schemas, LOGGER
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import ResponseNotOkException, MetaDataError
 from service_api.grabbing_api.constants import PATH_TO_METADATA, DOMRIA_TOKEN
-from service_api.grabbing_api.utils.db import RealtyLoadersFactory
-from service_api.grabbing_api.utils.grabbing_utils import open_metadata
+from service_api.grabbing_api.utils.grabbing_utils import open_metadata, load_data
 from service_api.grabbing_api.utils.services_convertors import DomRiaOutputConverter
 from service_api.models import Realty, RealtyDetails
 
@@ -79,6 +78,7 @@ class RealtyUpdater(AbstractUpdater):
         Runs the logic to update all data
         """
         for db_record in self.cursor:
+            LOGGER.info(db_record)
             self.update_single_record(db_record)
 
     def send_request_by_id(self, ad_id: int):
@@ -136,9 +136,9 @@ class RealtyUpdater(AbstractUpdater):
             print("An error occurred while converting data from Dom Ria for realty model")
             raise
 
-        factory = RealtyLoadersFactory()
         try:
-            factory.load([(realty_data, realty_details)])
+            load_data(schemas.RealtyDetailsSchema(), realty_details, models.RealtyDetails)
+            load_data(schemas.RealtySchema(), realty_data, models.Realty)
         except MetaDataError as error:
             raise InternalServerErrorException() from error
 

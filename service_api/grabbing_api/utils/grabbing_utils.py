@@ -9,8 +9,9 @@ from typing import Dict
 
 from marshmallow import ValidationError
 from marshmallow.schema import Schema
-from sqlalchemy.orm import make_transient
 from sqlalchemy import func
+from sqlalchemy.orm import make_transient
+
 from service_api import Base, LOGGER, session_scope
 from service_api.exceptions import AlreadyInDbException, MetaDataError, ModelNotFoundException, ObjectNotFoundException
 from service_api.models import Realty, RealtyDetails
@@ -54,8 +55,8 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
         db_data = model_schema.dump(realty_details)
         incoming_data.pop("id")
         db_data.pop("id")
-        print(incoming_data)
-        print(db_data)
+        LOGGER.info(incoming_data)
+        LOGGER.info(db_data)
         if incoming_data == db_data:
             raise AlreadyInDbException
         with session_scope() as session:

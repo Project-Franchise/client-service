@@ -244,7 +244,6 @@ def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> L
     :param: dict
     :return: List[dict]
     """
-    filters = []
     models, schemes = zip(*validators)
     filters = [{key: params.get(key) for key in params if hasattr(objects, key)} for objects in models]
 

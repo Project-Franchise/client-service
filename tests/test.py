@@ -3,7 +3,9 @@ Testing module
 """
 
 from service_api.models import State
-from service_api import session, Base, engine
+from service_api import Session_factory, Base, engine
+
+session = Session_factory()
 
 
 def setup_function():

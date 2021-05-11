@@ -35,6 +35,7 @@ class UnicodeApi(Api):
 flask_app = Flask(__name__)
 flask_app.config.from_object(os.environ.get("FLASK_CONFIG_MODE", "config.DevelopmentConfig"))
 api_ = UnicodeApi(flask_app)
+from .celery_tasks import celery_app
 
 # connecting to DB
 engine = create_engine(flask_app.config.get("SQLALCHEMY_DATABASE_URL"))

@@ -4,7 +4,6 @@ Celery config module
 from celery import Celery
 from celery.schedules import crontab
 
-from service_api import LOGGER
 from service_api.constants import CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE
 
 
@@ -20,7 +19,6 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
         crontab(**CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE), update_realties.s(), name="update-all-records"
     )
-    LOGGER.info("Task scheduled")
 
 
 def make_celery(flask_app):

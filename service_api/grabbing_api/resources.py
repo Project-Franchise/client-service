@@ -4,11 +4,11 @@ Resources and urls for grabbing service
 
 from flask import request
 from flask_restful import Resource
+
 from service_api import api_
 from service_api.constants import URLS
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import MetaDataError
-
 from .utils.db import RealtyFetcher
 
 

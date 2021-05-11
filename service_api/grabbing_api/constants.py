@@ -7,8 +7,6 @@ import os
 
 DOMRIA_TOKENS_LIST = os.environ.get("DOMRIA_API_KEYS").split(".")
 CACHED_CHARACTERISTICS = "characteristics_avaliable"
-CACHED_CITIES = "cities_upload"
-CACHED_STATES = "states_upload"
 
 # must be dict with datetime.timedelta params
 CACHED_CHARACTERISTICS_EXPIRE_TIME = {

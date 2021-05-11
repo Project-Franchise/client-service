@@ -63,6 +63,14 @@
     "category_xref": {
       "loader": "CategoryXRefServicesLoader",
       "depends_on": ["category_aliases", "categories", "services"]
+    },
+    "state_xref_olx": {
+      "loader": "StateOlxXRefServicesLoader",
+      "depends_on": ["state_aliases", "states", "services"]
+    },
+    "city_xref_olx": {
+      "loader": "CityOlxXRefServicesLoader",
+      "depends_on": ["city_aliases", "cities", "services", "state_xref_olx"]
     }
   }
 }

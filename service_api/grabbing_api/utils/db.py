@@ -12,7 +12,6 @@ from service_api.exceptions import (CycleReferenceException, MetaDataError, Obje
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
 from service_api.grabbing_api.constants import (PATH_TO_METADATA)
 from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
-from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
 from . import core_data_loaders
 from .grabbing_utils import open_metadata

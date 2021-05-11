@@ -1,5 +1,5 @@
 """
-Handler module docstring for pylint
+Handlers for Domria service
 """
 import json
 from abc import ABC, abstractmethod

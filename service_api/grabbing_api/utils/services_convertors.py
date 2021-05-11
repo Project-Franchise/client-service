@@ -205,16 +205,15 @@ class DomRiaInputConverter(AbstractInputConverter):
                 key = char_description["eq"].format(value=str(parameter))
                 new_params[key] = value
                 continue
-
-            value_from = value.get("values")[GE]
-            value_to = value.get("values")[LE]
-
-            key_from = char_description["ge"].format(value_from=str(parameter))
-            key_to = char_description["le"].format(value_to=str(parameter))
-
-            new_params[key_from] = value_from
-            new_params[key_to] = value_to
-
+            if (value.get("values")).get("ge"):
+                value_from = value.get("values")["ge"]
+                key_from = char_description["ge"].format(value_from=str(parameter))
+                new_params[key_from] = value_from
+            if (value.get("values")).get("le"):
+                value_to = value.get("values")["le"]
+                key_to = char_description["le"].format(value_to=str(parameter))
+                new_params[key_to] = value_to
+        new_params["lang_id"] = 4
         return new_params
 
     def process_characteristics(self, realty_type_aliases, redis_ex_time: Dict, redis_characteristics: str):

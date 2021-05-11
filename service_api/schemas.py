@@ -7,7 +7,7 @@ from typing import Dict, List
 from marshmallow import Schema, ValidationError, fields, validate
 
 from service_api import Base
-from service_api.constants import PARSING_REQUEST
+from service_api.constants import PARSING_REQUEST, CHANGE_CONST
 from service_api.errors import BadRequestException
 
 
@@ -37,6 +37,14 @@ def validate_non_negative_field(value):
     """
     if value < 0:
         raise ValidationError("This field must be non negative")
+
+
+def validate_range_filters(value):
+    """
+    Function for validation of range filters
+    """
+    if value.get("le") and value.get("ge") and value.get("le") < value.get("ge"):
+        raise ValidationError("Invalid range parameters")
 
 
 def parsing_request(params):
@@ -268,11 +276,16 @@ def filters_validation(params: Dict, models: List[Base], schemes: List[Schema]) 
 
         filters.append({key: params.get(key)
                         for key in params
-                        if hasattr(objects, key) or (isinstance(objects, list) and key in objects)})
+                        if hasattr(objects, key) or
+                        (isinstance(objects, list) and key in objects)})
 
     if sum(map(len, filters)) != len(params):
         raise BadRequestException("Undefined parameters found")
     iter_filters = iter(filters)
+    for item in filters:
+        for items, values in item.items():
+            if isinstance(values, dict):
+                item[items] = {key: value for key, value in values.items()}
     for scheme in schemes:
         dict_to_validate = next(iter_filters)
         try:

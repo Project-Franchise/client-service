@@ -76,7 +76,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
         """
         Creates records in the database on the ID list
         """
-        params = {"api_key": DOMRIA_TOKEN}
+        params = {"api_key": DOMRIA_TOKEN, "lang_id": 4}
         for param, val in service_metadata["optional"].items():
             params[param] = val
 

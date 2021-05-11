@@ -20,6 +20,14 @@ def validate_non_negative_field(value):
         raise ValidationError("This field must be non negative")
 
 
+def validate_range_filters(value):
+    """
+    Function for validation of range filters
+    """
+    if value.get("le") and value.get("ge") and value.get("le") < value.get("ge"):
+        raise ValidationError("Invalid range parameters")
+
+
 def parsing_request(params):
     """
     Parse and convert input params to dict representation
@@ -89,6 +97,7 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float(validate=validate_non_negative_field, allow_none=True)
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
+    original_id = fields.Integer()
 
 
 class RealtyDetailsInputSchema(Schema):
@@ -244,13 +253,16 @@ def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> L
     :param: dict
     :return: List[dict]
     """
-    filters = []
     models, schemes = zip(*validators)
     filters = [{key: params.get(key) for key in params if hasattr(objects, key)} for objects in models]
 
     if sum(map(len, filters)) != len(params):
         raise BadFiltersException("Undefined parameters found")
     iter_filters = iter(filters)
+
+    for item in filters:
+        item = {key: values for key, values in item.items() if isinstance(values, dict)}
+
     for scheme in schemes:
         dict_to_validate = next(iter_filters)
         try:

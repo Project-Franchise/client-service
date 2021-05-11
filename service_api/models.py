@@ -30,9 +30,13 @@ class RealtyDetails(Base):
     square = Column(Float, nullable=True)
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
-    original_url = Column(VARCHAR(255), nullable=False, unique=True)
+    original_url = Column(VARCHAR(255), nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     original_id = Column(BIGINT, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint(original_url, version),
+    )
 
 
 class Realty(Base):

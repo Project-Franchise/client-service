@@ -12,11 +12,12 @@ from bs4 import BeautifulSoup
 
 import requests
 from redis import RedisError
+
 from service_api import CACHE, LOGGER, models, session_scope
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
-                                                DOMRIA_TOKEN, PATH_TO_METADATA, GE, LE)
+                                                DOMRIA_TOKEN, PATH_TO_METADATA)
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 from service_api.grabbing_api.utils import driver
 
@@ -205,7 +206,6 @@ class DomRiaInputConverter(AbstractInputConverter):
     def build_new_dict(self, params: dict, realty_details_metadata) -> dict:
         """
         Method, that forms dictionary with parameters for the request
-        ::
         """
         new_params, fields_desc = {}, realty_details_metadata["fields"]
         for parameter, value in params.items():
@@ -214,16 +214,15 @@ class DomRiaInputConverter(AbstractInputConverter):
                 key = char_description["eq"].format(value=str(parameter))
                 new_params[key] = value
                 continue
-
-            value_from = value.get("values")[GE]
-            value_to = value.get("values")[LE]
-
-            key_from = char_description["ge"].format(value_from=str(parameter))
-            key_to = char_description["le"].format(value_to=str(parameter))
-
-            new_params[key_from] = value_from
-            new_params[key_to] = value_to
-
+            if (value.get("values")).get("ge"):
+                value_from = value.get("values")["ge"]
+                key_from = char_description["ge"].format(value_from=str(parameter))
+                new_params[key_from] = value_from
+            if (value.get("values")).get("le"):
+                value_to = value.get("values")["le"]
+                key_to = char_description["le"].format(value_to=str(parameter))
+                new_params[key_to] = value_to
+        new_params["lang_id"] = 4
         return new_params
 
     def process_characteristics(self, realty_type_aliases, redis_ex_time: Dict, redis_characteristics: str):

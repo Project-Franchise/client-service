@@ -42,7 +42,8 @@ class DomriaLimitationSystem:
         for token in range(2):
             token = cls.TOKENS[0]
             with session_scope() as session:
-                tmp = session.query(RequestsHistory).where(RequestsHistory.hashed_token == str(hash(token)) and
+                hashed_token = hash(token)
+                tmp = session.query(RequestsHistory).where(RequestsHistory.hashed_token == str(hashed_token) and
                                                            RequestsHistory.request_timestamp.between(
                     datetime.now() - timedelta(**cls.EXPIRE_TIME),
                     datetime.now())).count()

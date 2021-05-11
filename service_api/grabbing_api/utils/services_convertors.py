@@ -116,13 +116,13 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 model = getattr(models, model)
 
                 if not model:
-                    raise Warning("There is no such model named {}".format(model))
+                    raise ObjectNotFoundException("There is no such model named {}".format(model))
 
                 try:
                     obj = recognize_by_alias(model, self.response[response_key])
                 except ObjectNotFoundException as error:
-                    LOGGER.error("%s",error.args)
-                    break
+                    LOGGER.error("%s, advertisement_id: %s",error.args, self.response.get("realty_id"))
+                    raise
                 realty_data[key] = obj.id
 
             if city_characteristics:

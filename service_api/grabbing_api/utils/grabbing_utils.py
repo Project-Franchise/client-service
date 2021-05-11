@@ -30,8 +30,6 @@ def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
 
         raise
 
-    print(record)
-
     with session_scope() as session:
         existing_record = session.query(model).filter_by(**valid_data).first()
         if existing_record is None:

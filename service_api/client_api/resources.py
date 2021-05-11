@@ -136,10 +136,11 @@ class RealtyResource(Resource):
                 raise BadRequestException(error.args)from error
 
             offset = (page - 1) * per_page
-
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
-                    getattr(RealtyDetails, key).between(value[GE], value[LE])
+                    getattr(RealtyDetails, key).between(
+                        GE if not value[GE] else value[GE],
+                        LE if not value[LE] else value[LE])
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()

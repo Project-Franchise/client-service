@@ -82,38 +82,18 @@
             "model": "Realty",
             "fields": {
               "city_id": {
-                "response_key": {
-                  "regex": "",
-                  "parse_marker": ""
-                },
                 "model": "City"
               },
               "state_id": {
-                "response_key": {
-                  "regex": "",
-                  "parse_marker": ""
-                },
                 "model": "State"
               },
               "realty_details_id": {
-                "response_key": {
-                  "regex": "",
-                  "parse_marker": ""
-                },
                 "model": "RealtyDetails"
               },
               "realty_type_id": {
-                "response_key": {
-                  "regex": "",
-                  "parse_marker": ""
-                },
                 "model": "RealtyType"
               },
               "operation_type_id": {
-                "response_key": {
-                  "regex": "",
-                  "parse_marker": ""
-                },
                 "model": "OperationType"
               }
             }
@@ -126,9 +106,63 @@
               "square": "Загальна площа",
               "price": "Ціна",
               "published_at": null,
-              "original_url": null
+              "original_url": null,
+              "original_id": null
             }
           }
+        },
+        "parser": {
+          "tags": {
+            "class": "css-sfcl1s",
+            "html_tag": "p",
+            "floor": "Поверх: ",
+            "floors_number": "Поверховість: ",
+            "square": "Загальна площа: ",
+            "realty_type": [
+              "Тип об'єкта: ",
+              "Тип нерухомості: ",
+              "Тип будинку: "
+            ]
+          },
+          "price": {
+            "class": "css-8kqr5l-Text eu5v0x0",
+            "html_tag": "h3"
+          },
+          "published_at": {
+            "class": "css-19yf5ek",
+            "html_tag": "span",
+            "months": {
+              "грудня": "12",
+              "січня": "01",
+              "лютого": "02",
+              "березня": "03",
+              "квітня": "04",
+              "травня": "05",
+              "червня": "06",
+              "липня": "07",
+              "серпня": "08",
+              "вересня": "09",
+              "жовтня": "10",
+              "листопада": "11"
+            }
+          },
+          "location": {
+            "class": "css-1nrl4q4"
+          },
+          "operation_type": {
+            "class": "css-862oeo",
+            "html_tag": "a",
+            "types": [
+              "Продаж",
+              "Довгострокова оренда",
+              "Подобова оренда житла"
+            ]
+          },
+          "original_id": {
+            "class": "css-7oa68k-Text eu5v0x0",
+            "html_tag": "span"
+          },
+          "link": "https://www.olx.ua/d/uk/obyavlenie/"
         }
       }
     },

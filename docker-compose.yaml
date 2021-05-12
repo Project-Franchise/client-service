@@ -17,7 +17,7 @@ services:
       - CS_HOST_IP=0.0.0.0
       - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
       - REDIS_IP=redis
-      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - DOMRIA_API_KEYS=${DOMRIA_API_KEYS}
       - CELERY_BACKEND_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
 
@@ -38,10 +38,10 @@ services:
       - CS_HOST_IP=0.0.0.0
       - DATABASE_URL=postgresql://lv-python-mc:575@db:5432/Realty_DB
       - REDIS_IP=redis
-      - DOMRIA_API_KEY=${DOMRIA_API_KEY}
+      - DOMRIA_API_KEYS=${DOMRIA_API_KEYS}
       - CELERY_BACKEND_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
-    command: celery -A service_api.celery_tasks.tasks.celery_app worker -B 
+    command: celery -A service_api.celery_tasks.tasks.celery_app worker -B
 
   db:
     image: postgres:13.2

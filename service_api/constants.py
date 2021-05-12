@@ -5,6 +5,7 @@ URLS = {
     "CLIENT": {
         "INDEX_URL": "/",
         "GET_CITIES_URL": "/cities",
+        "GET_CITY_BY_ID_URL": "/city",
         "GET_REALTY_URL": "/realty",
         "GET_STATES_URL": "/states",
         "GET_STATES_BY_ID_URL": "/states/<state_id>",
@@ -23,10 +24,14 @@ CACHED_REQUESTS_EXPIRE_TIME = {
     "hours": 2
 }
 
-PARSING_REQUEST = {"le": "to", "ge": "from", "eq": None}
+
+ADDITIONAL_FILTERS = ["page", "page_ads_number"]
+PARSING_REQUEST = {"le": "le", "ge": "ge", "eq": None}
+LE = 10**18
+GE = 0
 VERSION_DEFAULT_TIMESTAMP = None
 
 PAGE_LIMIT = 10_000
 CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE = {
-    "minute": "*/5"
+    "minute": "*/2"
 }

@@ -3,21 +3,25 @@ Module with data Loaders
 """
 import csv
 from abc import ABC, abstractmethod
+
 from typing import Dict, List
 
-import requests
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
+from bs4 import BeautifulSoup
 
 from service_api import session_scope, LOGGER
+from service_api.utils import send_request
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
-    DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
+    PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
-    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
+    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
+    PATH_TO_PARSER_METADATA)
+from service_api.grabbing_api.utils import init_driver
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
@@ -27,6 +31,7 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 
 
@@ -40,7 +45,7 @@ class BaseLoader(ABC):
         Fetches info from metadata
         Raise MetaDataError
         """
-        self.metadata = open_metadata(PATH_TO_METADATA)
+        self.metadata = open_metadata(PATH_TO_METADATA) | open_metadata(PATH_TO_PARSER_METADATA)
 
     @abstractmethod
     def load(self, *args, **kwargs) -> None:
@@ -378,8 +383,8 @@ class CityXRefServicesLoader(XRefBaseLoader):
         :param: state_id: int
         :return: int
         """
-
-        if (state_id := kwargs.get("state_id")) is None:
+        state_id = kwargs.get("state_id")
+        if state_id is None:
             raise KeyError("No parameter state_id provided in function load")
 
         with session_scope() as session:
@@ -401,11 +406,11 @@ class CityXRefServicesLoader(XRefBaseLoader):
 
             set_by_state = session.query(City).filter_by(state_id=state_id)
 
-        response = requests.get("{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
-                                                  state_xref.original_id),
+        response = send_request("GET", "{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
+                                                         state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
-                                    self.domria_meta["token_name"]: DOMRIA_TOKEN})
+                                    self.domria_meta["token_name"]: DomriaLimitationSystem.get_token()})
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
@@ -456,7 +461,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
 
         params = {
             "lang_id": self.domria_meta["optional"]["lang_id"],
-            "api_key": DOMRIA_TOKEN
+            "api_key": DomriaLimitationSystem.get_token()
         }
 
         with session_scope() as session:
@@ -465,7 +470,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
 
         url = "{}/{}".format(self.domria_meta["base_url"], domria_states_meta["url_prefix"])
-        response = requests.get(url, params=params)
+        response = send_request("GET", url, params=params)
         if not response.ok:
             raise RequestException(response.text)
 
@@ -498,17 +503,19 @@ class StateXRefServicesLoader(XRefBaseLoader):
 
         return counter
 
+
 class RealtyLoader:
     """
     Load realty data to db
     """
 
-    def load(self, all_data: List[Dict]) -> None:
+    def load(self, all_data: List[Dict]) -> List[Dict]:
         """
          Calls mapped loader classes for keys in params dict input
         :params: List[Dict] - list of realty
         :return: None - the only loader's responsibility is to load realty and realty details to the database
         """
+        result = []
         for realty, realty_details_id in all_data:
             try:
                 load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
@@ -523,10 +530,337 @@ class RealtyLoader:
                     filter_by(**realty_details_id).first().id
                 realty["realty_details_id"] = realty_details_id
             try:
-                load_data(RealtySchema(), realty, Realty)
-
+                result.append(RealtySchema().dump(load_data(RealtySchema(), realty, Realty)))
             except KeyError as error:
                 print(error.args)
             except AlreadyInDbException as error:
                 print(error)
                 continue
+
+        return result
+
+
+class OlxXRefBaseLoader(BaseLoader):
+    """
+    Base Loader for cross reference tables for olx
+    """
+
+    def __init__(self) -> None:
+        """
+        Loads olx metadata
+        """
+        super().__init__()
+        self.olx_meta = self.metadata["OLX"]
+
+
+class OperationTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table OperationTypeXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to operation type cross reference service table
+        """
+
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["operation_type"].items():
+            try:
+                obj = recognize_by_alias(OperationType, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+
+
+class CategoryOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table CategoryXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to category cross reference service table
+        """
+
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(
+                Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(
+                    desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["category"].items():
+            try:
+                obj = recognize_by_alias(Category, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(CategoryToServiceSchema(), data, CategoryToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+
+
+class RealtyTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table realtyTypeXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to realty type cross reference service table
+        """
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(
+                Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(
+                    desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["realty_type"].items():
+            try:
+                obj = recognize_by_alias(RealtyType, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+
+
+class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Class for filling db with state xref reference from olx
+    """
+
+    @staticmethod
+    def get_states() -> dict:
+        """
+        Navigating through site olx.com and getting states
+        :return: dict
+        """
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        items = soup.find_all('a', class_='link gray')
+        urls = {}
+
+        with session_scope() as session:
+            states = session.query(State).all()
+
+        states = [state.name for state in states]
+
+        for item in items:
+            text = item.get_text()
+            if text.split(' ')[0] in states:
+                urls[text.split()[0]] = ((item.get('href')).split('/'))[-2]
+        driver.quit()
+        return urls
+
+    def load(self, *args, **kwargs) -> int:
+        """
+        Load states from OLX
+        Returns amount of fetched states
+        :return: int
+        """
+
+        with session_scope() as session:
+            service = session.query(Service).filter_by(name=self.olx_meta["name"]).first()
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(self.olx_meta["name"]))
+
+        service_states = StateOlxXRefServicesLoader.get_states()
+        counter = 0
+        for state, url in service_states.items():
+            try:
+                state_from_alias = recognize_by_alias(State, state)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+
+            data = {
+                "entity_id": state_from_alias.id,
+                "service_id": service.id,
+                "original_id": url
+            }
+
+            try:
+                load_data(StateToServiceSchema(), data, StateToService)
+            except ValidationError as error:
+                LOGGER.error(error)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+            else:
+                counter += 1
+
+        return counter
+
+
+class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table cityTypeXRefServices with original_ids from olx
+    """
+
+    def get_cities_by_state(self, html, state, urls):
+        """
+        Getting all cities by particular state from olx
+        """
+        soup = BeautifulSoup(html, 'html.parser')
+        items = soup.find_all('a', class_="regionSelectA2")
+
+        if not items:
+            return {}
+
+        with session_scope() as session:
+            state = session.query(State).filter_by(name=state).first()
+            cities_object = session.query(
+                City).filter_by(state_id=state.id).all()
+
+        cities = [city.name for city in cities_object]
+        urls[state.name] = {}
+
+        for item in items:
+            if item.get_text() in cities:
+                urls[state.name][item.get_text()] = item.get('data-url')
+        return urls
+
+    def get_all_cities(self):
+        """
+        getting all cities from olx
+        :return: dict
+        """
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
+        olx_states = self.olx_meta["entities"]["states"]
+        urls_cities = {}
+        for key, value in olx_states.items():
+            cities = {}
+            while not cities:
+                driver.execute_script("arguments[0].click();",
+                                      driver.find_element_by_css_selector(f'a[data-id="{value}"]'))
+                cities = self.get_cities_by_state(driver.page_source, key, cities)
+            driver.execute_script("arguments[0].click();",
+                                  driver.find_element_by_css_selector('a[id=back_region_link]'))
+            for state, dict_of_cities in cities.items():
+                urls_cities[state] = dict_of_cities
+        return urls_cities
+
+    def load(self, *args, **kwargs) -> Dict[int, int]:
+        """
+        Loads data to city cross reference service table
+        """
+        status = {}
+
+        response_from_olx = self.get_all_cities()
+
+        for state_name, cities in response_from_olx.items():
+            try:
+                status[state_name] = self.load_cities_by_state(state_name=state_name, cities=cities)
+            except ObjectNotFoundException as error:
+                LOGGER.error(error.desc)
+            except KeyError as error:
+                LOGGER.error(error)
+
+        return status
+
+    def load_cities_by_state(self, **kwargs) -> int:
+        """
+        loading cities from OLX to database by each state separately
+        Returns amount of fetched cities
+        :param: state_id: int
+        :return: int
+        """
+
+        if (state_name := kwargs.get("state_name")) is None:
+            raise KeyError("No parameter state_id provided in function load")
+
+        with session_scope() as session:
+            state = session.query(State).filter(State.name == state_name,
+                                                State.version == VERSION_DEFAULT_TIMESTAMP).first()
+
+        if state is None:
+            raise ObjectNotFoundException(message="No such state_id in DB")
+
+        with session_scope() as session:
+            service = session.query(Service).filter_by(name=self.olx_meta["name"]).first()
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(self.olx_meta["name"]))
+            state_xref = session.query(StateToService).get({"entity_id": state.id, "service_id": service.id})
+            if state_xref is None:
+                raise ObjectNotFoundException(desc="No StateXrefService obj found")
+
+            set_by_state = session.query(City).filter_by(state_id=state.id)
+
+        counter = 0
+        cities = kwargs.get("cities")
+
+        for city, original_id in cities.items():
+            try:
+                city = recognize_by_alias(City, city, set_by_state)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+
+            data = {
+                "entity_id": city.id,
+                "service_id": service.id,
+                "original_id": original_id
+            }
+
+            try:
+                load_data(CityToServiceSchema(), data, CityToService)
+            except ValidationError as error:
+                LOGGER.error(error)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+            else:
+                counter += 1
+
+        return counter

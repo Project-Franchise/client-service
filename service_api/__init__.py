@@ -5,6 +5,7 @@ Module that contains client_api, grabbing_api, models, schemas
 import logging
 import os
 from contextlib import contextmanager
+import threading
 from typing import Iterator
 
 import redis
@@ -35,20 +36,22 @@ class UnicodeApi(Api):
 flask_app = Flask(__name__)
 flask_app.config.from_object(os.environ.get("FLASK_CONFIG_MODE", "config.DevelopmentConfig"))
 api_ = UnicodeApi(flask_app)
+from .celery_tasks import celery_app
 
 # connecting to DB
 engine = create_engine(flask_app.config.get("SQLALCHEMY_DATABASE_URL"))
 metadata = MetaData(bind=engine)
 Base = declarative_base(metadata)
 Session_factory = sessionmaker(bind=engine)
-session = Session_factory()
+sql_session = Session_factory()
 
 # entrypoint for caching using redis
 CACHE = redis.Redis(
     host=os.environ["REDIS_IP"], port=os.environ["REDIS_PORT"], decode_responses=True)
 
-
 LOGGER = setup_logger('app_logger', 'logs/service.log', logging.DEBUG)
+
+thread_local = threading.local()
 
 
 @contextmanager
@@ -57,6 +60,9 @@ def session_scope() -> Iterator[Session]:
     Context manager to handle transaction to DB
     """
     try:
+        if not hasattr(thread_local, "sql_session"):
+            thread_local.sql_session = Session_factory()
+        session = thread_local.sql_session
         yield session
         session.commit()
     except SQLAlchemyError:
@@ -69,4 +75,5 @@ def session_scope() -> Iterator[Session]:
             session.rollback()
             raise
 
-from . import celery_tasks, client_api, commands, grabbing_api
+
+from . import celery_tasks, client_api, grabbing_api

@@ -11,11 +11,10 @@ from service_api.exceptions import (CycleReferenceException, MetaDataError, Obje
                                     ResponseNotOkException, LimitBoundError)
 from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
 from service_api.grabbing_api.constants import (PATH_TO_METADATA)
-from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
 from service_api.grabbing_api.utils.grabbing_utils import open_metadata
+from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
 from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
 from . import core_data_loaders
-from .grabbing_utils import open_metadata
 
 
 class FetchingOrderGenerator:
@@ -186,12 +185,15 @@ class RealtyFetcher:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
 
-
             request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
-            response = request_to_domria.get_latest_data()
-            loader = RealtyLoader()
             try:
-                loader.load(response)
+                response = request_to_domria.get_latest_data()
+            except LimitBoundError as error:
+                LOGGER.warning(error.args[0])
+                continue
+
+            try:
+                RealtyLoader().load(response)
             except LimitBoundError as error:
                 print(error)
             realties.extend(response)

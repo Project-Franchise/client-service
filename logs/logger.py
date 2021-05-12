@@ -1,3 +1,6 @@
+"""
+File for setuping logger
+"""
 import logging
 import sys
 

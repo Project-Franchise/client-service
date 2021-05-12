@@ -6,18 +6,16 @@ from typing import Dict
 from celery import group
 from sqlalchemy import select
 
-from service_api import flask_app, session_scope
-from service_api.celery_tasks.utils import make_celery
+from service_api import session_scope
+from service_api.celery_tasks import celery_app
 from service_api.constants import PAGE_LIMIT
 from service_api.errors import BadRequestException
 from service_api.exceptions import BadFiltersException
 from service_api.grabbing_api.utils.db import RealtyFetcher
-from service_api.models import (AdditionalFilters, Realty, RealtyDetails,RealtyType, State)
+from service_api.grabbing_api.utils.updaters import RealtyUpdater
+from service_api.models import (AdditionalFilters, Realty, RealtyDetails, RealtyType, State)
 from service_api.schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema,
                                  filters_validation)
-
-
-celery_app = make_celery(flask_app)
 
 
 @celery_app.task
@@ -68,3 +66,13 @@ def fill_db_with_realties():
 
     group_of_tasks = group([load_realties_by_filters.s(f) for f in filters])
     group_of_tasks()
+
+
+@celery_app.task()
+def update_realties():
+    """
+    Passes on all records of realty and realty details in a DB,
+    compares with the information on service and updates if necessary
+    """
+    updater = RealtyUpdater()
+    return updater.update_records()

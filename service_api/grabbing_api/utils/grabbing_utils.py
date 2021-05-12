@@ -9,8 +9,9 @@ from typing import Dict
 
 from marshmallow import ValidationError
 from marshmallow.schema import Schema
-from sqlalchemy.orm import make_transient
 from sqlalchemy import func
+from sqlalchemy.orm import make_transient
+
 from service_api import Base, LOGGER, session_scope
 from service_api.exceptions import AlreadyInDbException, MetaDataError, ModelNotFoundException, ObjectNotFoundException
 from service_api.models import Realty, RealtyDetails
@@ -26,7 +27,8 @@ def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
         valid_data = model_schema.load(data)
         record = model(**valid_data)
     except ValidationError as error:
-        LOGGER.error(error)
+        LOGGER.error("Error message:%s, data for validation %s", error, valid_data)
+
         raise
 
     with session_scope() as session:

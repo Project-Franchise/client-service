@@ -20,6 +20,14 @@ def validate_non_negative_field(value):
         raise ValidationError("This field must be non negative")
 
 
+def validate_range_filters(value):
+    """
+    Function for validation of range filters
+    """
+    if value.get("le") and value.get("ge") and value.get("le") < value.get("ge"):
+        raise ValidationError("Invalid range parameters")
+
+
 def parsing_request(params):
     """
     Parse and convert input params to dict representation
@@ -236,6 +244,17 @@ class CategoryAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
+class RequestsHistorySchema(Schema):
+    """
+    Schema for Requests History
+    """
+    id = fields.Integer()
+    url = fields.String(validate=validate.Length(max=4096))
+    hashed_token = fields.String(validate=validate.Length(max=255))
+    request_timestamp = fields.DateTime(
+        validate=validate.Range(min=datetime(1990, 1, 1)))
+
+
 def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details
@@ -248,6 +267,10 @@ def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> L
     if sum(map(len, filters)) != len(params):
         raise BadFiltersException("Undefined parameters found")
     iter_filters = iter(filters)
+
+    for item in filters:
+        item = {key: values for key, values in item.items() if isinstance(values, dict)}
+
     for scheme in schemes:
         dict_to_validate = next(iter_filters)
         try:

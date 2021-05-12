@@ -1,6 +1,7 @@
 """
 Models for service_api
 """
+from datetime import datetime
 from sqlalchemy import (BIGINT, TIMESTAMP, VARCHAR, Column, Float, ForeignKey, PrimaryKeyConstraint, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
@@ -30,8 +31,12 @@ class RealtyDetails(Base):
     square = Column(Float, nullable=True)
     price = Column(Float, nullable=False)
     published_at = Column(TIMESTAMP, nullable=False)
-    original_url = Column(VARCHAR(255), nullable=False, unique=True)
+    original_url = Column(VARCHAR(255), nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
+
+    __table_args__ = (
+        UniqueConstraint(original_url, version),
+    )
 
 
 class Realty(Base):
@@ -370,3 +375,18 @@ class AdditionalFilters:
     """
     page = None
     page_ads_number = None
+
+
+class RequestsHistory(Base):
+    """
+    Requests history model
+    :param: request_text str
+    :param: request_timestamp datetime
+    """
+
+    __tablename__ = "requests_history"
+
+    id = Column(BIGINT, primary_key=True)
+    url = Column(VARCHAR(4096), nullable=False)
+    hashed_token = Column(VARCHAR(200), nullable=False)
+    request_timestamp = Column(TIMESTAMP, nullable=False, default=datetime.now())

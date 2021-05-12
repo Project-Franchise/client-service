@@ -24,10 +24,14 @@ CACHED_REQUESTS_EXPIRE_TIME = {
     "hours": 2
 }
 
-PARSING_REQUEST = {"le": "to", "ge": "from", "eq": None}
+
+ADDITIONAL_FILTERS = ["page", "page_ads_number"]
+PARSING_REQUEST = {"le": "le", "ge": "ge", "eq": None}
+LE = 10**18
+GE = 0
 VERSION_DEFAULT_TIMESTAMP = None
 
 PAGE_LIMIT = 10_000
 CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE = {
-    "minute": "*/5"
+    "minute": "*/2"
 }

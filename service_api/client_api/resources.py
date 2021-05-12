@@ -6,14 +6,13 @@ from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-
 from service_api import CACHE, api_, models, schemas, session_scope
-from service_api.constants import URLS, VERSION_DEFAULT_TIMESTAMP
 from service_api.client_api.utils import get_latest_data_from_grabbing
+from service_api.constants import URLS, VERSION_DEFAULT_TIMESTAMP
 from service_api.errors import BadRequestException
 from service_api.exceptions import BadFiltersException
 from service_api.grabbing_api.constants import GE, LE
-from service_api.models import Realty, RealtyDetails,  AdditionalFilters
+from service_api.models import Realty, RealtyDetails, AdditionalFilters
 from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
     RealtyDetailsInputSchema
 
@@ -51,7 +50,8 @@ class CityResource(Resource):
         if not filters:
             raise BadRequestException("No filters provided")
 
-        if errors := schemas.CitySchema().validate(filters):
+        errors = schemas.CitySchema().validate(filters)
+        if errors:
             raise BadRequestException(errors)
 
         with session_scope() as session:
@@ -135,8 +135,8 @@ class RealtyResource(Resource):
             realty_dict, realty_details_dict, additional_params_dict, *_ = filters_validation(
                 filters,
                 [(Realty, RealtySchema),
-                (RealtyDetails, RealtyDetailsInputSchema),
-                (AdditionalFilters, AdditionalFilterParametersSchema)])
+                 (RealtyDetails, RealtyDetailsInputSchema),
+                 (AdditionalFilters, AdditionalFilterParametersSchema)])
         except BadFiltersException as error:
             raise BadRequestException from error
 
@@ -160,10 +160,11 @@ class RealtyResource(Resource):
                 raise BadRequestException(error.args)from error
 
             offset = (page - 1) * per_page
-
             realty = session.query(Realty).filter_by(**realty_dict).filter(
                 *[
-                    getattr(RealtyDetails, key).between(value[GE], value[LE])
+                    getattr(RealtyDetails, key).between(
+                        value.get(GE) or 0,
+                        value.get(LE) or 10^19)
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()

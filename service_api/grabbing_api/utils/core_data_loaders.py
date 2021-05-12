@@ -4,19 +4,22 @@ Module with data Loaders
 import csv
 import os
 from abc import ABC, abstractmethod
+
 from typing import Dict, List
 
-import requests
+from bs4 import BeautifulSoup
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
+from selenium import webdriver
 from sqlalchemy import select
 
 from service_api import session_scope, LOGGER
+from service_api.utils import send_request
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
 from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
-    DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
+    PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
     PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
     PATH_TO_PARSER_METADATA)
@@ -24,15 +27,14 @@ from service_api.models import (City, CityAlias, CityToService, OperationType, O
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
                                 Realty, RealtyDetails)
-
 from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
                                  OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
                                  RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
-from .grabbing_utils import load_data, open_metadata, recognize_by_alias
-from selenium import webdriver
-from bs4 import BeautifulSoup
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
+from .grabbing_utils import (load_data, open_metadata, recognize_by_alias)
+
 
 
 class BaseLoader(ABC):
@@ -383,8 +385,8 @@ class CityXRefServicesLoader(XRefBaseLoader):
         :param: state_id: int
         :return: int
         """
-
-        if (state_id := kwargs.get("state_id")) is None:
+        state_id = kwargs.get("state_id")
+        if state_id is None:
             raise KeyError("No parameter state_id provided in function load")
 
         with session_scope() as session:
@@ -406,11 +408,11 @@ class CityXRefServicesLoader(XRefBaseLoader):
 
             set_by_state = session.query(City).filter_by(state_id=state_id)
 
-        response = requests.get("{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
-                                                  state_xref.original_id),
+        response = send_request("GET", "{}/{}/{}".format(self.domria_meta["base_url"], domria_cities_meta["url_prefix"],
+                                                         state_xref.original_id),
                                 params={
                                     "lang_id": self.domria_meta["optional"]["lang_id"],
-                                    self.domria_meta["token_name"]: DOMRIA_TOKEN})
+                                    self.domria_meta["token_name"]: DomriaLimitationSystem.get_token()})
         if not response.ok:
             raise ResponseNotOkException(response.text)
 
@@ -461,7 +463,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
 
         params = {
             "lang_id": self.domria_meta["optional"]["lang_id"],
-            "api_key": DOMRIA_TOKEN
+            "api_key": DomriaLimitationSystem.get_token()
         }
 
         with session_scope() as session:
@@ -470,7 +472,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
                 raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
 
         url = "{}/{}".format(self.domria_meta["base_url"], domria_states_meta["url_prefix"])
-        response = requests.get(url, params=params)
+        response = send_request("GET", url, params=params)
         if not response.ok:
             raise RequestException(response.text)
 
@@ -651,7 +653,6 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
                 urls[state.name][item.get_text()] = item.get('data-url')
         return urls
 
-
     def get_all_cities(self):
         """
         getting all cities from olx
@@ -673,7 +674,6 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
             for state, dict_of_cities in cities.items():
                 urls_cities[state] = dict_of_cities
         return urls_cities
-
 
     def load(self, *args, **kwargs) -> Dict[int, int]:
         """

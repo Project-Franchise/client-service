@@ -650,26 +650,30 @@ class OlxParser:
         return result_url.group()
 
 
-def get_url_ads(link: str, number_of_ads: int) -> List[str]:
+def get_ads_urls(link: str, page_number: int, number_of_ads: int) -> List[str]:
     """
     Function to get all ads urls from OLX according to number of ads
     :param link: link to OLX advertisements with certain filters
+    :param page_number: needed to get ads to this page
     :param number_of_ads: returned number of advertisements
     :return: List[str]
     """
-    ads, next_page = find_all_ads(link)
-    num = number_of_ads - len(ads)
+    ads, next_page = find_all_ads_on_the_page(link)
+    gen_num = (page_number + 1) * number_of_ads
+    num = gen_num - len(ads)
     while next_page and num > 0:
-        more_ads, next_page = find_all_ads(next_page)
+        more_ads, next_page = find_all_ads_on_the_page(next_page)
         num -= len(more_ads)
         if num < 0:
             ads.extend(more_ads[:num])
         else:
             ads.extend(more_ads)
-    return ads if num >= 0 else ads[:num]
+    all_loaded_ads = ads if num >= 0 else ads[:gen_num]
+    partial = page_number * number_of_ads
+    return all_loaded_ads[partial:]
 
 
-def find_all_ads(link: str):
+def find_all_ads_on_the_page(link: str):
     """
     Function to find all ads urls on the page with html.parser
     :param link: link to OLX ads

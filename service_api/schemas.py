@@ -97,6 +97,7 @@ class RealtyDetailsSchema(Schema):
     price = fields.Float(validate=validate_non_negative_field, allow_none=True)
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
     original_url = fields.String(validate=validate.Length(max=255))
+    original_id = fields.Integer()
 
 
 class RealtyDetailsInputSchema(Schema):

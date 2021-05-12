@@ -7,3 +7,4 @@ set REDIS_IP=127.0.0.1
 set REDIS_PORT=6379
 set CELERY_BACKEND_URL=redis://127.0.0.1:6379/0
 set CELERY_BROKER_URL=redis://127.0.0.1:6379/0
+set FLASK_ENV=development

@@ -1,8 +1,8 @@
-"""Request history added
+"""RequestsHistory added
 
-Revision ID: 960c01f837f2
+Revision ID: d3ab13075552
 Revises: 3fdcde9df851
-Create Date: 2021-05-12 13:30:47.487916
+Create Date: 2021-05-12 13:25:48.482542
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '960c01f837f2'
+revision = 'd3ab13075552'
 down_revision = '3fdcde9df851'
 branch_labels = None
 depends_on = None

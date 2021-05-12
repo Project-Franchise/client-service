@@ -2,16 +2,14 @@
 Module with data Loaders
 """
 import csv
-import os
 from abc import ABC, abstractmethod
 
 from typing import Dict, List
 
-from bs4 import BeautifulSoup
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
-from selenium import webdriver
 from sqlalchemy import select
+from bs4 import BeautifulSoup
 
 from service_api import session_scope, LOGGER
 from service_api.utils import send_request
@@ -20,9 +18,10 @@ from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundExcept
                                     ResponseNotOkException, AlreadyInDbException)
 from service_api.grabbing_api.constants import (
     PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
-    PATH_TO_OPERATION_TYPE_CSV, PATH_TO_PARSER_METADATA, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV,
-    PATH_TO_SERVICES_CSV, PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV,
-    PATH_TO_CATEGORY_ALIASES_CSV)
+    PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
+    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
+    PATH_TO_PARSER_METADATA)
+from service_api.grabbing_api.utils import init_driver
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
@@ -510,12 +509,13 @@ class RealtyLoader:
     Load realty data to db
     """
 
-    def load(self, all_data: List[Dict]) -> None:
+    def load(self, all_data: List[Dict]) -> List[Dict]:
         """
          Calls mapped loader classes for keys in params dict input
         :params: List[Dict] - list of realty
         :return: None - the only loader's responsibility is to load realty and realty details to the database
         """
+        result = []
         for realty, realty_details_id in all_data:
             try:
                 load_data(RealtyDetailsSchema(), realty_details_id, RealtyDetails)
@@ -530,13 +530,14 @@ class RealtyLoader:
                     filter_by(**realty_details_id).first().id
                 realty["realty_details_id"] = realty_details_id
             try:
-                load_data(RealtySchema(), realty, Realty)
-
+                result.append(RealtySchema().dump(load_data(RealtySchema(), realty, Realty)))
             except KeyError as error:
                 print(error.args)
             except AlreadyInDbException as error:
                 print(error)
                 continue
+
+        return result
 
 
 class OlxXRefBaseLoader(BaseLoader):
@@ -677,8 +678,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
         Navigating through site olx.com and getting states
         :return: dict
         """
-        driver = webdriver.Chrome(os.environ.get('SELENIUM_PATH'))
-        driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         items = soup.find_all('a', class_='link gray')
@@ -772,8 +772,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        driver = webdriver.Chrome(os.environ.get('SELENIUM_PATH'))
-        driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         olx_states = self.olx_meta["entities"]["states"]
         urls_cities = {}

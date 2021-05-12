@@ -64,6 +64,18 @@
       "loader": "CategoryXRefServicesLoader",
       "depends_on": ["category_aliases", "categories", "services"]
     },
+    "realty_type_xref_olx": {
+      "loader": "RealtyTypeOlxXRefServicesLoader",
+      "depends_on": ["realty_type_aliases", "realty_types", "services"]
+    },
+    "category_xref_olx": {
+      "loader": "CategoryOlxXRefServicesLoader",
+      "depends_on": ["category_aliases", "categories", "services"]
+    },
+    "operation_type_xref_olx": {
+      "loader": "OperationTypeOlxXRefServicesLoader",
+      "depends_on": ["operation_type_aliases", "operation_types", "services"]
+    },
     "state_xref_olx": {
       "loader": "StateOlxXRefServicesLoader",
       "depends_on": ["state_aliases", "states", "services"]

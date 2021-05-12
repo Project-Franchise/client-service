@@ -164,7 +164,7 @@ class RealtyResource(Resource):
                 *[
                     getattr(RealtyDetails, key).between(
                         value.get(GE) or 0,
-                        value.get(LE) or 10^19)
+                        value.get(LE) or 10**19)
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()

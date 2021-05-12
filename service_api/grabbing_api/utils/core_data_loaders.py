@@ -20,7 +20,7 @@ from service_api.grabbing_api.constants import (
     PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
     PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
-from service_api.grabbing_api.utils import driver
+from service_api.grabbing_api.utils import init_driver
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
@@ -563,7 +563,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
         Navigating through site olx.com and getting states
         :return: dict
         """
-        driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         items = soup.find_all('a', class_='link gray')
@@ -656,7 +656,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
+        driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         olx_states = self.olx_meta["states_id"]
         urls_cities = {}

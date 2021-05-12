@@ -16,7 +16,7 @@ from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
                                                 PATH_TO_METADATA)
-from service_api.grabbing_api.utils import driver
+from service_api.grabbing_api.utils import init_driver
 from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 from service_api.utils import send_request
@@ -386,7 +386,7 @@ class OlxParser:
         :return: calls make_data() in return
         """
 
-        driver.get(link)
+        driver = init_driver(link)
 
         try:
             html = urllib.request.urlopen(link)
@@ -405,9 +405,9 @@ class OlxParser:
         price_string = soup.find(self.parser_metadata["price"]["html_tag"],
                                  attrs={"class": self.parser_metadata["price"]["class"]})
 
-        price, currency = self.price_divider(price_string)
+        price = self.price_divider(price_string)
 
-        result["price"] = self.price_converter(price, currency)
+        result["price"] = self.price_converter(price)
 
         published_at = soup.find(self.parser_metadata["published_at"]["html_tag"],
                                  attrs={"class": self.parser_metadata["published_at"]["class"]})
@@ -443,14 +443,14 @@ class OlxParser:
 
         return float(price), currency
 
-    def price_converter(self, price, currency):
+    def price_converter(self, price):
         """
         :param price: the price fetched from the parser
         :param currency: the currency needed to be converted to USD (for example $, € or грн.)
         :return: float price converted to usd
         """
-        if currency == "$":
-            return price
+        if price[1] == "$":
+            return price[0]
 
         with urllib.request.urlopen("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?&json") as url:
 
@@ -460,14 +460,14 @@ class OlxParser:
 
             usd_price = None
 
-            if currency == "грн.":
-                usd_price = price / usd_currency
+            if price[1] == "грн.":
+                usd_price = price[0] / usd_currency
 
-            elif currency == "€":
+            elif price[1] == "€":
                 eur = next(x for x in data if x["cc"] == "EUR")
                 eur_currency = round(eur["rate"], 2)
 
-                usd_price = price * eur_currency / usd_currency
+                usd_price = price[0] * eur_currency / usd_currency
 
             if not usd_price:
                 raise Warning("Wrong currency entered!")

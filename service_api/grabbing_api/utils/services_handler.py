@@ -8,11 +8,10 @@ from typing import Dict, List
 from service_api import LOGGER
 from service_api.utils import send_request
 from service_api.async_logic import get_all_responses
-from service_api.exceptions import  (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
-from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter)
+from service_api.exceptions import (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
+from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter,
+                                                                OLXOutputConverter, OlxParser)
 from .limitation import DomriaLimitationSystem
-
-
 
 
 class AbstractServiceHandler(ABC):
@@ -42,7 +41,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
     def get_latest_data(self):
         """
         Method that realise the logic of sending request to DomRia and getting items
-        :return: List(dict)
+        :return: List[Dict]
         """
         try:
             search_realty_metadata, service_name = self.metadata["urls"]["search_realty"], self.metadata["name"]
@@ -90,7 +89,7 @@ class DomriaServiceHandler(AbstractServiceHandler):
         responses_container = get_all_responses(url, params, ids)
         for response in responses_container:
             if not response.ok:
-                LOGGER.error("REsponse from Domria not ok: %s", response.content)
+                LOGGER.error("Response from Domria not ok: %s", response.content)
                 continue
             service_converter = DomRiaOutputConverter(response.json(), service_metadata)
 
@@ -120,6 +119,26 @@ class DomriaServiceHandler(AbstractServiceHandler):
         """
         page = page % page_ads_number
         current_items = search_response["items"][
-                        (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
-                        ]
+            (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
+        ]
         return self.create_records(current_items, metadata)
+
+
+class OlxServiceHandler(AbstractServiceHandler):
+    """
+    Handler class for OLX service
+    """
+
+    def get_latest_data(self):
+        """
+        Method that realise the logic of sending request to OLX and getting items
+        :return: List[Dict]
+        """
+        url = OLXOutputConverter(self.post_body, self.metadata).make_url()
+        olx_parser = OlxParser(self.metadata)
+        parsed_links = olx_parser.get_ads_urls(url, self.post_body["additional"]["page"],
+                                               self.post_body["additional"]["page_ads_number"])
+        records = []
+        for link in parsed_links:
+            records.append(olx_parser.main_logic(link))
+        return records

@@ -138,7 +138,7 @@ class RealtySchema(Schema):
     Schema for Realty model
     """
     id = fields.Integer()
-    city_id = fields.Integer(load_only=True, required=False)
+    city_id = fields.Integer(load_only=True, required=False, allow_none=True)
     city = fields.Nested(CitySchema, dump_only=True)
     state_id = fields.Integer(load_only=True)
     state = fields.Nested(StateSchema, dump_only=True)

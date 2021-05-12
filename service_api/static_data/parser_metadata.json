@@ -2,6 +2,7 @@
   "OLX": {
     "base_url": "https://www.olx.ua/uk/",
     "name": "OLX",
+    "handler_name": "OlxServiceHandler",
     "optional": {},
     "limits": {
       "page_ads_number": null,
@@ -9,7 +10,7 @@
     },
     "urls": {
       "search_realty": {
-        "url_prefix": "/nedvizhimost",
+        "url_prefix": "nedvizhimost",
         "url_order": [
           "realty_category_id",
           "operation_type_id",

@@ -2,6 +2,7 @@
 Module with data Loaders
 """
 import csv
+import os
 from abc import ABC, abstractmethod
 
 from typing import Dict, List
@@ -37,6 +38,8 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
+from selenium import webdriver
+
 
 
 class BaseLoader(ABC):

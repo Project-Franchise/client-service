@@ -96,7 +96,7 @@ def _(model_schema: RealtySchema, data: Dict, model: Realty):
         LOGGER.debug("record.realty_details_id: %s", str(realty_record.realty_details_id))
     except ValidationError as error:
         LOGGER.error(error)
-        raise
+        raise 
     with session_scope() as session:
         realty = session.query(model).filter_by(realty_details_id=realty_record.realty_details_id).first()
     if realty is not None:

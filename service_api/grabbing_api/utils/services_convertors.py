@@ -648,25 +648,7 @@ class OlxParser:
 
         return result_url.group()
 
-    def get_url_ads(self, link: str, number_of_ads: int) -> List[str]:
-        """
-        Function to get all ads urls from OLX according to number of ads
-        :param link: link to OLX advertisements with certain filters
-        :param number_of_ads: returned number of advertisements
-        :return: List[str]
-        """
-        ads, next_page = self.find_all_ads(link)
-        num = number_of_ads - len(ads)
-        while next_page and num > 0:
-            more_ads, next_page = self.find_all_ads(next_page)
-            num -= len(more_ads)
-            if num < 0:
-                ads.extend(more_ads[:num])
-            else:
-                ads.extend(more_ads)
-        return ads if num >= 0 else ads[:num]
-
-    def get_ads_urls(link: str, page_number: int, number_of_ads: int) -> List[str]:
+    def get_ads_urls(self, link: str, page_number: int, number_of_ads: int) -> List[str]:
         """
         Function to get all ads urls from OLX according to number of ads
         :param link: link to OLX advertisements with certain filters
@@ -674,11 +656,11 @@ class OlxParser:
         :param number_of_ads: returned number of advertisements
         :return: List[str]
         """
-        ads, next_page = find_all_ads_on_the_page(link)
+        ads, next_page = self.find_all_ads_on_the_page(link)
         gen_num = (page_number + 1) * number_of_ads
         num = gen_num - len(ads)
         while next_page and num > 0:
-            more_ads, next_page = find_all_ads_on_the_page(next_page)
+            more_ads, next_page = self.find_all_ads_on_the_page(next_page)
             num -= len(more_ads)
             if num < 0:
                 ads.extend(more_ads[:num])
@@ -687,9 +669,8 @@ class OlxParser:
         all_loaded_ads = ads if num >= 0 else ads[:gen_num]
         partial = page_number * number_of_ads
         return all_loaded_ads[partial:]
-    
-    
-    def find_all_ads_on_the_page(link: str):
+
+    def find_all_ads_on_the_page(self, link: str):
         """
         Function to find all ads urls on the page with html.parser
         :param link: link to OLX ads
@@ -697,15 +678,14 @@ class OlxParser:
         """
         with urllib.request.urlopen(link) as html:
             soup = BeautifulSoup(html, "html.parser")
-    
+
             if a_tags := soup.find_all("a", {"data-cy": "listing-ad-title"}):
                 advertisement_urls = [tag_a['href'] for tag_a in a_tags]
             else:
                 advertisement_urls = []
-    
+
             if next_page := soup.find("a", {"data-cy": "page-link-next"}):
                 contains_next_page_link = next_page["href"]
             else:
                 contains_next_page_link = None
             return advertisement_urls, contains_next_page_link
-    

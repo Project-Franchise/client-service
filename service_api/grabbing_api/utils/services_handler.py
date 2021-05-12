@@ -8,8 +8,9 @@ from typing import Dict, List
 from service_api import LOGGER
 from service_api.utils import send_request
 from service_api.async_logic import get_all_responses
-from service_api.exceptions import  (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
-from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter, OLXOutputConverter, OlxParser)
+from service_api.exceptions import (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
+from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter,
+                                                                OLXOutputConverter, OlxParser)
 from .limitation import DomriaLimitationSystem
 
 
@@ -135,8 +136,8 @@ class OlxServiceHandler(AbstractServiceHandler):
         """
         url = OLXOutputConverter(self.post_body, self.metadata).make_url()
         olx_parser = OlxParser(self.metadata)
-        parsed_links = olx_parser.get_url_ads(url, self.post_body["additional"]["page_ads_number"] *
-                                              self.post_body["additional"]["page"])
+        parsed_links = olx_parser.get_ads_urls(url, self.post_body["additional"]["page"],
+                                               self.post_body["additional"]["page_ads_number"])
         records = []
         for link in parsed_links:
             records.append(olx_parser.main_logic(link))

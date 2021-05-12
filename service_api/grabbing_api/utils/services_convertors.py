@@ -6,15 +6,15 @@ import json
 from abc import ABC, abstractmethod
 from typing import Dict
 
-import requests
 from redis import RedisError
-
-from service_api import CACHE, LOGGER, models, session_scope
+from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
-                                                DOMRIA_TOKEN, PATH_TO_METADATA, GE, LE)
+                                                PATH_TO_METADATA)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
+from service_api.utils import send_request
 
 
 class AbstractInputConverter(ABC):
@@ -116,13 +116,13 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 model = getattr(models, model)
 
                 if not model:
-                    raise Warning("There is no such model named {}".format(model))
+                    raise ObjectNotFoundException("There is no such model named {}".format(model))
 
                 try:
                     obj = recognize_by_alias(model, self.response[response_key])
                 except ObjectNotFoundException as error:
-                    print(error.args)
-                    break
+                    LOGGER.error("%s, advertisement_id: %s",error.args, self.response.get("realty_id"))
+                    raise
                 realty_data[key] = obj.id
 
             if city_characteristics:
@@ -290,7 +290,7 @@ class DomriaCharacteristicLoader:
 
         chars_metadata, realty_types = self.metadata["urls"]["options"], self.metadata["entities"]["realty_type"]
 
-        params = {"api_key": DOMRIA_TOKEN}
+        params = {"api_key": DomriaLimitationSystem.get_token()}
 
         for param, val in self.metadata["optional"].items():
             params[param] = val
@@ -304,7 +304,7 @@ class DomriaCharacteristicLoader:
             )
 
             params[chars_metadata["fields"]["realty_type"]] = realty_types[element]
-            req = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
+            req = send_request("GET", url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
 
             requested_characteristics = req.json(object_hook=self.decode_characteristics)
             requested_characteristics = [

@@ -71,3 +71,8 @@ class LimitBoundError(BaseCustomException):
     """
     Raised when limit bound is reached
     """
+
+class ServiceHandlerError(BaseCustomException):
+    """
+    Raised when handler error appears
+    """

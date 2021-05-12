@@ -246,6 +246,17 @@ class CategoryAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
+class RequestsHistorySchema(Schema):
+    """
+    Schema for Requests History
+    """
+    id = fields.Integer()
+    url = fields.String(validate=validate.Length(max=4096))
+    hashed_token = fields.String(validate=validate.Length(max=255))
+    request_timestamp = fields.DateTime(
+        validate=validate.Range(min=datetime(1990, 1, 1)))
+
+
 def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> List[Dict]:
     """
     Method that validates filters for Realty and Realty_details

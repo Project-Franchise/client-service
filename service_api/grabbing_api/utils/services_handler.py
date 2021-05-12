@@ -5,15 +5,14 @@ import json
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
-import requests
-
 from service_api import LOGGER
+from service_api.utils import send_request
 from service_api.async_logic import get_all_responses
-from service_api.errors import BadRequestException
-from service_api.exceptions import MetaDataError, ResponseNotOkException
-from service_api.grabbing_api.constants import DOMRIA_TOKEN
-from service_api.grabbing_api.utils.services_convertors import (
-    DomRiaInputConverter, DomRiaOutputConverter)
+from service_api.exceptions import  (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
+from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter)
+from .limitation import DomriaLimitationSystem
+
+
 
 
 class AbstractServiceHandler(ABC):
@@ -59,10 +58,10 @@ class DomriaServiceHandler(AbstractServiceHandler):
         params = DomRiaInputConverter(self.post_body, search_realty_metadata, service_name=service_name).convert()
         for param, val in search_realty_metadata["optional"].items():
             params[param] = val
-        params[self.metadata["token_name"]] = DOMRIA_TOKEN
-        response = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
+        params[self.metadata["token_name"]] = DomriaLimitationSystem.get_token()
+        response = send_request("GET", url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
         if response.status_code != 200:
-            raise BadRequestException("Invalid url")
+            raise ServiceHandlerError("Invalid url")
 
         items = response.json()
         try:
@@ -71,14 +70,14 @@ class DomriaServiceHandler(AbstractServiceHandler):
                                                         self.metadata)
         except KeyError as error:
             LOGGER.error(error.args)
-            raise BadRequestException(error.args) from error
+            raise ServiceHandlerError(error.args) from error
 
     @staticmethod
     def create_records(ids: List, service_metadata: Dict) -> List[Dict]:
         """
         Creates records in the database on the ID list
         """
-        params = {"api_key": DOMRIA_TOKEN, "lang_id": 4}
+        params = {"api_key": DomriaLimitationSystem.get_token()}
         for param, val in service_metadata["optional"].items():
             params[param] = val
 
@@ -91,20 +90,27 @@ class DomriaServiceHandler(AbstractServiceHandler):
         responses_container = get_all_responses(url, params, ids)
         for response in responses_container:
             if not response.ok:
-                raise ResponseNotOkException(response.content)
+                LOGGER.error("REsponse from Domria not ok: %s", response.content)
+                continue
             service_converter = DomRiaOutputConverter(response.json(), service_metadata)
 
             try:
                 realty_details = service_converter.make_realty_details_data()
             except json.JSONDecodeError:
                 LOGGER.error("An error occurred while converting data from Dom Ria for realty_details model")
-                raise
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error("Traceback: %s", error.__traceback__)
+                continue
 
             try:
                 realty_data = service_converter.make_realty_data()
             except json.JSONDecodeError:
                 LOGGER.error("An error occurred while converting data from Dom Ria for realty model")
-                raise
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error("Traceback: %s", error.__traceback__)
+                continue
             realty_realty_details.append((realty_data, realty_details))
         return realty_realty_details
 

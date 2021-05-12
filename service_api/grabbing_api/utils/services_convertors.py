@@ -426,8 +426,6 @@ class OlxParser:
                                 attrs={"class": self.parser_metadata["original_id"]["class"]})
         result["original_id"] = int(original_id.text[4:])
 
-        print(result)
-
         return self.make_data(result)
 
     def price_divider(self, data):
@@ -509,17 +507,14 @@ class OlxParser:
 
             if tag.startswith(self.parser_metadata["tags"]["floor"]):
                 position = tag.find(":")
-
                 result["floor"] = int(tag[position + 2:])
 
             elif tag.startswith(self.parser_metadata["tags"]["floors_number"]):
                 position = tag.find(":")
-
                 result["floors_number"] = int(tag[position + 2:])
 
             elif tag.startswith(self.parser_metadata["tags"]["square"]):
                 square = re.search(": (.*?) м", tag).group(1)
-
                 result["square"] = float(square)
 
             elif re.search("|".join(self.parser_metadata["tags"]["realty_type"]), tag) and not realty_details_fetched:
@@ -528,9 +523,8 @@ class OlxParser:
                 if tag.startswith(self.parser_metadata["tags"]["realty_type"][0]):
                     result["realty_type_id"] = tag[position + 2:]
                     realty_details_fetched = True
-
                 result["realty_type_id"] = tag[position + 2:]
-        print(result)
+
         return result
 
     def location_converter(self, location: str):

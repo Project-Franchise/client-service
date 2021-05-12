@@ -40,3 +40,5 @@ PATH_TO_STATE_ALIASES_CSV = os.sep.join([*path_to_static_data, "state_aliases.cs
 
 PATH_TO_CITIES_CSV = os.sep.join([*path_to_static_data, "cities.csv"])
 PATH_TO_CITIES_ALIASES_CSV = os.sep.join([*path_to_static_data, "city_aliases.csv"])
+
+PATH_TO_PARSER_METADATA = os.sep.join([*path_to_static_data, "parser_metadata.json"])

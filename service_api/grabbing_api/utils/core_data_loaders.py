@@ -19,7 +19,8 @@ from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundExcept
 from service_api.grabbing_api.constants import (
     PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
-    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
+    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
+    PATH_TO_PARSER_METADATA)
 from service_api.grabbing_api.utils import init_driver
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
@@ -32,6 +33,7 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from .grabbing_utils import (load_data, open_metadata, recognize_by_alias)
+
 
 
 class BaseLoader(ABC):
@@ -549,7 +551,7 @@ class OlxXRefBaseLoader(BaseLoader):
         Loads olx metadata
         """
         super().__init__()
-        self.olx_meta = self.metadata["OLX API"]
+        self.olx_meta = open_metadata(PATH_TO_PARSER_METADATA)["OLX"]
 
 
 class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
@@ -658,7 +660,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         """
         driver = init_driver('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
-        olx_states = self.olx_meta["states_id"]
+        olx_states = self.olx_meta["entities"]["states"]
         urls_cities = {}
         for key, value in olx_states.items():
             cities = {}

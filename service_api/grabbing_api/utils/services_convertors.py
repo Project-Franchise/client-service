@@ -3,26 +3,29 @@ Output and input converters for DomRia service
 """
 import datetime
 import json
-from abc import ABC, abstractmethod
-import urllib.request
 import re
+import urllib.request
+from abc import ABC, abstractmethod
+from functools import reduce
+from typing import Dict
+from typing import List
 from urllib.error import HTTPError
 from urllib.parse import urljoin
-from typing import Dict
-from functools import reduce
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
 from redis import RedisError
 from sqlalchemy.orm import make_transient
+
 from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
                                                 PATH_TO_METADATA)
 from service_api.grabbing_api.utils import init_driver
-from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.utils import send_request
+
 
 class AbstractInputConverter(ABC):
     """
@@ -645,3 +648,45 @@ class OlxParser:
         result_url = re.search(".*?html", link)
 
         return result_url.group()
+
+##############################################################################################################
+
+
+def get_url_ads(link: str, number_of_ads: int) -> List[str]:
+    """
+    Function to get all ads urls from OLX according to number of ads
+    :param link: link to OLX advertisements with certain filters
+    :param number_of_ads: returned number of advertisements
+    :return: List[str]
+    """
+    ads, next_page = find_all_ads(link)
+    num = number_of_ads - len(ads)
+    while next_page and num > 0:
+        more_ads, next_page = find_all_ads(next_page)
+        num -= len(more_ads)
+        if num < 0:
+            ads.extend(more_ads[:num])
+        else:
+            ads.extend(more_ads)
+    return ads if num >= 0 else ads[:num]
+
+
+def find_all_ads(link: str):
+    """
+    Function to find all ads urls on the page with html.parser
+    :param link: link to OLX ads
+    :return: all founded advertisement urls plus link to the next page if one exists
+    """
+    with urllib.request.urlopen(link) as html:
+        soup = BeautifulSoup(html, "html.parser")
+
+    if a_tags := soup.find_all("a", {"data-cy": "listing-ad-title"}):
+        advertisement_urls = [tag_a['href'] for tag_a in a_tags]
+    else:
+        advertisement_urls = []
+
+    if next_page := soup.find("a", {"data-cy": "page-link-next"}):
+        contains_next_page_link = next_page["href"]
+    else:
+        contains_next_page_link = None
+    return advertisement_urls, contains_next_page_link

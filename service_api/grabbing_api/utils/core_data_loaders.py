@@ -2,6 +2,7 @@
 Module with data Loaders
 """
 import csv
+import os
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
@@ -17,7 +18,8 @@ from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundExcept
 from service_api.grabbing_api.constants import (
     DOMRIA_TOKEN, PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
     PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
-    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV)
+    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
+    PATH_TO_PARSER_METADATA)
 from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
                                 OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
                                 Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
@@ -31,7 +33,6 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
 from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 from selenium import webdriver
 from bs4 import BeautifulSoup
-PATH = 'C://Program Files (x86)//chromedriver.exe'
 
 
 class BaseLoader(ABC):
@@ -547,7 +548,7 @@ class OlxXRefBaseLoader(BaseLoader):
         Loads olx metadata
         """
         super().__init__()
-        self.olx_meta = self.metadata["OLX API"]
+        self.olx_meta = open_metadata(PATH_TO_PARSER_METADATA)["OLX"]
 
 
 class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
@@ -561,7 +562,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
         Navigating through site olx.com and getting states
         :return: dict
         """
-        driver = webdriver.Chrome(PATH)
+        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"))
         driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -635,6 +636,9 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         soup = BeautifulSoup(html, 'html.parser')
         items = soup.find_all('a', class_="regionSelectA2")
 
+        if not items:
+            return {}
+
         with session_scope() as session:
             state = session.query(State).filter_by(name=state).first()
             cities_object = session.query(City).filter_by(state_id=state.id).all()
@@ -653,21 +657,22 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        driver = webdriver.Chrome(PATH)
+        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"))
         driver.get('https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/')
         driver.execute_script("arguments[0].click();", driver.find_element_by_id('cityField'))
-        olx_states = self.olx_meta["states_id"]
-        cities = {}
+        olx_states = self.olx_meta["entities"]["states"]
+        urls_cities = {}
         for key, value in olx_states.items():
-            driver.execute_script("arguments[0].click();",
-                                  driver.find_element_by_css_selector(f'a[data-id="{value}"]'))
-            if value == 25:
+            cities = {}
+            while not cities:
                 driver.execute_script("arguments[0].click();",
                                       driver.find_element_by_css_selector(f'a[data-id="{value}"]'))
-            cities = self.get_cities_by_state(driver.page_source, key, cities)
+                cities = self.get_cities_by_state(driver.page_source, key, cities)
             driver.execute_script("arguments[0].click();",
                                   driver.find_element_by_css_selector('a[id=back_region_link]'))
-        return cities
+            for state, dict_of_cities in cities.items():
+                urls_cities[state] = dict_of_cities
+        return urls_cities
 
 
     def load(self, *args, **kwargs) -> Dict[int, int]:

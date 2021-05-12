@@ -96,10 +96,8 @@ class RealtyDetailsInputSchema(Schema):
     Schema for RealtyDetails input
     """
     id = fields.Integer()
-    floor = fields.Integer(validate=validate.Range(
-        min=0, max=50), allow_none=True)
-    floors_number = fields.Integer(
-        validate=validate.Range(min=1, max=50), allow_none=True)
+    floor = fields.Dict(allow_none=True)
+    floors_number = fields.Dict(allow_none=True)
     square = fields.Dict(allow_none=True)
     price = fields.Dict(allow_none=True)
     published_at = fields.DateTime(validate=validate.Range(min=datetime(1990, 1, 1)))
@@ -244,7 +242,6 @@ def filters_validation(params: Dict, validators: List[Tuple[Base, Schema]]) -> L
     :param: dict
     :return: List[dict]
     """
-    filters = []
     models, schemes = zip(*validators)
     filters = [{key: params.get(key) for key in params if hasattr(objects, key)} for objects in models]
 

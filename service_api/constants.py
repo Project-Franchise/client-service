@@ -5,6 +5,7 @@ URLS = {
     "CLIENT": {
         "INDEX_URL": "/",
         "GET_CITIES_URL": "/cities",
+        "GET_CITY_BY_ID_URL": "/city",
         "GET_REALTY_URL": "/realty",
         "GET_STATES_URL": "/states",
         "GET_STATES_BY_ID_URL": "/states/<state_id>",

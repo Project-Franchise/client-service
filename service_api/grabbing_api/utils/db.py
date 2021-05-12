@@ -185,33 +185,17 @@ class RealtyFetcher:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
 
-
             request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
-            response = request_to_domria.get_latest_data()
-            loader = RealtyLoader()
             try:
-                realties.extend(loader.load(response))
+                response = request_to_domria.get_latest_data()
+            except LimitBoundError as error:
+                LOGGER.warning(error.args[0])
+                continue
+
+            try:
+                RealtyLoader().load(response)
             except LimitBoundError as error:
                 print(error)
-        realty_service_metadata = self.metadata["DOMRIA API"]
-
-        if limit_data:
-            page_numbers_limit = realty_service_metadata["limits"]["page_numbers_limit_le"]
-            page_ads_limit = realty_service_metadata["limits"]["page_ads_number_le"]
-            additional = self.filters["additional"]
-            if page_numbers_limit and page_ads_limit:
-                if additional["page"] > page_numbers_limit:
-                    # continue
-                    ...
-                additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
-
-        request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
-        response = request_to_domria.get_latest_data()
-        loader = RealtyLoader()
-        try:
-            loader.load(response)
-        except LimitBoundError as error:
-            print(error)
-        realties.extend(response)
+            realties.extend(response)
 
         return realties

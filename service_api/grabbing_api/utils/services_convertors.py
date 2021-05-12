@@ -10,16 +10,16 @@ from urllib.error import HTTPError
 from typing import Dict
 from bs4 import BeautifulSoup
 
-import requests
 from redis import RedisError
-
-from service_api import CACHE, LOGGER, models, session_scope
+from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
-                                                DOMRIA_TOKEN, PATH_TO_METADATA)
-from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
+                                                PATH_TO_METADATA)
 from service_api.grabbing_api.utils import driver
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
+from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
+from service_api.utils import send_request
 
 
 class AbstractInputConverter(ABC):
@@ -121,13 +121,13 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 model = getattr(models, model)
 
                 if not model:
-                    raise Warning("There is no such model named {}".format(model))
+                    raise ObjectNotFoundException("There is no such model named {}".format(model))
 
                 try:
                     obj = recognize_by_alias(model, self.response[response_key])
                 except ObjectNotFoundException as error:
-                    print(error.args)
-                    break
+                    LOGGER.error("%s, advertisement_id: %s",error.args, self.response.get("realty_id"))
+                    raise
                 realty_data[key] = obj.id
 
             if city_characteristics:
@@ -295,7 +295,7 @@ class DomriaCharacteristicLoader:
 
         chars_metadata, realty_types = self.metadata["urls"]["options"], self.metadata["entities"]["realty_type"]
 
-        params = {"api_key": DOMRIA_TOKEN}
+        params = {"api_key": DomriaLimitationSystem.get_token()}
 
         for param, val in self.metadata["optional"].items():
             params[param] = val
@@ -309,7 +309,7 @@ class DomriaCharacteristicLoader:
             )
 
             params[chars_metadata["fields"]["realty_type"]] = realty_types[element]
-            req = requests.get(url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
+            req = send_request("GET", url=url, params=params, headers={'User-Agent': 'Mozilla/5.0'})
 
             requested_characteristics = req.json(object_hook=self.decode_characteristics)
             requested_characteristics = [
@@ -358,7 +358,10 @@ class OlxParser:
             realty_data["state_id"] = recognize_by_alias(models.State, response.pop("state_id")).id
 
             cities_by_state = session.query(models.City).filter_by(state_id=realty_data["state_id"])
-            realty_data["city_id"] = recognize_by_alias(models.City, response.pop("city_id"), cities_by_state).id
+            try:
+                realty_data["city_id"] = recognize_by_alias(models.City, response.pop("city_id"), cities_by_state).id
+            except ObjectNotFoundException:
+                realty_data["city_id"] = None
 
             for key in models_list.keys():
 
@@ -422,6 +425,8 @@ class OlxParser:
         original_id = soup.find(self.parser_metadata["original_id"]["html_tag"],
                                 attrs={"class": self.parser_metadata["original_id"]["class"]})
         result["original_id"] = int(original_id.text[4:])
+
+        print(result)
 
         return self.make_data(result)
 
@@ -497,6 +502,7 @@ class OlxParser:
         :return: dictionary with floor, floors_number, realty_type
         """
         result = {}
+        realty_details_fetched = False
 
         for tag in tags:
             tag = str(tag)
@@ -516,15 +522,15 @@ class OlxParser:
 
                 result["square"] = float(square)
 
-            elif re.search("|".join(self.parser_metadata["tags"]["realty_type"]), tag):
+            elif re.search("|".join(self.parser_metadata["tags"]["realty_type"]), tag) and not realty_details_fetched:
                 position = tag.find(":")
 
                 if tag.startswith(self.parser_metadata["tags"]["realty_type"][0]):
                     result["realty_type_id"] = tag[position + 2:]
-                    break
+                    realty_details_fetched = True
 
                 result["realty_type_id"] = tag[position + 2:]
-
+        print(result)
         return result
 
     def location_converter(self, location: str):

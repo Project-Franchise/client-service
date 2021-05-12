@@ -649,8 +649,6 @@ class OlxParser:
 
         return result_url.group()
 
-##############################################################################################################
-
 
 def get_url_ads(link: str, number_of_ads: int) -> List[str]:
     """

@@ -7,10 +7,13 @@ from abc import ABC, abstractmethod
 import urllib.request
 import re
 from urllib.error import HTTPError
+from urllib.parse import urljoin
 from typing import Dict
+from functools import reduce
 from bs4 import BeautifulSoup
 
 from redis import RedisError
+from sqlalchemy.orm import make_transient
 from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
@@ -20,7 +23,6 @@ from service_api.grabbing_api.utils import init_driver
 from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
 from service_api.utils import send_request
-
 
 class AbstractInputConverter(ABC):
     """
@@ -72,6 +74,87 @@ class AbstractOutputConverter(ABC):
         """
         Converts a response to a dictionary ready for writing realty_details in the database
         """
+
+
+class OLXOutputConverter(AbstractOutputConverter):
+    """
+    A class for converting characteristics specified by the user into OLX-specified url
+    """
+    def make_realty_data(self) -> Dict:
+        """
+        Converts a response to a dictionary ready for writing realty in the database
+        """
+
+    def make_realty_details_data(self):
+        """
+        Converts a response to a dictionary ready for writing realty_details in the database
+        """
+
+    def make_url(self) -> str:
+        """
+        Compose data into OLX-specified url
+        """
+
+        base_url = urljoin(
+            self.service_metadata["base_url"], self.service_metadata["urls"]["search_realty"]["url_prefix"]) + "/"
+        realty_data = {}
+        url_main = []
+        realty_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty"]
+        with session_scope() as session:
+
+            service = session.query(models.Service).filter(
+                models.Service.name == self.service_metadata["name"]
+            ).first()
+
+            if not service:
+                raise Warning("There is no such service named {}".format(service))
+
+            realty_data["service_id"] = service.id
+            url_order = self.service_metadata["urls"]["search_realty"]["url_order"]
+            for filter_ in url_order:
+                if filter_ == "location":
+                    for element in realty_meta["location"]:
+                        if element in self.response["realty_filters"]:
+                            if element == "city_id":
+                                entity = session.query(
+                                    getattr(models, realty_meta[filter_][element]["model"])).filter_by(
+                                    service_id=realty_data["service_id"],
+                                    entity_id=self.response["realty_filters"][element]
+                                ).first()
+                                if entity is not None:
+                                    make_transient(entity)
+                                    url_main.append(entity.original_id)
+                                break
+                            entity = session.query(
+                                getattr(models, realty_meta[filter_][element]["model"])).filter_by(
+                                service_id=realty_data["service_id"],
+                                entity_id=self.response["realty_filters"][element]
+                            ).first()
+                            if entity is not None:
+                                make_transient(entity)
+                                url_main.append(entity.original_id)
+                if filter_ in self.response["realty_filters"]:
+
+                    entity = session.query(getattr(models, realty_meta[filter_]["model"])).filter_by(
+                        service_id=realty_data["service_id"], entity_id=self.response["realty_filters"][filter_]
+                    ).first()
+                    if entity is not None:
+                        if filter_ == "operation_type_id":
+                            make_transient(entity)
+                            entity.original_id = entity.original_id + "-" + \
+                                self.service_metadata["sufixes"][url_main[0]]
+                        url_main.append(entity.original_id)
+
+        url_details = ["?", ]
+        realty_details_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty_details"]
+        for parameter in self.response["characteristics"]:
+            for key in self.response["characteristics"][parameter]:
+                url_details.append(realty_details_meta[parameter].get(key, None) + "=" +
+                                   str(self.response["characteristics"][parameter][key]))
+        url_details = reduce(lambda x, y: x + "&" + y, url_details)
+        url_main = reduce(lambda x, y: x + "/" + y + "/", url_main)
+        url = urljoin(urljoin(base_url, url_main), url_details)
+        return url
 
 
 class DomRiaOutputConverter(AbstractOutputConverter):
@@ -126,7 +209,7 @@ class DomRiaOutputConverter(AbstractOutputConverter):
                 try:
                     obj = recognize_by_alias(model, self.response[response_key])
                 except ObjectNotFoundException as error:
-                    LOGGER.error("%s, advertisement_id: %s",error.args, self.response.get("realty_id"))
+                    LOGGER.error("%s, advertisement_id: %s", error.args, self.response.get("realty_id"))
                     raise
                 realty_data[key] = obj.id
 

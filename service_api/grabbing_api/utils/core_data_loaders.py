@@ -32,8 +32,7 @@ from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchem
                                  StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
                                  CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
 from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
-from .grabbing_utils import (load_data, open_metadata, recognize_by_alias)
-
+from .grabbing_utils import load_data, open_metadata, recognize_by_alias
 
 
 class BaseLoader(ABC):
@@ -46,7 +45,7 @@ class BaseLoader(ABC):
         Fetches info from metadata
         Raise MetaDataError
         """
-        self.metadata = open_metadata(PATH_TO_METADATA)
+        self.metadata = open_metadata(PATH_TO_METADATA) | open_metadata(PATH_TO_PARSER_METADATA)
 
     @abstractmethod
     def load(self, *args, **kwargs) -> None:
@@ -551,7 +550,121 @@ class OlxXRefBaseLoader(BaseLoader):
         Loads olx metadata
         """
         super().__init__()
-        self.olx_meta = open_metadata(PATH_TO_PARSER_METADATA)["OLX"]
+        self.olx_meta = self.metadata["OLX"]
+
+
+class OperationTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table OperationTypeXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to operation type cross reference service table
+        """
+
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["operation_type"].items():
+            try:
+                obj = recognize_by_alias(OperationType, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+
+
+class CategoryOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table CategoryXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to category cross reference service table
+        """
+
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(
+                Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(
+                    desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["category"].items():
+            try:
+                obj = recognize_by_alias(Category, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(CategoryToServiceSchema(), data, CategoryToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
+
+
+class RealtyTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
+    """
+    Fill table realtyTypeXRefServices with original_ids
+    """
+
+    def load(self, *args, **kwargs) -> None:
+        """
+        Loads data to realty type cross reference service table
+        """
+        service_name = "OLX"
+        service_meta = self.metadata[service_name]
+        with session_scope() as session:
+            service = session.query(Service).filter(
+                Service.name == service_name).first()
+            if service is None:
+                raise ObjectNotFoundException(
+                    desc="No service {} found".format(service_name))
+        for name, value in service_meta["entities"]["realty_type"].items():
+            try:
+                obj = recognize_by_alias(RealtyType, name)
+            except ModelNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            except ObjectNotFoundException as error:
+                LOGGER.error(error)
+                continue
+            data = {
+                "entity_id": obj.id,
+                "service_id": service.id,
+                "original_id": str(value)
+            }
+            try:
+                load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+            except AlreadyInDbException as error:
+                LOGGER.warning(error)
+                continue
 
 
 class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
@@ -643,7 +756,8 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
 
         with session_scope() as session:
             state = session.query(State).filter_by(name=state).first()
-            cities_object = session.query(City).filter_by(state_id=state.id).all()
+            cities_object = session.query(
+                City).filter_by(state_id=state.id).all()
 
         cities = [city.name for city in cities_object]
         urls[state.name] = {}

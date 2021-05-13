@@ -55,7 +55,7 @@ def run_celery():
     `celery_app` defined in service_api
     `-B` mean beat mode. It's for running periodic tasks
     """
-    os.system("celery worker -A service_api.celery_app -B --loglevel=info")
+    os.system("celery  -A service_api.celery_app worker -B --loglevel=info")
 
 
 @cli.command("load_core_data")
@@ -107,7 +107,7 @@ def clear_db() -> None:
     with session_scope() as session:
         for table in Base.metadata.sorted_tables:
             session.query(table).delete()
-            LOGGER.debug(f"{table} cleared!")
+            LOGGER.debug("%s cleared!", table)
     LOGGER.debug("ALL table cleared")
 
 

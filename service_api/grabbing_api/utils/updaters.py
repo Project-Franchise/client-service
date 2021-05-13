@@ -10,9 +10,10 @@ import requests
 from sqlalchemy.engine.row import Row
 
 from service_api import session_scope, models, schemas, LOGGER
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.errors import InternalServerErrorException
 from service_api.exceptions import ResponseNotOkException, MetaDataError
-from service_api.grabbing_api.constants import PATH_TO_METADATA, DOMRIA_TOKEN
+from service_api.grabbing_api.constants import PATH_TO_METADATA
 from service_api.grabbing_api.utils.grabbing_utils import open_metadata, load_data
 from service_api.grabbing_api.utils.services_convertors import DomRiaOutputConverter
 from service_api.models import Realty, RealtyDetails
@@ -64,7 +65,7 @@ class RealtyUpdater(AbstractUpdater):
             self.cursor = session.execute(
                 "SELECT floor, floors_number, square, price, original_url FROM realty_details"
             )
-        self.params = {"api_key": DOMRIA_TOKEN}
+        self.params = {"api_key": DomriaLimitationSystem.get_token()}
         for param, val in self.metadata["optional"].items():
             self.params[param] = val
         self.url = "{base_url}{condition}{single_ad}".format(

@@ -2,6 +2,7 @@
 Module with data LoadersFactory and order generator
 """
 from collections import defaultdict
+from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
@@ -9,11 +10,11 @@ from marshmallow.exceptions import ValidationError
 from service_api import LOGGER
 from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
                                     ResponseNotOkException, LimitBoundError)
-from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA
+from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA, PATH_TO_PARSER_METADATA
 from service_api.grabbing_api.constants import (PATH_TO_METADATA)
 from service_api.grabbing_api.utils.grabbing_utils import open_metadata
 from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
-from service_api.grabbing_api.utils.services_handler import DomriaServiceHandler
+from service_api.grabbing_api.utils import services_handler
 from . import core_data_loaders
 
 
@@ -163,7 +164,7 @@ class RealtyFetcher:
         :param: filters - data for filtering realties in services
         """
         self.filters = filters
-        self.metadata = open_metadata(PATH_TO_METADATA)
+        self.metadata = open_metadata(PATH_TO_METADATA) | open_metadata(PATH_TO_PARSER_METADATA)
 
     def fetch(self, filters=None, limit_data=False) -> List:
         """
@@ -184,18 +185,21 @@ class RealtyFetcher:
                     if additional["page"] > page_numbers_limit:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
-
-            request_to_domria = DomriaServiceHandler(self.filters, realty_service_metadata)
+            handler = getattr(services_handler, self.metadata[service_name]["handler_name"])
+            if not handler:
+                raise MetaDataError
+            filter_copy = deepcopy(self.filters)
+            request_to_service = handler(filter_copy, realty_service_metadata)
             try:
-                response = request_to_domria.get_latest_data()
+                response = request_to_service.get_latest_data()
             except LimitBoundError as error:
                 LOGGER.warning(error.args[0])
                 continue
 
             try:
-                RealtyLoader().load(response)
+                loaded_data = RealtyLoader().load(response)
             except LimitBoundError as error:
                 print(error)
-            realties.extend(response)
+            realties.extend(loaded_data)
 
         return realties

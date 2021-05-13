@@ -20,7 +20,7 @@ class DomriaLimitationSystem:
     Logic for limitation of requests to domria
     """
     TOKENS = DOMRIA_TOKENS_LIST
-    TOKEN_LIMIT = 80
+    TOKEN_LIMIT = 800
     EXPIRE_TIME = {
         "hours": 1,
         "minutes": 1

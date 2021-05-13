@@ -59,9 +59,9 @@ class CityResource(Resource):
         return schemas.CitySchema(many=True).dump(city), 200
 
 
-class CityByIDResource(Resource):
+class CitiesResource(Resource):
     """
-    Route to retrieve city by it`s id
+    Route to retrieve all cities
     """
 
     def get(self):
@@ -70,14 +70,10 @@ class CityByIDResource(Resource):
         :params: int, int
         :return: json(schema)
         """
-        filters = request.args
-
-        if not filters:
-            raise BadRequestException("No filters provided")
 
         with session_scope() as session:
-            city = session.query(models.City).filter_by(id=filters['id'], version=VERSION_DEFAULT_TIMESTAMP).all()
-        return schemas.CitySchema(many=True).dump(city), 200
+            cities = session.query(models.City).all()
+        return schemas.CitySchema(many=True).dump(cities), 200
 
 
 class StatesResource(Resource):
@@ -164,7 +160,7 @@ class RealtyResource(Resource):
                 *[
                     getattr(RealtyDetails, key).between(
                         value.get(GE) or 0,
-                        value.get(LE) or 10^19)
+                        value.get(LE) or 10**19)
                     if isinstance(value, dict)
                     else getattr(RealtyDetails, key) == value
                     for key, value in realty_details_dict.items()
@@ -242,7 +238,7 @@ class OperationTypeResource(Resource):
 
 api_.add_resource(IndexResource, URLS["CLIENT"]["INDEX_URL"])
 api_.add_resource(CityResource, URLS["CLIENT"]["GET_CITIES_URL"])
-api_.add_resource(CityByIDResource, URLS["CLIENT"]["GET_CITY_BY_ID_URL"])
+api_.add_resource(CitiesResource, URLS["CLIENT"]["GET_CITY_BY_ID_URL"])
 api_.add_resource(RealtyResource, URLS["CLIENT"]["GET_REALTY_URL"])
 api_.add_resource(StatesResource, URLS["CLIENT"]["GET_STATES_URL"])
 api_.add_resource(StateResource, URLS["CLIENT"]["GET_STATES_BY_ID_URL"])

@@ -3,26 +3,29 @@ Output and input converters for DomRia service
 """
 import datetime
 import json
-from abc import ABC, abstractmethod
-import urllib.request
 import re
+import urllib.request
+from abc import ABC, abstractmethod
+from functools import reduce
+from typing import Dict
+from typing import List
 from urllib.error import HTTPError
 from urllib.parse import urljoin
-from typing import Dict
-from functools import reduce
-from bs4 import BeautifulSoup
 
+from bs4 import BeautifulSoup
 from redis import RedisError
 from sqlalchemy.orm import make_transient
+
 from service_api import (CACHE, LOGGER, models, session_scope)
 from service_api.errors import BadRequestException
 from service_api.exceptions import (BadFiltersException, MetaDataError, ObjectNotFoundException)
 from service_api.grabbing_api.constants import (CACHED_CHARACTERISTICS, CACHED_CHARACTERISTICS_EXPIRE_TIME,
                                                 PATH_TO_METADATA)
 from service_api.grabbing_api.utils import init_driver
-from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.grabbing_api.utils.grabbing_utils import (open_metadata, recognize_by_alias)
+from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
 from service_api.utils import send_request
+
 
 class AbstractInputConverter(ABC):
     """
@@ -80,6 +83,7 @@ class OLXOutputConverter(AbstractOutputConverter):
     """
     A class for converting characteristics specified by the user into OLX-specified url
     """
+
     def make_realty_data(self) -> Dict:
         """
         Converts a response to a dictionary ready for writing realty in the database
@@ -98,7 +102,16 @@ class OLXOutputConverter(AbstractOutputConverter):
         base_url = urljoin(
             self.service_metadata["base_url"], self.service_metadata["urls"]["search_realty"]["url_prefix"]) + "/"
         realty_data = {}
-        url_main = []
+        with session_scope() as session:
+            realty_type = session.query(models.RealtyType).get(self.response["realty_filters"].get("realty_type_id"))
+
+            if realty_type is None:
+                raise ObjectNotFoundException("Realty type not found in OLX handler")
+
+            category_xref = session.query(models.CategoryToService).get(
+                {"entity_id": realty_type.category_id, "service_id": 2})
+
+        url_main = [category_xref.original_id]
         realty_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty"]
         with session_scope() as session:
 
@@ -145,13 +158,15 @@ class OLXOutputConverter(AbstractOutputConverter):
                                 self.service_metadata["sufixes"][url_main[0]]
                         url_main.append(entity.original_id)
 
-        url_details = ["?", ]
+        url_details = []
         realty_details_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty_details"]
         for parameter in self.response["characteristics"]:
             for key in self.response["characteristics"][parameter]:
                 url_details.append(realty_details_meta[parameter].get(key, None) + "=" +
                                    str(self.response["characteristics"][parameter][key]))
-        url_details = reduce(lambda x, y: x + "&" + y, url_details)
+        if url_details:
+            url_details[0]= "?" + url_details[0]
+            url_details = reduce(lambda x, y: x + "&" + y, url_details)
         url_main = reduce(lambda x, y: x + "/" + y + "/", url_main)
         url = urljoin(urljoin(base_url, url_main), url_details)
         return url
@@ -468,7 +483,6 @@ class OlxParser:
         :param link: a link to a single OLX page with a realty ad
         :return: calls make_data() in return
         """
-
         driver = init_driver(link)
 
         try:
@@ -574,7 +588,7 @@ class OlxParser:
         month = re.search("|".join(self.parser_metadata["published_at"]["months"].keys()), str(date)).group()
         day = re.search(r"\d{2}", str(date)).group()
 
-        result_date = f"{year}-{day}-{self.parser_metadata['published_at']['months'][month]} 00:00:00"
+        result_date = f"{year}-{self.parser_metadata['published_at']['months'][month]}-{day} 00:00:00"
         return result_date
 
     def tag_converter(self, tags):
@@ -645,3 +659,46 @@ class OlxParser:
         result_url = re.search(".*?html", link)
 
         return result_url.group()
+
+    def get_ads_urls(self, link: str, page_number: int, number_of_ads: int) -> List[str]:
+        """
+        Function to get all ads urls from OLX according to number of ads
+        :param link: link to OLX advertisements with certain filters
+        :param page_number: needed to get ads to this page
+        :param number_of_ads: returned number of advertisements
+        :return: List[str]
+        """
+        ads, next_page = self.find_all_ads_on_the_page(link)
+        gen_num = (page_number + 1) * number_of_ads
+        num = gen_num - len(ads)
+        while next_page and num > 0:
+            more_ads, next_page = self.find_all_ads_on_the_page(next_page)
+            num -= len(more_ads)
+            if num < 0:
+                ads.extend(more_ads[:num])
+            else:
+                ads.extend(more_ads)
+        all_loaded_ads = ads if num >= 0 else ads[:gen_num]
+        partial = page_number * number_of_ads
+        return all_loaded_ads[partial:]
+
+    def find_all_ads_on_the_page(self, link: str):
+        """
+        Function to find all ads urls on the page with html.parser
+        :param link: link to OLX ads
+        :return: all founded advertisement urls plus link to the next page if one exists
+        """
+        print(link)
+        with urllib.request.urlopen(link) as html:
+            soup = BeautifulSoup(html, "html.parser")
+
+            if a_tags := soup.find_all("a", {"data-cy": "listing-ad-title"}):
+                advertisement_urls = [tag_a['href'] for tag_a in a_tags]
+            else:
+                advertisement_urls = []
+
+            if next_page := soup.find("a", {"data-cy": "page-link-next"}):
+                contains_next_page_link = next_page["href"]
+            else:
+                contains_next_page_link = None
+            return advertisement_urls, contains_next_page_link

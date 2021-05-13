@@ -84,6 +84,7 @@ def fill_db_with_test_data():
         session.add(realty1)
         session.commit()
 
+
 def setup_function():
     """
     Create all table and instances in DB

@@ -83,6 +83,7 @@ class OLXOutputConverter(AbstractOutputConverter):
     """
     A class for converting characteristics specified by the user into OLX-specified url
     """
+
     def make_realty_data(self) -> Dict:
         """
         Converts a response to a dictionary ready for writing realty in the database
@@ -101,7 +102,16 @@ class OLXOutputConverter(AbstractOutputConverter):
         base_url = urljoin(
             self.service_metadata["base_url"], self.service_metadata["urls"]["search_realty"]["url_prefix"]) + "/"
         realty_data = {}
-        url_main = ["kvartiry-komnaty"]
+        with session_scope() as session:
+            realty_type = session.query(models.RealtyType).get(self.response["realty_filters"].get("realty_type_id"))
+
+            if realty_type is None:
+                raise ObjectNotFoundException("Realty type not found in OLX handler")
+
+            category_xref = session.query(models.CategoryToService).get(
+                {"entity_id": realty_type.category_id, "service_id": 2})
+
+        url_main = [category_xref.original_id]
         realty_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty"]
         with session_scope() as session:
 
@@ -148,13 +158,15 @@ class OLXOutputConverter(AbstractOutputConverter):
                                 self.service_metadata["sufixes"][url_main[0]]
                         url_main.append(entity.original_id)
 
-        url_details = ["?", ]
+        url_details = []
         realty_details_meta = self.service_metadata["urls"]["search_realty"]["models"]["realty_details"]
         for parameter in self.response["characteristics"]:
             for key in self.response["characteristics"][parameter]:
                 url_details.append(realty_details_meta[parameter].get(key, None) + "=" +
                                    str(self.response["characteristics"][parameter][key]))
-        url_details = reduce(lambda x, y: x + "&" + y, url_details)
+        if url_details:
+            # url_details[0]= "?" + url_details[0]
+            url_details = reduce(lambda x, y: x + "&" + y, url_details)
         url_main = reduce(lambda x, y: x + "/" + y + "/", url_main)
         url = urljoin(urljoin(base_url, url_main), url_details)
         return url
@@ -676,6 +688,7 @@ class OlxParser:
         :param link: link to OLX ads
         :return: all founded advertisement urls plus link to the next page if one exists
         """
+        print(link)
         with urllib.request.urlopen(link) as html:
             soup = BeautifulSoup(html, "html.parser")
 

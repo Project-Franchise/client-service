@@ -5,8 +5,8 @@
     "handler_name": "OlxServiceHandler",
     "optional": {},
     "limits": {
-      "page_ads_number": null,
-      "page_numbers": null
+      "page_ads_number_le": null,
+      "page_numbers_limit_le": null
     },
     "urls": {
       "search_realty": {

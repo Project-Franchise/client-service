@@ -328,7 +328,7 @@ def test_filter_validation_for_getting_city(filters, expected_exception):
     """
     with flask_app.test_request_context():
         with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json().returned_value = filters
+            mock_request.get_json().return_value = filters
             mock_request.get_json().called_once()
             with pytest.raises(expected_exception):
                 CityResource().get()
@@ -406,7 +406,7 @@ def test_filter_validation_for_getting_realty(filters, expected_exception):
     """
     with flask_app.test_request_context():
         with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json().returned_value = filters
+            mock_request.get_json().return_value = filters
             mock_request.get_json().called_once()
             with pytest.raises(expected_exception):
                 RealtyResource().post()

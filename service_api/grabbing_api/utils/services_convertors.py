@@ -165,7 +165,7 @@ class OLXOutputConverter(AbstractOutputConverter):
                 url_details.append(realty_details_meta[parameter].get(key, None) + "=" +
                                    str(self.response["characteristics"][parameter][key]))
         if url_details:
-            # url_details[0]= "?" + url_details[0]
+            url_details[0]= "?" + url_details[0]
             url_details = reduce(lambda x, y: x + "&" + y, url_details)
         url_main = reduce(lambda x, y: x + "/" + y + "/", url_main)
         url = urljoin(urljoin(base_url, url_main), url_details)

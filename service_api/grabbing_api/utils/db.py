@@ -197,9 +197,9 @@ class RealtyFetcher:
                 continue
 
             try:
-                RealtyLoader().load(response)
+                loaded_data = RealtyLoader().load(response)
             except LimitBoundError as error:
                 print(error)
-            realties.extend(response)
+            realties.extend(loaded_data)
 
         return realties

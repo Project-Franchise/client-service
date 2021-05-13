@@ -13,7 +13,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import make_transient
 
 from service_api import Base, LOGGER, session_scope
-from service_api.exceptions import AlreadyInDbException, MetaDataError, ModelNotFoundException, ObjectNotFoundException
+from service_api.exceptions import MetaDataError, ModelNotFoundException, ObjectNotFoundException
 from service_api.models import Realty, RealtyDetails
 from service_api.schemas import RealtyDetailsSchema, RealtySchema
 
@@ -35,7 +35,7 @@ def load_data(model_schema: Schema, data: Dict, model: Base) -> Base:
         existing_record = session.query(model).filter_by(**valid_data).first()
         if existing_record is None:
             session.add(record)
-    return record
+    return existing_record or record
 
 
 @load_data.register
@@ -57,7 +57,7 @@ def _(model_schema: RealtyDetailsSchema, data: Dict, model: RealtyDetails):
         incoming_data.pop("id")
         db_data.pop("id")
         if incoming_data == db_data:
-            raise AlreadyInDbException
+            return realty_details
         with session_scope() as session:
 
             session.expire_on_commit = False
@@ -96,14 +96,13 @@ def _(model_schema: RealtySchema, data: Dict, model: Realty):
         LOGGER.debug("record.realty_details_id: %s", str(realty_record.realty_details_id))
     except ValidationError as error:
         LOGGER.error(error)
-        raise 
+        raise
     with session_scope() as session:
         realty = session.query(model).filter_by(realty_details_id=realty_record.realty_details_id).first()
-    if realty is not None:
-        raise AlreadyInDbException
-    with session_scope() as session:
-        session.add(realty_record)
-    return realty_record
+    if realty is None:
+        with session_scope() as session:
+            session.add(realty_record)
+    return realty or realty_record
 
 
 def open_metadata(path: str) -> Dict:

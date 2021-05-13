@@ -133,6 +133,14 @@ class StateSchema(Schema):
     self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
+class ServiceSchema(Schema):
+    """
+    Schema for Service model
+    """
+    id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
+
+
 class RealtySchema(Schema):
     """
     Schema for Realty model
@@ -146,18 +154,11 @@ class RealtySchema(Schema):
     realty_details = fields.Nested(RealtyDetailsSchema, dump_only=True)
     realty_type_id = fields.Integer(load_only=True, required=True)
     realty_type = fields.Nested(RealtyTypeSchema, dump_only=True)
-    operation_type_id = fields.Integer(load_only=True)
+    operation_type_id = fields.Integer(load_only=True, required=True)
     operation_type = fields.Nested(OperationTypeSchema, dump_only=True)
     version = fields.String()
     service_id = fields.Integer(load_only=True)
-
-
-class ServiceSchema(Schema):
-    """
-    Schema for Service model
-    """
-    id = fields.Integer()
-    name = fields.String(validate=validate.Length(max=255))
+    service = fields.Nested(ServiceSchema, dump_only=True)
 
 
 class CityToServiceSchema(Schema):

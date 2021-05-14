@@ -327,9 +327,9 @@ def test_filter_validation_for_getting_city(filters, expected_exception):
     Test route for getting realties from database
     """
     with flask_app.test_request_context():
-        with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json().return_value = filters
-            mock_request.get_json().called_once()
+        with patch("service_api.client_api.resources.request.get_json") as mock_request:
+            mock_request().return_value = filters
+            mock_request().called_once()
             with pytest.raises(expected_exception):
                 CityResource().get()
 
@@ -405,8 +405,8 @@ def test_filter_validation_for_getting_realty(filters, expected_exception):
     Test route for getting realties from database with validation method for exception
     """
     with flask_app.test_request_context():
-        with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json().return_value = filters
-            mock_request.get_json().called_once()
+        with patch("service_api.client_api.resources.request.get_json") as mock_request:
+            mock_request().return_value = filters
+            mock_request().called_once()
             with pytest.raises(expected_exception):
                 RealtyResource().post()

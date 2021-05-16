@@ -55,7 +55,6 @@ services:
     volumes:
       - flask_db_volume:/var/lib/postgresql/data
 
-
   redis:
     profiles: ["dev", "dev-python", "python-celery"]
     image: redis:6.2

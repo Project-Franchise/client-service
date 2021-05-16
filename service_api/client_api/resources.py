@@ -5,16 +5,15 @@ Api routes for client api
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
-
 from service_api import CACHE, api_, models, schemas, session_scope
-from service_api.client_api.utils import get_latest_data_from_grabbing
-from service_api.constants import URLS, VERSION_DEFAULT_TIMESTAMP
-from service_api.errors import BadRequestException
-from service_api.exceptions import BadFiltersException
-from service_api.grabbing_api.constants import GE, LE
-from service_api.models import Realty, RealtyDetails, AdditionalFilters
-from service_api.schemas import filters_validation, RealtySchema, AdditionalFilterParametersSchema, \
-    RealtyDetailsInputSchema
+
+from ..client_api.utils import get_latest_data_from_grabbing
+from ..constants import URLS, VERSION_DEFAULT_TIMESTAMP
+from ..errors import BadRequestException
+from ..exceptions import BadFiltersException
+from ..constants import GE, LE
+from ..models import AdditionalFilters, Realty, RealtyDetails
+from ..schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema, filters_validation)
 
 
 class IndexResource(Resource):
@@ -135,7 +134,6 @@ class RealtyResource(Resource):
                  (AdditionalFilters, AdditionalFilterParametersSchema)])
         except BadFiltersException as error:
             raise BadRequestException from error
-
 
         request_filters = {
             "realty_filters": realty_dict,

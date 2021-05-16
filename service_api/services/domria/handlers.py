@@ -1,36 +1,17 @@
 """
-Handlers for Domria service
+Domria handlers
 """
 import json
-from abc import ABC, abstractmethod
 from typing import Dict, List
 
 from service_api import LOGGER
-from service_api.utils import send_request
-from service_api.async_logic import get_all_responses
-from service_api.exceptions import (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
-from service_api.grabbing_api.utils.services_convertors import (DomRiaInputConverter, DomRiaOutputConverter,
-                                                                OLXOutputConverter, OlxParser)
+
+from ...exceptions import (MetaDataError, ObjectNotFoundException, ServiceHandlerError)
+from ...utils import send_request
+from ...utils.async_logic import get_all_responses
+from ..interfaces import AbstractServiceHandler
+from .convertors import (DomRiaInputConverter, DomRiaOutputConverter)
 from .limitation import DomriaLimitationSystem
-
-
-class AbstractServiceHandler(ABC):
-    """
-    Abstract class for handler class
-    """
-
-    def __init__(self, post_body: Dict, service_metadata: Dict):
-        """
-        Sets self values
-        """
-        self.metadata = service_metadata
-        self.post_body = post_body
-
-    @abstractmethod
-    def get_latest_data(self):
-        """
-        Method that realise the logic of sending request to particular service and getting items
-        """
 
 
 class DomriaServiceHandler(AbstractServiceHandler):
@@ -122,23 +103,3 @@ class DomriaServiceHandler(AbstractServiceHandler):
             (page + 1) * page_ads_number - page_ads_number: (page + 1) * page_ads_number
         ]
         return self.create_records(current_items, metadata)
-
-
-class OlxServiceHandler(AbstractServiceHandler):
-    """
-    Handler class for OLX service
-    """
-
-    def get_latest_data(self):
-        """
-        Method that realise the logic of sending request to OLX and getting items
-        :return: List[Dict]
-        """
-        url = OLXOutputConverter(self.post_body, self.metadata).make_url()
-        olx_parser = OlxParser(self.metadata)
-        parsed_links = olx_parser.get_ads_urls(url, self.post_body["additional"]["page"],
-                                               self.post_body["additional"]["page_ads_number"])
-        records = []
-        for link in parsed_links:
-            records.append(olx_parser.main_logic(link))
-        return records

@@ -688,7 +688,6 @@ class OlxParser:
         :param link: link to OLX ads
         :return: all founded advertisement urls plus link to the next page if one exists
         """
-        print(link)
         with urllib.request.urlopen(link) as html:
             soup = BeautifulSoup(html, "html.parser")
 

@@ -12,3 +12,4 @@ beautifulsoup4~=4.9.3
 alembic~=1.5.7
 click~=7.1.2
 celery==5.0.5
+pytest~=6.2.3

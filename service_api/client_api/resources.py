@@ -133,7 +133,7 @@ class RealtyResource(Resource):
                  (RealtyDetails, RealtyDetailsInputSchema),
                  (AdditionalFilters, AdditionalFilterParametersSchema)])
         except BadFiltersException as error:
-            raise BadRequestException from error
+            raise BadRequestException(error.desc) from error
 
         request_filters = {
             "realty_filters": realty_dict,

@@ -6,6 +6,6 @@ from .domria.handlers import DomriaServiceHandler
 from .olx.handlers import OlxServiceHandler
 
 services_handlers = {
-    DomriaServiceHandler: DomriaServiceHandler,
-    OlxServiceHandler: OlxServiceHandler
+    "DomriaServiceHandler": DomriaServiceHandler,
+    "OlxServiceHandler": OlxServiceHandler
 }

@@ -196,7 +196,8 @@ class OlxParser:
 
         tags = []
         for tag in soup.find("ul", attrs={"class": self.parser_metadata["tags"]["class"]}):
-            tags.append(tag.contents[0].string)
+            if tag.contents:
+                tags.append(tag.contents[0].string)
 
         result.update(self.tag_converter(tags))
 

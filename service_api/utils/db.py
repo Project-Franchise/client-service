@@ -182,7 +182,7 @@ class RealtyFetcher:
                     if additional["page"] > page_numbers_limit:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
-            handler = services_handlers.get(self.metadata[service_name]["handler_name"])
+            handler = services_handlers.get(realty_service_metadata["handler_name"])
             if not handler:
                 raise MetaDataError
             filter_copy = deepcopy(self.filters)

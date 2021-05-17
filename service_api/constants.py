@@ -17,7 +17,6 @@ URLS = {
         "GET_OPERATION_TYPE_BY_ID_URL": "/operation_type/<operation_type_id>"
     },
     "GRABBING": {
-        "GET_CORE_DATA_URL": "/grabbing/core_data",
         "GET_LATEST_URL": "/grabbing/latest"
     }
 }

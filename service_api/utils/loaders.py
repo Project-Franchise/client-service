@@ -698,7 +698,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
             text = item.get_text()
             if text.split(" ")[0] in states:
                 urls[text.split()[0]] = ((item.get("href")).split("/"))[-2]
-        driver.quit()
+        # driver.quit()
         return urls
 
     def load(self, *args, **kwargs) -> int:
@@ -777,10 +777,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        options = Options()
-        options.headless = True
-        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"), options=options)
-        driver.get("https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/")
+        driver = init_driver("https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/")
         driver.execute_script("arguments[0].click();", driver.find_element_by_id("cityField"))
         olx_states = self.olx_meta["entities"]["states"]
         urls_cities = {}

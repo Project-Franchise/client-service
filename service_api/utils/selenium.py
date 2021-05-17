@@ -1,7 +1,6 @@
 """
 Module of grabbing service contains driver for selenium
 """
-
 import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options

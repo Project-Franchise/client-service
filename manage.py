@@ -9,7 +9,7 @@ import click
 
 from service_api import Base, session_scope, flask_app, LOGGER
 from service_api.exceptions import MetaDataError
-from service_api.grabbing_api.utils.db import CoreDataLoadersFactory
+from service_api.utils.db import CoreDataLoadersFactory
 
 BASE_ENTITIES = CoreDataLoadersFactory.get_available_entities()
 

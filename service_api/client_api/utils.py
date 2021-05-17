@@ -9,8 +9,8 @@ import requests
 from sqlalchemy.util.langhelpers import NoneType
 
 from service_api import CACHE, LOGGER
-from service_api.errors import ServiceUnavailableException
-from service_api.constants import CACHED_REQUESTS_EXPIRE_TIME
+from ..errors import ServiceUnavailableException
+from ..constants import CACHED_REQUESTS_EXPIRE_TIME
 
 
 def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Union[Dict, NoneType] = None):

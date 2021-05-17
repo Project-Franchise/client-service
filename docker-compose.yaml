@@ -67,7 +67,7 @@ services:
     profiles: ["test"]
     image: postgres:13.2
     ports:
-      - "5432:5432"
+      - "5442:5432"
     environment:
       - POSTGRES_USER=lv-python-mc
       - POSTGRES_PASSWORD=575

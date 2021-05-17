@@ -33,7 +33,7 @@ def get_single_response(url, params, item_id):
 
 
 def get_all_responses(url, params, id_container: List):
-    """∂
+    """
     Main function to make requests to Domria API in parallel
     :return: List[Dict]
     """

@@ -17,7 +17,7 @@
         "url_prefix": "cities",
         "depens_on": ["state_id"],
         "condition": "/",
-        "model": "CityToService",
+        "model": "CityXRefService",
         "fields": {
           "name": "name",
           "city_id": null,
@@ -29,7 +29,7 @@
         "url_prefix": "states",
         "depens_on": [],
         "condition": "/",
-        "model": "StateToService",
+        "model": "StateXRefService",
         "fields": {
           "state_id": null,
           "service_id": null,
@@ -61,22 +61,22 @@
               "city_id": {
                 "request_key": "city_id",
                 "condition": "&",
-                "model": "CityToService"
+                "model": "CityXRefService"
               },
               "state_id": {
                 "request_key": "state_id",
                 "condition": "&",
-                "model": "StateToService"
+                "model": "StateXRefService"
               },
               "realty_type_id": {
                 "request_key": "realty_type",
                 "condition": "&",
-                "model": "RealtyTypeToService"
+                "model": "RealtyTypeXRefService"
               },
               "operation_type_id": {
                 "request_key": "operation_type",
                 "condition": "&",
-                "model": "OperationTypeToService"
+                "model": "OperationTypeXRefService"
               }
             }
           },

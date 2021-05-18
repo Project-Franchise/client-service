@@ -32,28 +32,28 @@
             "realty_category_id": {
               "request_key": "{original_id}",
               "condition": "/",
-              "model": "CategoryToService"
+              "model": "CategoryXRefService"
             },
             "operation_type_id": {
               "request_key": "{original_id}",
               "condition": "/",
-              "model": "OperationTypeToService"
+              "model": "OperationTypeXRefService"
             },
             "realty_type_id": {
               "request_key": "{original_id}",
               "condition": "/",
-              "model": "RealtyTypeToService"
+              "model": "RealtyTypeXRefService"
             },
             "location": {
               "city_id": {
                 "request_key": "{original_id}",
                 "condition": "/",
-                "model": "CityToService"
+                "model": "CityXRefService"
               },
               "state_id": {
                 "request_key": "{original_id}",
                 "condition": "/",
-                "model": "StateToService"
+                "model": "StateXRefService"
               }
             }
           },

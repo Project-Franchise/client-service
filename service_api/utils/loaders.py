@@ -4,42 +4,40 @@ Module with data Loaders
 import csv
 import os
 from abc import ABC, abstractmethod
-
 from typing import Dict, List
 
+from bs4 import BeautifulSoup
 from marshmallow.exceptions import ValidationError
 from requests.exceptions import RequestException
 from sqlalchemy import select
-from bs4 import BeautifulSoup
-
-import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from service_api import session_scope, LOGGER
-from service_api.utils import send_request
+from service_api import LOGGER, session_scope
 from service_api.constants import VERSION_DEFAULT_TIMESTAMP
-from service_api.exceptions import (ModelNotFoundException, ObjectNotFoundException,
-                                    ResponseNotOkException, AlreadyInDbException)
-from service_api.grabbing_api.constants import (
-    PATH_TO_CITIES_ALIASES_CSV, PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
-    PATH_TO_OPERATION_TYPE_CSV, PATH_TO_REALTY_TYPE_ALIASES_CSV, PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV,
-    PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV, PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV,
-    PATH_TO_PARSER_METADATA)
-from service_api.grabbing_api.utils import init_driver
-from service_api.models import (City, CityAlias, CityToService, OperationType, OperationTypeAlias,
-                                OperationTypeToService, RealtyType, RealtyTypeAlias, RealtyTypeToService,
-                                Service, State, StateAlias, StateToService, Category, CategoryAlias, CategoryToService,
-                                Realty, RealtyDetails)
-from service_api.schemas import (CityAliasSchema, CitySchema, CityToServiceSchema, OperationTypeAliasSchema,
-                                 OperationTypeSchema, OperationTypeToServiceSchema, RealtyTypeAliasSchema,
-                                 RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema, StateAliasSchema,
-                                 StateSchema, StateToServiceSchema, CategorySchema, CategoryAliasSchema,
-                                 CategoryToServiceSchema, RealtySchema, RealtyDetailsSchema)
-from service_api.grabbing_api.utils.limitation import DomriaLimitationSystem
-from .grabbing_utils import load_data, open_metadata, recognize_by_alias
-from selenium import webdriver
-
+from service_api.exceptions import (AlreadyInDbException,
+                                    ModelNotFoundException,
+                                    ObjectNotFoundException,
+                                    ResponseNotOkException)
+from service_api.models import (Category, CategoryAlias, CategoryToService,
+                                City, CityAlias, CityToService, OperationType,
+                                OperationTypeAlias, OperationTypeToService,
+                                Realty, RealtyDetails, RealtyType,
+                                RealtyTypeAlias, RealtyTypeToService, Service,
+                                State, StateAlias, StateToService)
+from service_api.schemas import (CategoryAliasSchema, CategorySchema, CategoryToServiceSchema, CityAliasSchema,
+                                 CitySchema, CityToServiceSchema, OperationTypeAliasSchema, OperationTypeSchema,
+                                 OperationTypeToServiceSchema, RealtyDetailsSchema, RealtySchema,
+                                 RealtyTypeAliasSchema, RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema,
+                                 StateAliasSchema, StateSchema, StateToServiceSchema)
+from service_api.utils import send_request
+from ..constants import (PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV, PATH_TO_CITIES_ALIASES_CSV,
+                         PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
+                         PATH_TO_OPERATION_TYPE_CSV, PATH_TO_PARSER_METADATA, PATH_TO_REALTY_TYPE_ALIASES_CSV,
+                         PATH_TO_REALTY_TYPE_CSV, PATH_TO_SERVICES_CSV, PATH_TO_STATE_ALIASES_CSV, PATH_TO_STATE_CSV)
+from ..services.domria.limitation import DomriaLimitationSystem
+from ..utils import load_data, open_metadata, recognize_by_alias
+from ..utils.selenium import init_driver
 
 
 class BaseLoader(ABC):
@@ -700,7 +698,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
             text = item.get_text()
             if text.split(" ")[0] in states:
                 urls[text.split()[0]] = ((item.get("href")).split("/"))[-2]
-        driver.quit()
+        # driver.quit()
         return urls
 
     def load(self, *args, **kwargs) -> int:
@@ -779,10 +777,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
         getting all cities from olx
         :return: dict
         """
-        options = Options()
-        options.headless = True
-        driver = webdriver.Chrome(os.environ.get("SELENIUM_PATH"), options=options)
-        driver.get("https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/")
+        driver = init_driver("https://www.olx.ua/uk/nedvizhimost/kvartiry-komnaty/arenda-kvartir-komnat/")
         driver.execute_script("arguments[0].click();", driver.find_element_by_id("cityField"))
         olx_states = self.olx_meta["entities"]["states"]
         urls_cities = {}

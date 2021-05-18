@@ -7,15 +7,14 @@ from celery import group
 from sqlalchemy import select
 
 from service_api import LOGGER, session_scope
-from service_api.celery_tasks import celery_app
-from service_api.constants import PAGE_LIMIT
-from service_api.errors import BadRequestException
-from service_api.exceptions import BadFiltersException, LimitBoundError
-from service_api.grabbing_api.utils.db import RealtyFetcher
-from service_api.grabbing_api.utils.updaters import RealtyUpdater
-from service_api.models import (AdditionalFilters, OperationType, Realty, RealtyDetails, RealtyType, State)
-from service_api.schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema,
-                                 filters_validation)
+from ..constants import PAGE_LIMIT
+from ..errors import BadRequestException
+from ..exceptions import BadFiltersException, LimitBoundError
+from ..models import (AdditionalFilters, OperationType, Realty, RealtyDetails, RealtyType, State)
+from ..schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema, filters_validation)
+from ..utils.db import RealtyFetcher
+from . import celery_app
+from .updaters import RealtyUpdater
 
 
 @celery_app.task

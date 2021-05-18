@@ -31,5 +31,6 @@ run:
 
 test:
 	@docker-compose --profile test up -d
-	@${PYTHON} -m pytest tests/test.py
+	@timeout 2
+	@${PYTHON} -m pytest tests/test_client_api.py
 	@docker-compose down

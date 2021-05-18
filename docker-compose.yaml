@@ -55,7 +55,6 @@ services:
     volumes:
       - flask_db_volume:/var/lib/postgresql/data
 
-
   redis:
     profiles: ["dev", "dev-python", "python-celery"]
     image: redis:6.2
@@ -68,18 +67,24 @@ services:
     profiles: ["test"]
     image: postgres:13.2
     ports:
-      - "5432:5432"
+      - "5442:5432"
     environment:
       - POSTGRES_USER=lv-python-mc
       - POSTGRES_PASSWORD=575
       - POSTGRES_DB=test
-
 
   redis_test:
     profiles: ["test"]
     image: redis:6.2
     ports:
       - "6379:6379"
+ 
+  chromedriver:
+    profiles: ["dev"]
+    image: selenium/standalone-chrome
+    ports:
+      - "4444:4444"
+
 
 
 volumes:

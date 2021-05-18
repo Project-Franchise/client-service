@@ -1,7 +1,6 @@
 """
 Utilities for creating models and saving them in DB
 """
-
 import datetime
 import json
 from functools import singledispatch
@@ -9,13 +8,14 @@ from typing import Dict
 
 from marshmallow import ValidationError
 from marshmallow.schema import Schema
-from sqlalchemy import func
+from requests import Session
 from sqlalchemy.orm import make_transient
+from sqlalchemy import func
 
-from service_api import Base, LOGGER, session_scope
-from service_api.exceptions import MetaDataError, ModelNotFoundException, ObjectNotFoundException
-from service_api.models import Realty, RealtyDetails
-from service_api.schemas import RealtyDetailsSchema, RealtySchema
+from service_api import LOGGER, Base, session_scope
+from ..exceptions import (MetaDataError, ModelNotFoundException, ObjectNotFoundException)
+from ..models import Realty, RealtyDetails
+from ..schemas import RealtyDetailsSchema, RealtySchema
 
 
 @singledispatch
@@ -145,3 +145,14 @@ def recognize_by_alias(model: Base, alias: str, set_=None):
     if obj is None:
         raise ObjectNotFoundException(message="Record for alias: {} not found".format(alias))
     return obj
+
+
+def send_request(method: str, url: str, request_session: Session = None, *args, **kwargs):
+    """
+    Wrapper for sending requests
+    """
+    request_session = request_session or Session()
+    response = request_session.request(method, url, *args, **kwargs)
+    from ..services.limitation import LimitationSystem
+    LimitationSystem().mark_token_after_request(response.url)
+    return response

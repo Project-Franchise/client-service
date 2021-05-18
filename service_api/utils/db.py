@@ -6,16 +6,13 @@ from copy import deepcopy
 from typing import Any, Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
-
 from service_api import LOGGER
-from service_api.exceptions import (CycleReferenceException, MetaDataError, ObjectNotFoundException,
-                                    ResponseNotOkException, LimitBoundError)
-from service_api.grabbing_api.constants import PATH_TO_CORE_DB_METADATA, PATH_TO_PARSER_METADATA
-from service_api.grabbing_api.constants import (PATH_TO_METADATA)
-from service_api.grabbing_api.utils.grabbing_utils import open_metadata
-from service_api.grabbing_api.utils.core_data_loaders import RealtyLoader
-from service_api.grabbing_api.utils import services_handler
-from . import core_data_loaders
+
+from ..constants import (PATH_TO_CORE_DB_METADATA, PATH_TO_METADATA, PATH_TO_PARSER_METADATA)
+from ..exceptions import (CycleReferenceException, LimitBoundError, MetaDataError, ObjectNotFoundException,
+                          ResponseNotOkException)
+from ..services import services_handlers
+from ..utils import loaders, open_metadata
 
 
 class FetchingOrderGenerator:
@@ -95,7 +92,7 @@ class CoreDataLoadersFactory:
         """
 
         for info in self.__METADATA.values():
-            info["loader"] = getattr(core_data_loaders, info.get("loader", None), None)
+            info["loader"] = getattr(loaders, info.get("loader", None), None)
 
     @classmethod
     def get_available_entities(cls) -> List[str]:
@@ -185,7 +182,7 @@ class RealtyFetcher:
                     if additional["page"] > page_numbers_limit:
                         continue
                     additional["page_ads_number"] = min(page_ads_limit, additional["page_ads_number"])
-            handler = getattr(services_handler, self.metadata[service_name]["handler_name"])
+            handler = services_handlers.get(realty_service_metadata["handler_name"])
             if not handler:
                 raise MetaDataError
             filter_copy = deepcopy(self.filters)
@@ -197,7 +194,7 @@ class RealtyFetcher:
                 continue
 
             try:
-                loaded_data = RealtyLoader().load(response)
+                loaded_data = loaders.RealtyLoader().load(response)
             except LimitBoundError as error:
                 print(error)
             realties.extend(loaded_data)

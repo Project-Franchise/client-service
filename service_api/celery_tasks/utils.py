@@ -4,7 +4,7 @@ Celery config module
 from celery import Celery
 from celery.schedules import crontab
 
-from service_api.constants import CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE
+from ..constants import CRONTAB_FILLING_DB_WITH_REALTIES_SCHEDULE
 
 
 def setup_periodic_tasks(sender, **kwargs):

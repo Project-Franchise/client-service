@@ -10,4 +10,4 @@ COPY . /app
 
 RUN pip3 install -r requirements.txt -r dev-requirements.txt
 
-CMD ["python3", "-u", "app.py"]
+CMD ["python3", "-u", "manage.py", "runserver"]

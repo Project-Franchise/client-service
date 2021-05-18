@@ -17,7 +17,7 @@ def init_driver(link):
     if DRIVER is None:
         options = Options()
         options.headless = True
-        DRIVER = webdriver.Chrome(os.environ.get("SELENIUM_PATH"), options=options)
+        DRIVER = webdriver.Remote("http://127.0.0.1:4444/wd/hub", options=options)
         DRIVER.get(link)
 
     return DRIVER

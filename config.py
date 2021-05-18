@@ -15,7 +15,7 @@ class Config:
     SQLALCHEMY_DATABASE_URL = os.environ['DATABASE_URL']
     CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
     CELERY_BACKEND_URL = os.environ['CELERY_BACKEND_URL']
-    SELENIUM_PATH = os.environ['SELENIUM_PATH']
+    SELENIUM_URL = os.environ['SELENIUM_URL']
 
 
 class ProductionConfig(Config):

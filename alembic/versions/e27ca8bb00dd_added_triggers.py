@@ -132,7 +132,7 @@ def upgrade():
     BEGIN
         UPDATE operation_type_to_service otts
         SET entity_id = NEW.id
-        WHERE otts.entity_id = (
+        WHERE otts.entity_id IN (
                 SELECT otts.entity_id
                 FROM operation_type_to_service otts
                 JOIN operation_type ot ON otts.entity_id = ot.id

@@ -32,6 +32,11 @@ class DomRiaOutputConverter(AbstractOutputConverter):
         realty_details_data = dict(zip(
             realty_details_meta["fields"].keys(), values
         ))
+        try:
+            realty_details_data["original_url"] = \
+                f"{self.service_metadata['pretty_url']}/{realty_details_data['original_url']}"
+        except KeyError as error:
+            raise MetaDataError("No such key in metadata: base_url or original_url") from error
 
         return realty_details_data
 

@@ -31,7 +31,7 @@ def upgrade():
                         'operation_type.id'], ondelete='SET NULL'),
                     sa.PrimaryKeyConstraint('operation_type_id', 'alias')
                     )
-    op.create_table('operation_type_to_service',
+    op.create_table('operation_type_xref_service',
                     sa.Column('operation_type_id',
                               sa.BIGINT(), nullable=False),
                     sa.Column('service_id', sa.BIGINT(), nullable=False),
@@ -50,7 +50,7 @@ def upgrade():
                         'realty_type.id'], ondelete='SET NULL'),
                     sa.PrimaryKeyConstraint('realty_type_id', 'alias')
                     )
-    op.create_table('realty_type_to_service',
+    op.create_table('realty_type_xref_service',
                     sa.Column('realty_type_id', sa.BIGINT(), nullable=False),
                     sa.Column('service_id', sa.BIGINT(), nullable=False),
                     sa.Column('original_id', sa.VARCHAR(
@@ -68,7 +68,7 @@ def upgrade():
                         ['state_id'], ['state.id'], ondelete='SET NULL'),
                     sa.PrimaryKeyConstraint('state_id', 'alias')
                     )
-    op.create_table('state_to_service',
+    op.create_table('state_xref_service',
                     sa.Column('state_id', sa.BIGINT(), nullable=False),
                     sa.Column('service_id', sa.BIGINT(), nullable=False),
                     sa.Column('original_id', sa.VARCHAR(
@@ -86,7 +86,7 @@ def upgrade():
                         ['city_id'], ['city.id'], ondelete='SET NULL'),
                     sa.PrimaryKeyConstraint('city_id', 'alias')
                     )
-    op.create_table('city_to_service',
+    op.create_table('city_xref_service',
                     sa.Column('city_id', sa.BIGINT(), nullable=False),
                     sa.Column('service_id', sa.BIGINT(), nullable=False),
                     sa.Column('original_id', sa.VARCHAR(
@@ -135,13 +135,13 @@ def downgrade():
                                     autoincrement=False, nullable=False))
     op.create_unique_constraint(
         'city_original_id_key', 'city', ['original_id'])
-    op.drop_table('city_to_service')
+    op.drop_table('city_xref_service')
     op.drop_table('city_alias')
-    op.drop_table('state_to_service')
+    op.drop_table('state_xref_service')
     op.drop_table('state_alias')
-    op.drop_table('realty_type_to_service')
+    op.drop_table('realty_type_xref_service')
     op.drop_table('realty_type_alias')
-    op.drop_table('operation_type_to_service')
+    op.drop_table('operation_type_xref_service')
     op.drop_table('operation_type_alias')
     op.drop_table('service')
     # ### end Alembic commands ###

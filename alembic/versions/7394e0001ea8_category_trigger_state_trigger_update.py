@@ -23,11 +23,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_STATE_ID$
 
     BEGIN
-        UPDATE state_to_service sts
+        UPDATE state_xref_service sts
         SET entity_id = NEW.id
         WHERE sts.entity_id IN (
                 SELECT sts.entity_id
-                FROM state_to_service sts
+                FROM state_xref_service sts
                 JOIN state ON sts.entity_id = state.id
                 WHERE state.self_id = NEW.self_id
                     AND state.version is not null
@@ -64,11 +64,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_CATEGORY_ID$
 
     BEGIN
-        UPDATE category_to_service cts
+        UPDATE category_xref_service cts
         SET entity_id=NEW.id
         WHERE cts.entity_id IN (
 			SELECT cts.entity_id
-                FROM category_to_service cts
+                FROM category_xref_service cts
                 JOIN category c ON cts.entity_id = c.id
                 WHERE c.self_id = NEW.self_id
                     AND c.version is not null
@@ -113,11 +113,11 @@ def downgrade():
     RETURNS TRIGGER AS $UPDATE_STATE_ID$
 
     BEGIN
-        UPDATE state_to_service sts
+        UPDATE state_xref_service sts
         SET entity_id = NEW.id
         WHERE sts.entity_id IN (
                 SELECT sts.entity_id
-                FROM state_to_service sts
+                FROM state_xref_service sts
                 JOIN state ON sts.entity_id = state.id
                 WHERE state.self_id = NEW.self_id
                     AND state.version is not null

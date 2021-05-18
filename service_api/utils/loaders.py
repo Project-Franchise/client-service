@@ -19,17 +19,17 @@ from service_api.exceptions import (AlreadyInDbException,
                                     ModelNotFoundException,
                                     ObjectNotFoundException,
                                     ResponseNotOkException)
-from service_api.models import (Category, CategoryAlias, CategoryToService,
-                                City, CityAlias, CityToService, OperationType,
-                                OperationTypeAlias, OperationTypeToService,
+from service_api.models import (Category, CategoryAlias, CategoryXRefService,
+                                City, CityAlias, CityXRefService, OperationType,
+                                OperationTypeAlias, OperationTypeXRefService,
                                 Realty, RealtyDetails, RealtyType,
-                                RealtyTypeAlias, RealtyTypeToService, Service,
-                                State, StateAlias, StateToService)
-from service_api.schemas import (CategoryAliasSchema, CategorySchema, CategoryToServiceSchema, CityAliasSchema,
-                                 CitySchema, CityToServiceSchema, OperationTypeAliasSchema, OperationTypeSchema,
-                                 OperationTypeToServiceSchema, RealtyDetailsSchema, RealtySchema,
-                                 RealtyTypeAliasSchema, RealtyTypeSchema, RealtyTypeToServiceSchema, ServiceSchema,
-                                 StateAliasSchema, StateSchema, StateToServiceSchema)
+                                RealtyTypeAlias, RealtyTypeXRefService, Service,
+                                State, StateAlias, StateXRefService)
+from service_api.schemas import (CategoryAliasSchema, CategorySchema, CategoryXRefServiceSchema, CityAliasSchema,
+                                 CitySchema, CityXRefServiceSchema, OperationTypeAliasSchema, OperationTypeSchema,
+                                 OperationTypeXRefServiceSchema, RealtyDetailsSchema, RealtySchema,
+                                 RealtyTypeAliasSchema, RealtyTypeSchema, RealtyTypeXRefServiceSchema, ServiceSchema,
+                                 StateAliasSchema, StateSchema, StateXRefServiceSchema)
 from service_api.utils import send_request
 from ..constants import (PATH_TO_CATEGORIES_CSV, PATH_TO_CATEGORY_ALIASES_CSV, PATH_TO_CITIES_ALIASES_CSV,
                          PATH_TO_CITIES_CSV, PATH_TO_METADATA, PATH_TO_OPERATION_TYPE_ALIASES_CSV,
@@ -268,7 +268,7 @@ class OperationTypeXRefServicesLoader(XRefBaseLoader):
                 "original_id": str(value)
             }
             try:
-                load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+                load_data(OperationTypeXRefServiceSchema(), data, OperationTypeXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -307,7 +307,7 @@ class RealtyTypeXRefServicesLoader(XRefBaseLoader):
                 "original_id": str(value)
             }
             try:
-                load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+                load_data(RealtyTypeXRefServiceSchema(), data, RealtyTypeXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -348,7 +348,7 @@ class CategoryXRefServicesLoader(XRefBaseLoader):
                 "original_id": str(value["own_id"])
             }
             try:
-                load_data(CategoryToServiceSchema(), data, CategoryToService)
+                load_data(CategoryXRefServiceSchema(), data, CategoryXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -405,7 +405,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             service = session.query(Service).filter_by(name=self.domria_meta["name"]).first()
             if service is None:
                 raise ObjectNotFoundException(desc="No service {} found".format(self.domria_meta["name"]))
-            state_xref = session.query(StateToService).get({"entity_id": state_id, "service_id": service.id})
+            state_xref = session.query(StateXRefService).get({"entity_id": state_id, "service_id": service.id})
             if state_xref is None:
                 raise ObjectNotFoundException(desc="No StateXrefService obj found")
 
@@ -438,7 +438,7 @@ class CityXRefServicesLoader(XRefBaseLoader):
             }
 
             try:
-                load_data(CityToServiceSchema(), data, CityToService)
+                load_data(CityXRefServiceSchema(), data, CityXRefService)
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:
@@ -497,7 +497,7 @@ class StateXRefServicesLoader(XRefBaseLoader):
             }
 
             try:
-                load_data(StateToServiceSchema(), data, StateToService)
+                load_data(StateXRefServiceSchema(), data, StateXRefService)
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:
@@ -589,7 +589,7 @@ class OperationTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
                 "original_id": str(value)
             }
             try:
-                load_data(OperationTypeToServiceSchema(), data, OperationTypeToService)
+                load_data(OperationTypeXRefServiceSchema(), data, OperationTypeXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -628,7 +628,7 @@ class CategoryOlxXRefServicesLoader(OlxXRefBaseLoader):
                 "original_id": str(value)
             }
             try:
-                load_data(CategoryToServiceSchema(), data, CategoryToService)
+                load_data(CategoryXRefServiceSchema(), data, CategoryXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -666,7 +666,7 @@ class RealtyTypeOlxXRefServicesLoader(OlxXRefBaseLoader):
                 "original_id": str(value)
             }
             try:
-                load_data(RealtyTypeToServiceSchema(), data, RealtyTypeToService)
+                load_data(RealtyTypeXRefServiceSchema(), data, RealtyTypeXRefService)
             except AlreadyInDbException as error:
                 LOGGER.warning(error)
                 continue
@@ -731,7 +731,7 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
             }
 
             try:
-                load_data(StateToServiceSchema(), data, StateToService)
+                load_data(StateXRefServiceSchema(), data, StateXRefService)
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:
@@ -832,7 +832,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
             service = session.query(Service).filter_by(name=self.olx_meta["name"]).first()
             if service is None:
                 raise ObjectNotFoundException(desc="No service {} found".format(self.olx_meta["name"]))
-            state_xref = session.query(StateToService).get({"entity_id": state.id, "service_id": service.id})
+            state_xref = session.query(StateXRefService).get({"entity_id": state.id, "service_id": service.id})
             if state_xref is None:
                 raise ObjectNotFoundException(desc="No StateXrefService obj found")
 
@@ -858,7 +858,7 @@ class CityOlxXRefServicesLoader(OlxXRefBaseLoader):
             }
 
             try:
-                load_data(CityToServiceSchema(), data, CityToService)
+                load_data(CityXRefServiceSchema(), data, CityXRefService)
             except ValidationError as error:
                 LOGGER.error(error)
             except AlreadyInDbException as error:

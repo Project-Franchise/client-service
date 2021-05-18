@@ -23,11 +23,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_STATE_ID$
 
     BEGIN
-        UPDATE state_to_service sts
+        UPDATE state_xref_service sts
         SET entity_id = NEW.id
         WHERE sts.entity_id IN (
                 SELECT sts.entity_id
-                FROM state_to_service sts
+                FROM state_xref_service sts
                 JOIN state ON sts.entity_id = state.id
                 WHERE state.self_id = NEW.self_id
                     AND state.version is not null
@@ -58,11 +58,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_CITY_ID$
 
     BEGIN
-        UPDATE city_to_service cts
+        UPDATE city_xref_service cts
         SET entity_id = NEW.id
         WHERE cts.entity_id IN (
                 SELECT cts.entity_id
-                FROM city_to_service cts
+                FROM city_xref_service cts
                 JOIN city ON cts.entity_id = city.id
                 WHERE city.self_id = NEW.self_id
                     AND city.version is not null
@@ -93,11 +93,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_REALTY_TYPE_ID$
 
     BEGIN
-        UPDATE realty_type_to_service rtts
+        UPDATE realty_type_xref_service rtts
         SET entity_id = NEW.id
         WHERE rtts.entity_id IN (
                 SELECT rtts.entity_id
-                FROM realty_type_to_service rtts
+                FROM realty_type_xref_service rtts
                 JOIN realty_type rt ON rtts.entity_id = rt.id
                 WHERE rt.self_id = NEW.self_id
                     AND rt.version is not null
@@ -130,11 +130,11 @@ def upgrade():
     RETURNS TRIGGER AS $UPDATE_OPERATION_TYPE_ID$
 
     BEGIN
-        UPDATE operation_type_to_service otts
+        UPDATE operation_type_xref_service otts
         SET entity_id = NEW.id
         WHERE otts.entity_id IN (
                 SELECT otts.entity_id
-                FROM operation_type_to_service otts
+                FROM operation_type_xref_service otts
                 JOIN operation_type ot ON otts.entity_id = ot.id
                 WHERE ot.self_id = NEW.self_id
                     AND ot.version is not null

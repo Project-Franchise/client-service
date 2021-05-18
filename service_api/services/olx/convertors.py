@@ -52,7 +52,7 @@ class OLXOutputConverter(AbstractOutputConverter):
                 raise ObjectNotFoundException(
                     "Realty type not found in OLX handler")
 
-            category_xref = session.query(models.CategoryToService).get(
+            category_xref = session.query(models.CategoryXRefService).get(
                 {"entity_id": realty_type.category_id, "service_id": 2})
 
         url_main = [category_xref.original_id]

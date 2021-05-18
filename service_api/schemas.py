@@ -161,9 +161,9 @@ class RealtySchema(Schema):
     service = fields.Nested(ServiceSchema, dump_only=True)
 
 
-class CityToServiceSchema(Schema):
+class CityXRefServiceSchema(Schema):
     """
-    Schema for CityToService model
+    Schema for CityXRefService model
     """
     entity_id = fields.Integer()
     service_id = fields.Integer()
@@ -178,9 +178,9 @@ class CityAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
-class StateToServiceSchema(Schema):
+class StateXRefServiceSchema(Schema):
     """
-    Schema for StateToService model
+    Schema for StateXRefService model
     """
     entity_id = fields.Integer()
     service_id = fields.Integer()
@@ -195,9 +195,9 @@ class StateAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
-class OperationTypeToServiceSchema(Schema):
+class OperationTypeXRefServiceSchema(Schema):
     """
-    Schema for OperationTypeToService model
+    Schema for OperationTypeXRefService model
     """
     entity_id = fields.Integer()
     service_id = fields.Integer()
@@ -212,9 +212,9 @@ class OperationTypeAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
-class RealtyTypeToServiceSchema(Schema):
+class RealtyTypeXRefServiceSchema(Schema):
     """
-    Schema for RealtyTypeToService model
+    Schema for RealtyTypeXRefService model
     """
     entity_id = fields.Integer()
     service_id = fields.Integer()
@@ -229,9 +229,9 @@ class RealtyTypeAliasSchema(Schema):
     alias = fields.String(validate=validate.Length(max=255))
 
 
-class CategoryToServiceSchema(Schema):
+class CategoryXRefServiceSchema(Schema):
     """
-    Schema for CategoryToService model
+    Schema for CategoryXRefService model
     """
     entity_id = fields.Integer()
     service_id = fields.Integer()

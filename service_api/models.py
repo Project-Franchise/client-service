@@ -80,11 +80,11 @@ class Service(Base):
 
     id = Column(BIGINT, primary_key=True)
     name = Column(VARCHAR(128), nullable=False)
-    city_to_service = relationship("CityToService", backref="service", lazy=True)
-    state_to_service = relationship("StateToService", backref="service", lazy=True)
-    operation_type_to_service = relationship("OperationTypeToService", backref="service", lazy=True)
-    realty_type_to_service = relationship("RealtyTypeToService", backref="service", lazy=True)
-    category_to_service = relationship("CategoryToService", backref="service", lazy=True)
+    city_to_service = relationship("CityXRefService", backref="service", lazy=True)
+    state_to_service = relationship("StateXRefService", backref="service", lazy=True)
+    operation_type_to_service = relationship("OperationTypeXRefService", backref="service", lazy=True)
+    realty_type_to_service = relationship("RealtyTypeXRefService", backref="service", lazy=True)
+    category_to_service = relationship("CategoryXRefService", backref="service", lazy=True)
     realty = relationship("Realty", backref="service", lazy=True)
 
 
@@ -103,7 +103,7 @@ class City(Base):
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     state_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     realty = relationship("Realty", backref="city", lazy=True)
-    service_repr = relationship("CityToService", backref="entity", lazy=True)
+    service_repr = relationship("CityXRefService", backref="entity", lazy=True)
     aliases = relationship("CityAlias", backref="city_type", lazy=True)
 
     __table_args__ = (
@@ -111,7 +111,7 @@ class City(Base):
     )
 
 
-class CityToService(Base):
+class CityXRefService(Base):
     """
     City to service model
     :param: city_id int
@@ -119,7 +119,7 @@ class CityToService(Base):
     :param: original_id int
     """
 
-    __tablename__ = "city_to_service"
+    __tablename__ = "city_xref_service"
 
     entity_id = Column(BIGINT, ForeignKey("city.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
@@ -161,13 +161,13 @@ class State(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="state", lazy=True)
-    service_repr = relationship("StateToService", backref="entity", lazy=True)
+    service_repr = relationship("StateXRefService", backref="entity", lazy=True)
     aliases = relationship("StateAlias", backref="state_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
 
 
-class StateToService(Base):
+class StateXRefService(Base):
     """
     State to service model
     :param: state_id int
@@ -175,7 +175,7 @@ class StateToService(Base):
     :param: original_id int
     """
 
-    __tablename__ = "state_to_service"
+    __tablename__ = "state_xref_service"
 
     entity_id = Column(BIGINT, ForeignKey("state.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
@@ -217,13 +217,13 @@ class OperationType(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="operation_type", lazy=True)
-    service_repr = relationship("OperationTypeToService", backref="entity", lazy=True)
+    service_repr = relationship("OperationTypeXRefService", backref="entity", lazy=True)
     aliases = relationship("OperationTypeAlias", backref="operation_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
 
 
-class OperationTypeToService(Base):
+class OperationTypeXRefService(Base):
     """
     Operation type to service model
     :param: operation_type_id int
@@ -231,7 +231,7 @@ class OperationTypeToService(Base):
     :param: original_id int
     """
 
-    __tablename__ = "operation_type_to_service"
+    __tablename__ = "operation_type_xref_service"
 
     entity_id = Column(BIGINT, ForeignKey("operation_type.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
@@ -274,13 +274,13 @@ class RealtyType(Base):
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
     realty = relationship("Realty", backref="realty_type", lazy=True)
-    service_repr = relationship("RealtyTypeToService", backref="entity", lazy=True)
+    service_repr = relationship("RealtyTypeXRefService", backref="entity", lazy=True)
     aliases = relationship("RealtyTypeAlias", backref="realty_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
 
 
-class RealtyTypeToService(Base):
+class RealtyTypeXRefService(Base):
     """
     Realty type to service model
     :param: realty_type_id int
@@ -288,7 +288,7 @@ class RealtyTypeToService(Base):
     :param: original_id int
     """
 
-    __tablename__ = "realty_type_to_service"
+    __tablename__ = "realty_type_xref_service"
 
     entity_id = Column(BIGINT, ForeignKey("realty_type.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)
@@ -328,13 +328,13 @@ class Category(Base):
     name = Column(VARCHAR(255), nullable=False)
     self_id = Column(BIGINT, nullable=False)
     version = Column(TIMESTAMP, nullable=True, default=VERSION_DEFAULT_TIMESTAMP)
-    service_repr = relationship("CategoryToService", backref="entity", lazy=True)
+    service_repr = relationship("CategoryXRefService", backref="entity", lazy=True)
     aliases = relationship("CategoryAlias", backref="realty_type", lazy=True)
 
     __table_args__ = (UniqueConstraint("self_id", "version"),)
 
 
-class CategoryToService(Base):
+class CategoryXRefService(Base):
     """
     Category to service model
     :param: category_id int
@@ -342,7 +342,7 @@ class CategoryToService(Base):
     :param: original_id int
     """
 
-    __tablename__ = "category_to_service"
+    __tablename__ = "category_xref_service"
 
     entity_id = Column(BIGINT, ForeignKey("category.id", ondelete="CASCADE"), nullable=False)
     service_id = Column(BIGINT, ForeignKey("service.id", ondelete="CASCADE"), nullable=False)

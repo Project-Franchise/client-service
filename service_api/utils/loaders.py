@@ -698,7 +698,6 @@ class StateOlxXRefServicesLoader(OlxXRefBaseLoader):
             text = item.get_text()
             if text.split(" ")[0] in states:
                 urls[text.split()[0]] = ((item.get("href")).split("/"))[-2]
-        # driver.quit()
         return urls
 
     def load(self, *args, **kwargs) -> int:

@@ -30,7 +30,7 @@ def upgrade():
                 FROM state_to_service sts
                 JOIN state ON sts.entity_id = state.id
                 WHERE state.self_id = NEW.self_id
-                    AND state.version <> NEW.version
+                    AND state.version is not null
                 );
 
         UPDATE state_alias sa
@@ -40,7 +40,7 @@ def upgrade():
                 FROM state_alias sa
                 JOIN state ON sa.entity_id = state.id
                 WHERE state.self_id = NEW.self_id
-                    AND state.version <> NEW.version
+                    AND state.version is not null
                 );
 
         RETURN NEW;
@@ -65,7 +65,7 @@ def upgrade():
                 FROM city_to_service cts
                 JOIN city ON cts.entity_id = city.id
                 WHERE city.self_id = NEW.self_id
-                    AND city.version <> NEW.version
+                    AND city.version is not null
                 );
 
         UPDATE city_alias ca
@@ -75,7 +75,7 @@ def upgrade():
                 FROM city_alias ca
                 JOIN city ON ca.entity_id = city.id
                 WHERE city.self_id = NEW.self_id
-                    AND city.version <> NEW.version
+                    AND city.version is not null
                 );
 
         RETURN NEW;
@@ -100,7 +100,7 @@ def upgrade():
                 FROM realty_type_to_service rtts
                 JOIN realty_type rt ON rtts.entity_id = rt.id
                 WHERE rt.self_id = NEW.self_id
-                    AND rt.version <> NEW.version
+                    AND rt.version is not null
                 );
 
         UPDATE realty_type_alias rta
@@ -110,7 +110,7 @@ def upgrade():
                 FROM realty_type_alias rta
                 JOIN realty_type rt ON rta.entity_id = rt.id
                 WHERE rt.self_id = NEW.self_id
-                    AND rt.version <> NEW.version
+                    AND rt.version is not null
                 );
 
         RETURN NEW;
@@ -132,12 +132,12 @@ def upgrade():
     BEGIN
         UPDATE operation_type_to_service otts
         SET entity_id = NEW.id
-        WHERE otts.entity_id = (
+        WHERE otts.entity_id IN (
                 SELECT otts.entity_id
                 FROM operation_type_to_service otts
                 JOIN operation_type ot ON otts.entity_id = ot.id
                 WHERE ot.self_id = NEW.self_id
-                    AND ot.version <> NEW.version
+                    AND ot.version is not null
                 );
 
         UPDATE operation_type_alias ota
@@ -147,7 +147,7 @@ def upgrade():
                 FROM operation_type_alias ota
                 JOIN operation_type ot ON ota.entity_id = ot.id
                 WHERE ot.self_id = NEW.self_id
-                    AND ot.version <> NEW.version
+                    AND ot.version is not null
                 );
 
         RETURN NEW;

@@ -1,7 +1,8 @@
 {
   "DOMRIA API": {
-    "base_url": "https://developers.ria.com/dom",
     "name": "DOMRIA API",
+    "base_url": "https://developers.ria.com/dom",
+    "pretty_url": "https://dom.ria.com/uk/",
     "token_name": "api_key",
     "handler_name": "DomriaServiceHandler",
     "limits": {

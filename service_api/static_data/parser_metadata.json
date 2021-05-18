@@ -1,7 +1,8 @@
 {
   "OLX": {
-    "base_url": "https://www.olx.ua/uk/",
     "name": "OLX",
+    "base_url": "https://www.olx.ua/uk/",
+    "pretty_url": "https://www.olx.ua/uk/obyavlenie",
     "handler_name": "OlxServiceHandler",
     "optional": {},
     "limits": {

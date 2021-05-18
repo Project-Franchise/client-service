@@ -5,13 +5,12 @@ Api routes for client api
 from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
-from service_api import CACHE, api_, models, schemas, session_scope
 
+from service_api import CACHE, api_, models, schemas, session_scope
 from ..client_api.utils import get_latest_data_from_grabbing
-from ..constants import URLS, VERSION_DEFAULT_TIMESTAMP
+from ..constants import BASE_URL, GE, LE, URLS, VERSION_DEFAULT_TIMESTAMP
 from ..errors import BadRequestException
 from ..exceptions import BadFiltersException
-from ..constants import GE, LE
 from ..models import AdditionalFilters, Realty, RealtyDetails
 from ..schemas import (AdditionalFilterParametersSchema, RealtyDetailsInputSchema, RealtySchema, filters_validation)
 
@@ -142,7 +141,7 @@ class RealtyResource(Resource):
         }
 
         if latest:
-            return get_latest_data_from_grabbing(request_filters, "http://127.0.0.1:5000/grabbing/latest")
+            return get_latest_data_from_grabbing(request_filters, f"{BASE_URL}/grabbing/latest")
 
         with session_scope() as session:
             try:

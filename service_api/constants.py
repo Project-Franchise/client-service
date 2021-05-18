@@ -3,6 +3,7 @@ Service_api global constants
 """
 import os
 
+BASE_URL = "http://127.0.0.1:5000"
 URLS = {
     "CLIENT": {
         "INDEX_URL": "/",

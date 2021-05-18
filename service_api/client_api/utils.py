@@ -17,7 +17,7 @@ def make_hash(request_data: Dict, response_data: Dict, redis_ex_time: Union[Dict
     """
     Hash request to redis
     """
-    CACHE.set(str(sha256(json.dumps(request_data, sort_keys=True).encode('utf-8')).hexdigest()),
+    CACHE.set(str(sha256(json.dumps(request_data, sort_keys=True).encode("utf-8")).hexdigest()),
               json.dumps(response_data), datetime.timedelta(**(redis_ex_time or CACHED_REQUESTS_EXPIRE_TIME)))
 
 
@@ -25,19 +25,20 @@ def get_hash(request_data: Dict):
     """
     Get hashed request from redis
     """
-    return CACHE.get(str(sha256(json.dumps(request_data, sort_keys=True).encode('utf-8')).hexdigest()))
+    return CACHE.get(str(sha256(json.dumps(request_data, sort_keys=True).encode("utf-8")).hexdigest()))
 
 
 def get_latest_data_from_grabbing(request_filters: Dict, url: str):
     """
     Entrypoint to get latest data from grabbing or from cache
     """
-    if cached_responce := get_hash(request_filters):
+    if cached_response := get_hash(request_filters):
         LOGGER.debug("___hashed stuff___")
-        return json.loads(cached_responce), 200
+        return json.loads(cached_response), 200
     response = requests.post(url, json=request_filters)
     if response.status_code >= 400:
         raise ServiceUnavailableException("GRABBING does not respond")
     result = response.json()
-    make_hash(request_filters, result)
+    if result:
+        make_hash(request_filters, result)
     return result, 200

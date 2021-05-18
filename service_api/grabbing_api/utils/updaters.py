@@ -153,8 +153,9 @@ class RealtyUpdater(AbstractUpdater):
             ).first()
             realty = session.query(Realty).filter(Realty.id == realty_details.id).first()
 
-            realty.version = datetime.datetime.utcnow()
-            realty_details.version = datetime.datetime.utcnow()
+            if realty:
+                realty.version = datetime.datetime.utcnow()
+                realty_details.version = datetime.datetime.utcnow()
 
 
 if __name__ == "__main__":

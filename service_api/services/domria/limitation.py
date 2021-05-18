@@ -58,11 +58,10 @@ class DomriaLimitationSystem:
             token = cls.TOKENS[0]
             with session_scope() as session:
                 hashed_token = sha256(token.encode("utf-8")).hexdigest()
-                tmp = session.query(RequestsHistory).where(RequestsHistory.hashed_token == str(hashed_token) and
+                tmp = session.query(RequestsHistory).where(RequestsHistory.hashed_token == str(hashed_token),
                                                            RequestsHistory.request_timestamp.between(
-                    datetime.now() - timedelta(**cls.EXPIRE_TIME),
-                    datetime.now())).count()
-
+                    datetime.now() - timedelta(**cls.EXPIRE_TIME), datetime.now())).count()
+            LOGGER.debug("Key hash: %s, requests during last hour: %s", hashed_token, tmp)
             if tmp < cls.TOKEN_LIMIT:
                 return token
 

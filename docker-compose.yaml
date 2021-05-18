@@ -20,9 +20,10 @@ services:
       - DOMRIA_API_KEYS=${DOMRIA_API_KEYS}
       - CELERY_BACKEND_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - SELENIUM_URL=http://127.0.0.1:4444/wd/hub
 
   celery_worker:
-    profiles: ["dev-python", "python-celery"]
+    profiles: ["python-celery"]
     build: .
     ports:
       - "5001:5001"
@@ -41,6 +42,7 @@ services:
       - DOMRIA_API_KEYS=${DOMRIA_API_KEYS}
       - CELERY_BACKEND_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - SELENIUM_URL=http://127.0.0.1:4444/wd/hub
     command: celery -A service_api.celery_tasks.tasks.celery_app worker -B
 
   db:
@@ -80,7 +82,7 @@ services:
       - "6379:6379"
  
   chromedriver:
-    profiles: ["dev"]
+    profiles: ["dev", "dev-python"]
     image: selenium/standalone-chrome
     ports:
       - "4444:4444"

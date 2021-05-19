@@ -25,3 +25,4 @@ class LimitationSystem(metaclass=Singleton):
         for service in self.metadata.values():
             if url.startswith(service["base_url"]):
                 self.SERVICES[service["name"]].mark_token_after_requset(url)
+                break

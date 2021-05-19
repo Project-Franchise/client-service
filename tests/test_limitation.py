@@ -40,7 +40,7 @@ def test_limitation_signleton():
     firtst_instance = LimitationSystem()
     second_instance = LimitationSystem()
 
-    assert id(firtst_instance) == id(second_instance)
+    assert firtst_instance is second_instance
     assert firtst_instance == second_instance
 
 

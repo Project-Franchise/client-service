@@ -6,7 +6,7 @@ from flask import request
 from flask_restful import Resource
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-from service_api import CACHE, api_, models, schemas, session_scope
+from service_api import CACHE, LOGGER, api_, models, schemas, session_scope
 from ..client_api.utils import get_latest_data_from_grabbing
 from ..constants import BASE_URL, GE, LE, URLS, VERSION_DEFAULT_TIMESTAMP
 from ..errors import BadRequestException
@@ -44,14 +44,14 @@ class CityResource(Resource):
         :return: json(schema)
         """
         filters = request.args
+        LOGGER.debug(filters)
 
         if not filters:
             raise BadRequestException("No filters provided")
 
-        errors = schemas.CitySchema().validate(filters)
+        errors = schemas.CityInputSchema().validate(filters)
         if errors:
             raise BadRequestException(errors)
-
         with session_scope() as session:
             city = session.query(models.City).filter_by(**filters, version=VERSION_DEFAULT_TIMESTAMP).all()
         return schemas.CitySchema(many=True).dump(city), 200

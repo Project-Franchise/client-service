@@ -124,6 +124,15 @@ class CitySchema(Schema):
     self_id = fields.Integer(validate=validate_non_negative_field, required=True)
 
 
+class CityInputSchema(Schema):
+    """
+    Schema for City input filters
+    """
+    id = fields.Integer()
+    state_id = fields.Integer(load_only=True)
+    self_id = fields.Integer(validate=validate_non_negative_field)
+
+
 class StateSchema(Schema):
     """
     Schema for State model

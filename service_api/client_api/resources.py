@@ -51,6 +51,7 @@ class CityResource(Resource):
 
         errors = schemas.CityInputSchema().validate(filters)
         if errors:
+            LOGGER.info(errors)
             raise BadRequestException(errors)
         with session_scope() as session:
             city = session.query(models.City).filter_by(**filters, version=VERSION_DEFAULT_TIMESTAMP).all()

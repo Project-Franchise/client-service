@@ -129,6 +129,7 @@ class CityInputSchema(Schema):
     Schema for City input filters
     """
     id = fields.Integer()
+    name = fields.String(validate=validate.Length(max=255))
     state_id = fields.Integer(load_only=True)
     self_id = fields.Integer(validate=validate_non_negative_field)
 

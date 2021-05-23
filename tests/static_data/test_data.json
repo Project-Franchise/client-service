@@ -1,0 +1,385 @@
+{
+  "services": [
+    {
+      "id": 1,
+      "name": "TestService1"
+    },
+    {
+      "id": 2,
+      "name": "TestService2"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "test_category1",
+      "self_id": 1
+    },
+    {
+      "id": 2,
+      "name": "test_category2",
+      "self_id": 2
+    }
+  ],
+  "realty_types": [
+    {
+      "id": 1,
+      "name": "TestRealtyTypeName1",
+      "self_id": 101,
+      "category_id": 1
+    },
+    {
+      "id": 2,
+      "name": "TestRealtyTypeName2",
+      "self_id": 102,
+      "category_id": 1
+    },
+    {
+      "id": 3,
+      "name": "TestRealtyTypeName3",
+      "self_id": 103,
+      "category_id": 2
+    },
+    {
+      "id": 4,
+      "name": "TestRealtyTypeName4",
+      "self_id": 104,
+      "category_id": 2
+    }
+  ],
+  "operation_types": [
+    {
+      "id": 1,
+      "name": "TestOperationTypeName1",
+      "self_id": 201
+    },
+    {
+      "id": 2,
+      "name": "TestOperationTypeName2",
+      "self_id": 202
+    },
+    {
+      "id": 3,
+      "name": "TestOperationTypeName3",
+      "self_id": 203
+    }
+  ],
+  "states": [
+    {
+      "id": 1,
+      "name": "TestStateName1",
+      "self_id": 111
+    },
+    {
+      "id": 2,
+      "name": "TestStateName2",
+      "self_id": 112
+    },
+    {
+      "id": 3,
+      "name": "TestStateName3",
+      "self_id": 113
+    },
+    {
+      "id": 4,
+      "name": "TestStateName4",
+      "self_id": 114
+    },
+    {
+      "id": 5,
+      "name": "TestStateName5",
+      "self_id": 115
+    }
+  ],
+  "cities":[
+    {
+      "id": 1,
+      "name": "TestCityName1",
+      "state_id": 1,
+      "self_id": 301
+    },
+    {
+      "id": 2,
+      "name": "TestCityName2",
+      "state_id": 1,
+      "self_id": 302
+    },
+    {
+      "id": 3,
+      "name": "TestCityName3",
+      "state_id": 1,
+      "self_id": 303
+    },
+    {
+      "id": 4,
+      "name": "TestCityName4",
+      "state_id": 2,
+      "self_id": 304
+    },
+    {
+      "id": 5,
+      "name": "TestCityName5",
+      "state_id": 2,
+      "self_id": 305
+    },
+    {
+      "id": 6,
+      "name": "TestCityName6",
+      "state_id": 3,
+      "self_id": 306
+    },
+    {
+      "id": 7,
+      "name": "TestCityName7",
+      "state_id": 3,
+      "self_id": 307
+    },
+    {
+      "id": 8,
+      "name": "TestCityName8",
+      "state_id": 3,
+      "self_id": 308
+    },
+    {
+      "id": 9,
+      "name": "TestCityName9",
+      "state_id": 4,
+      "self_id": 309
+    },
+    {
+      "id": 10,
+      "name": "TestCityName10",
+      "state_id": 4,
+      "self_id": 310
+    }
+  ],
+  "realty_details_data": [
+    {
+      "id": 1,
+      "price": 5000.0,
+      "published_at": "2020-08-01T10:10:01",
+      "original_url": "https//url.to.realty.on.originals_site1"
+    },
+    {
+      "id": 2,
+      "price": 6000.0,
+      "published_at": "2020-08-08T10:00:00",
+      "original_url": "https//url.to.realty.on.originals_site2"
+    },
+    {
+      "id": 3,
+      "price": 7100.0,
+      "published_at": "2019-08-21T09:10:01",
+      "original_url": "https//url.to.realty.on.originals_site3"
+    },
+    {
+      "id": 4,
+      "price": 13500.0,
+      "published_at": "2020-02-07T07:22:22",
+      "original_url": "https//url.to.realty.on.originals_site4"
+    },
+    {
+      "id": 5,
+      "price": 7800.0,
+      "published_at": "2020-11-11T01:01:01",
+      "original_url": "https//url.to.realty.on.originals_site5"
+    },
+    {
+      "id": 6,
+      "price": 9999.0,
+      "published_at": "2020-01-07T04:15:01",
+      "original_url": "https//url.to.realty.on.originals_site6"
+    },
+    {
+      "id": 7,
+      "price": 2500.0,
+      "published_at": "2021-02-20T11:11:11",
+      "original_url": "https//url.to.realty.on.originals_site7"
+    },
+    {
+      "id": 8,
+      "price": 1000.0,
+      "published_at": "2020-08-16T12:27:01",
+      "original_url": "https//url.to.realty.on.originals_site8"
+    },
+    {
+      "id": 9,
+      "price": 4050.0,
+      "published_at": "2020-02-15T07:45:01",
+      "original_url": "https//url.to.realty.on.originals_site9"
+    },
+    {
+      "id": 10,
+      "price": 28000.0,
+      "published_at": "2016-08-07T05:00:00",
+      "original_url": "https//url.to.realty.on.originals_site10"
+    },
+    {
+      "id": 11,
+      "price": 15000.0,
+      "published_at": "2018-08-07T09:00:00",
+      "original_url": "https//url.to.realty.on.originals_site11"
+    },
+    {
+      "id": 12,
+      "price": 9000.0,
+      "published_at": "2020-10-10T08:37:14",
+      "original_url": "https//url.to.realty.on.originals_site12"
+    },
+    {
+      "id": 13,
+      "price": 8100.0,
+      "published_at": "2020-09-07T10:39:00",
+      "original_url": "https//url.to.realty.on.originals_site13"
+    },
+    {
+      "id": 14,
+      "price": 4900.0,
+      "published_at": "2021-01-07T04:00:07",
+      "original_url": "https//url.to.realty.on.originals_site14"
+    },
+    {
+      "id": 15,
+      "price": 10000.0,
+      "published_at": "2020-12-07T03:47:10",
+      "original_url": "https//url.to.realty.on.originals_site15"
+    }
+  ],
+  "realty_data": [
+    {
+      "id": 1,
+      "city_id": 3,
+      "state_id": 1,
+      "realty_details_id": 1,
+      "realty_type_id": 1,
+      "operation_type_id": 2,
+      "service_id": 1
+    },
+    {
+      "id": 2,
+      "city_id": 1,
+      "state_id": 1,
+      "realty_details_id": 2,
+      "realty_type_id": 1,
+      "operation_type_id": 2,
+      "service_id": 1
+    },
+    {
+      "id": 3,
+      "city_id": 1,
+      "state_id": 1,
+      "realty_details_id": 3,
+      "realty_type_id": 2,
+      "operation_type_id": 2,
+      "service_id": 1
+    },
+    {
+      "id": 4,
+      "city_id": 4,
+      "state_id": 2,
+      "realty_details_id": 4,
+      "realty_type_id": 2,
+      "operation_type_id": 1,
+      "service_id": 1
+    },
+    {
+      "id": 5,
+      "city_id": 4,
+      "state_id": 2,
+      "realty_details_id": 5,
+      "realty_type_id": 2,
+      "operation_type_id": 1,
+      "service_id": 1
+    },
+    {
+      "id": 6,
+      "city_id": 5,
+      "state_id": 2,
+      "realty_details_id": 6,
+      "realty_type_id": 4,
+      "operation_type_id": 1,
+      "service_id": 1
+    },
+    {
+      "id": 7,
+      "city_id": 6,
+      "state_id": 3,
+      "realty_details_id": 7,
+      "realty_type_id": 3,
+      "operation_type_id": 3,
+      "service_id": 1
+    },
+    {
+      "id": 8,
+      "city_id": 7,
+      "state_id": 3,
+      "realty_details_id": 8,
+      "realty_type_id": 4,
+      "operation_type_id": 3,
+      "service_id": 1
+    },
+    {
+      "id": 9,
+      "city_id": 6,
+      "state_id": 3,
+      "realty_details_id": 9,
+      "realty_type_id": 1,
+      "operation_type_id": 3,
+      "service_id": 2
+    },
+    {
+      "id": 10,
+      "city_id": 9,
+      "state_id": 4,
+      "realty_details_id": 10,
+      "realty_type_id": 2,
+      "operation_type_id": 1,
+      "service_id": 2
+    },
+    {
+      "id": 11,
+      "city_id": 9,
+      "state_id": 4,
+      "realty_details_id": 11,
+      "realty_type_id": 3,
+      "operation_type_id": 3,
+      "service_id": 2
+    },
+    {
+      "id": 12,
+      "city_id": 10,
+      "state_id": 4,
+      "realty_details_id": 12,
+      "realty_type_id": 3,
+      "operation_type_id": 2,
+      "service_id": 2
+    },
+    {
+      "id": 13,
+      "city_id": 4,
+      "state_id": 2,
+      "realty_details_id": 13,
+      "realty_type_id": 4,
+      "operation_type_id": 2,
+      "service_id": 2
+    },
+    {
+      "id": 14,
+      "city_id": 1,
+      "state_id": 1,
+      "realty_details_id": 14,
+      "realty_type_id": 3,
+      "operation_type_id": 3,
+      "service_id": 2
+    },
+    {
+      "id": 15,
+      "city_id": 3,
+      "state_id": 1,
+      "realty_details_id": 15,
+      "realty_type_id": 1,
+      "operation_type_id": 1,
+      "service_id": 2
+    }
+  ]
+}

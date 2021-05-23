@@ -427,9 +427,9 @@ def test_for_getting_realties(filters):
     Test route for getting realties from database
     """
     with flask_app.test_request_context():
-        with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json.return_value = filters
-            mock_request.get_json.called_once()
+        with patch("service_api.client_api.resources.request.get_json") as mock_request:
+            mock_request.return_value = filters
+            mock_request.called_once()
             actual = RealtyResource().post()
             expected = filter_test_data(filters)
             assert expected.sort(key=lambda x: x.get("id")) == actual.sort(key=lambda x: x.get("id"))
@@ -457,8 +457,8 @@ def test_for_getting_latest_realty(mock_grabbing_request):
     }
     realty_template = get_realty_template(realty_data, realty_details_data)
     with flask_app.test_request_context():
-        with patch("service_api.client_api.resources.request") as mock_request:
-            mock_request.get_json.return_value = {
+        with patch("service_api.client_api.resources.request.get_json") as mock_request:
+            mock_request.return_value = {
                 "price": {
                     "ge": 1000,
                     "le": 20000

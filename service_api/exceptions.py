@@ -58,6 +58,14 @@ class MetaDataError(BaseCustomException):
     def __init__(self, *args, message="Metadata error occured", **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
 
+class LoadDataError(BaseCustomException):
+    """
+    Raised when there is some problems with loading data
+    """
+
+    def __init__(self, *args, message="Error occurred while loading data", **kwargs) -> None:
+        super().__init__(message, *args, **kwargs)
+
 
 class AlreadyInDbException(BaseCustomException):
     """

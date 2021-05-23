@@ -8,21 +8,21 @@ class BaseCustomException(Exception):
     Base class for class custom exceptions
     """
 
-    def __init__(self, message, desc="No decription provided") -> None:
+    def __init__(self, message, desc="No description provided") -> None:
         super().__init__(message)
         self.desc = desc
 
 
 class ResponseNotOkException(BaseCustomException):
     """
-    Exception shoud be raised when wen response from external service is not OK (status code ≥ 400)
+    Exception should be raised when wen response from external service is not OK (status code ≥ 400)
     """
     ...
 
 
 class ObjectNotFoundException(BaseCustomException):
     """
-    Exception which should be used when sqlaclhemy returns None from get function
+    Exception which should be used when sqlalchemy returns None from get function
     """
 
     def __init__(self, message="Object not found", *args, **kwargs) -> None:
@@ -31,7 +31,7 @@ class ObjectNotFoundException(BaseCustomException):
 
 class ModelNotFoundException(BaseCustomException):
     """
-    Exception which should be used when sqlaclhemy returns None from get function
+    Exception which should be used when sqlalchemy returns None from get function
     """
 
     def __init__(self, message="Model not found", *args, **kwargs) -> None:
@@ -44,19 +44,22 @@ class CycleReferenceException(BaseCustomException):
     """
     ...
 
+
 class BadFiltersException(BaseCustomException):
     """
     Raised when there is a problem in filters
     """
     ...
 
+
 class MetaDataError(BaseCustomException):
     """
     Raised when there is some problems with metadata
     """
 
-    def __init__(self, *args, message="Metadata error occured", **kwargs) -> None:
+    def __init__(self, *args, message="Metadata error occurred", **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
+
 
 class LoadDataError(BaseCustomException):
     """
@@ -75,10 +78,12 @@ class AlreadyInDbException(BaseCustomException):
     def __init__(self, *args, message="Already in db", **kwargs) -> None:
         super().__init__(message, *args, **kwargs)
 
+
 class LimitBoundError(BaseCustomException):
     """
     Raised when limit bound is reached
     """
+
 
 class ServiceHandlerError(BaseCustomException):
     """

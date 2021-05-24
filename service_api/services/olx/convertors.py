@@ -222,7 +222,7 @@ class OlxParser:
         result["operation_type_id"] = self.operation_type_converter(
             operation_type)
 
-        result["original_url"] = self.url_converter(link)
+        result["original_url"] = link
 
         original_id = soup.find(self.parser_metadata["original_id"]["html_tag"],
                                 attrs={"class": self.parser_metadata["original_id"]["class"]})
@@ -355,16 +355,6 @@ class OlxParser:
                 return res_operation_type.group()
 
         return None
-
-    def url_converter(self, link: str):
-        """
-        :param link: a link to single OLX ad
-        :return: a unique part or url
-        """
-        link = link[len(self.parser_metadata["link"]):]
-        result_url = re.search(".*?html", link)
-
-        return result_url.group()
 
     def get_ads_urls(self, link: str, page_number: int, number_of_ads: int) -> List[str]:
         """

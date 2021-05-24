@@ -51,8 +51,6 @@ CACHE = redis.Redis(
 
 LOGGER = setup_logger('app_logger', 'logs/service.log', logging.DEBUG)
 
-thread_local = threading.local()
-
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
@@ -60,9 +58,7 @@ def session_scope() -> Iterator[Session]:
     Context manager to handle transaction to DB
     """
     try:
-        if not hasattr(thread_local, "sql_session"):
-            thread_local.sql_session = Session_factory()
-        session = thread_local.sql_session
+        session = sql_session
         yield session
         session.commit()
     except SQLAlchemyError:

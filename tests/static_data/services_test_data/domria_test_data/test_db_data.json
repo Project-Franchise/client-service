@@ -46,10 +46,10 @@
   ],
   "cities":[
     {
-      "id": 53,
+      "id": 51,
       "name": "Дніпро",
       "state_id": 3,
-      "self_id": 53
+      "self_id": 51
     },
     {
       "id": 4,
@@ -95,7 +95,7 @@
   "city_alias": [
     {
       "alias": "Дніпро",
-      "entity_id": 53
+      "entity_id": 51
     },
     {
       "alias": "Вінниця",

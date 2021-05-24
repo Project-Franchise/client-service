@@ -3,30 +3,43 @@ Convertors testing module
 """
 import json
 import os
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, patch
 
 import pytest
 
+from service_api import LOGGER
+from service_api.exceptions import LoadDataError
 from service_api.services.domria.convertors import DomRiaOutputConverter, DomRiaInputConverter
 
 path_to_domria_test_data = ["tests", "static_data", "services_test_data", "domria_test_data"]
 PATH_TO_OP_CONVERTERS_DATA = os.sep.join([*path_to_domria_test_data, "output_convertors_test_data.json"])
 PATH_TO_BUILD_NEW_DICT_DATA = os.sep.join([*path_to_domria_test_data, "ip_build_new_dict_test_data.json"])
+PATH_TO_CONVERT_FIELD_DATA = os.sep.join([*path_to_domria_test_data, "ip_convert_char_fields_test_data.json"])
+PATH_TO_CONVERT_FIELD_METADATA = os.sep.join([*path_to_domria_test_data, "metadata_ip_convert_char_fields.json"])
+PATH_TO_CACHED_CHARACTERISTICS = os.sep.join([*path_to_domria_test_data, "cached_characteristics.json"])
 
 
 def get_converters_data(path: str):
     """
     Return input and expected data to test converters
     """
-    with open(path, "r") as file:
-        data = json.loads(file.read())
-    return data
+    try:
+        with open(path, encoding="utf-8") as data_file:
+            testing_data = json.load(data_file)
+    except FileNotFoundError as error:
+        LOGGER.error("Invalid testing data path, or test_data.json file does not exist")
+        raise LoadDataError from error
+    except json.JSONDecodeError as error:
+        LOGGER.error(error)
+        raise LoadDataError from error
+    return testing_data
 
 
 class TestDomRiaOutputConverter:
     """
     Class to test DomRiaOutputConverter
     """
+
     @pytest.mark.parametrize("test_data", get_converters_data(PATH_TO_OP_CONVERTERS_DATA))
     def test_make_realty_data(self, test_data, get_metadata, database):
         """
@@ -42,6 +55,7 @@ class TestDomRiaInputConverter:
     """
     Class to test DomRiaInputConverter
     """
+
     @pytest.mark.parametrize("test_data", get_converters_data(PATH_TO_BUILD_NEW_DICT_DATA))
     def test_build_new_dict(self, test_data):
         """
@@ -58,30 +72,21 @@ class TestDomRiaInputConverter:
 
         assert test_data["new_params"] == new_params
 
+    @pytest.mark.parametrize("test_data", get_converters_data(PATH_TO_CONVERT_FIELD_DATA))
+    def test_convert_characteristic_fields(self, test_data, database, open_testing_data):
+        """
+        Check converting limited user data to DomRia search characteristics
+        """
+        service_name = Mock()
+        service_metadata = open_testing_data(PATH_TO_CONVERT_FIELD_METADATA)
 
-# @pytest.fixture(scope="function")
-# def rnd_gen():
-#     return random.Random(123456)
-#
-#
-# @pytest.fixture(scope="function")
-# def rnd(rnd_gen):
-#     return rnd_gen.random()
-#
-#
-# @pytest.fixture()
-# def fixture_1(rnd):
-#     return rnd
-#
-#
-# @pytest.fixture()
-# def fixture_2(rnd):
-#     return rnd
-#
-#
-# def test_training(fixture_1, fixture_2):
-#     assert fixture_1 == fixture_2
-#
-#
-# def test_training2():
-#     assert 2 == 2
+        mock_body = MagicMock()
+        post_body = {"characteristics": {}, "realty_filters": {"realty_type_id": 1}, "additional": {}}
+        mock_body.__getitem__.side_effect = post_body.__getitem__
+
+        converter = DomRiaInputConverter(mock_body, service_metadata, service_name)
+        with patch("service_api.CACHE") as mock_cache:
+            mock_cache.get.side_effect = open_testing_data(PATH_TO_CACHED_CHARACTERISTICS)
+            new_filters = converter.convert_characteristic_fields(test_data["input_char_filters"])
+
+            assert test_data["output_char_filters"] == new_filters

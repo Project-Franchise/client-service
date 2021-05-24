@@ -1,0 +1,45 @@
+{
+  "models": {
+    "realty_details": {
+      "models": "RealtyDetails",
+      "fields": {
+        "floor": {
+          "response_key": "floor",
+          "ge": null,
+          "le": null,
+          "eq": "characteristic[{value}]"
+        },
+        "floors_number": {
+          "response_key": "floors_count",
+          "ge": null,
+          "le": null,
+          "eq": "characteristic[{value}]"
+        },
+        "square": {
+          "response_key": "total_square_meters",
+          "ge": "characteristic[{value_from}][from]",
+          "le": "characteristic[{value_to}][to]",
+          "eq": null
+        },
+        "price": {
+          "response_key": "price",
+          "ge": "characteristic[{value_from}][from]",
+          "le": "characteristic[{value_to}][to]",
+          "eq": null
+        },
+        "published_at": {
+          "response_key": "publishing_date",
+          "ge": null,
+          "le": null,
+          "eq": "characteristic[{value}]"
+        },
+        "original_url": {
+          "response_key": "beautiful_url",
+          "ge": null,
+          "le": null,
+          "eq": "characteristic[{value}]"
+        }
+      }
+    }
+  }
+}

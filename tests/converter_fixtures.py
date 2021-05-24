@@ -26,7 +26,7 @@ def get_metadata():
     return open_metadata(PATH_TO_METADATA)["DOMRIA API"]
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="module")
 def open_testing_data():
     """
     Open file with testing data and return content

@@ -84,6 +84,10 @@
     {
     "alias": "Квартира",
     "entity_id": 1
+    },
+    {
+    "alias": "flat",
+    "entity_id": 1
     }
   ],
   "operation_type_alias": [

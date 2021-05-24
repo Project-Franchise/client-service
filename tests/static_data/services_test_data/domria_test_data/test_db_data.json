@@ -32,6 +32,16 @@
       "id": 3,
       "name": "Дніпропетровська",
       "self_id": 3
+    },
+    {
+      "id": 1,
+      "name": "Вінницька",
+      "self_id": 1
+    },
+    {
+      "id": 14,
+      "name": "Одеська",
+      "self_id": 14
     }
   ],
   "cities":[
@@ -40,6 +50,18 @@
       "name": "Дніпро",
       "state_id": 3,
       "self_id": 53
+    },
+    {
+      "id": 4,
+      "name": "Вінниця",
+      "state_id": 1,
+      "self_id": 4
+    },
+    {
+      "id": 324,
+      "name": "Одеса",
+      "state_id": 14,
+      "self_id": 324
     }
   ],
   "realty_details_data": [],
@@ -48,6 +70,14 @@
     {
       "alias": "Дніпропетровська",
       "entity_id": 3
+    },
+    {
+      "alias": "Вінницька",
+      "entity_id": 1
+    },
+    {
+      "alias": "Одеська",
+      "entity_id": 14
     }
   ],
   "realty_type_alias": [
@@ -66,6 +96,14 @@
     {
       "alias": "Дніпро",
       "entity_id": 53
+    },
+    {
+      "alias": "Вінниця",
+      "entity_id": 4
+    },
+    {
+      "alias": "Одеса",
+      "entity_id": 324
     }
   ]
 }

@@ -32,29 +32,12 @@ filters = {
 }
 
 
-def setup_function():
-    """
-    Create all table and instances in DB
-    """
-    # sql_session.begin()
-    Base.metadata.create_all(engine)
-
-
-def teardown_function():
-    """
-    Closes sql_session if its open and drop database
-    """
-    with session_scope() as session:
-        session.close()
-        Base.metadata.drop_all(engine)
-
-
-def test_domria_handler_key_error():
+def test_domria_handler_key_error(set_database):
     with pytest.raises(MetaDataError):
         DomriaServiceHandler({"urls": {"search": 1}}, {"urls": {"search": 1}}).get_latest_data()
 
 
-def test_domria_handler_responce_status_code():
+def test_domria_handler_responce_status_code(set_database):
     with patch('service_api.services.domria.handlers.send_request') as patched_request, \
             patch("service_api.services.domria.handlers.DomRiaInputConverter.convert") as mock_request:
         type(patched_request.return_value).status_code = PropertyMock(return_value=300)
@@ -64,7 +47,7 @@ def test_domria_handler_responce_status_code():
             DomriaServiceHandler(filters, open_metadata(PATH_TO_METADATA)["DOMRIA API"]).get_latest_data()
 
 
-def test_domria_handler_second_key_error():
+def test_domria_handler_second_key_error(set_database):
     with patch('service_api.services.domria.handlers.send_request') as patched_request, \
             patch("service_api.services.domria.handlers.DomRiaInputConverter.convert") as mock_request:
         type(patched_request.return_value).status_code = PropertyMock(return_value=200)
@@ -77,7 +60,7 @@ def test_domria_handler_second_key_error():
             DomriaServiceHandler(filter_copy, open_metadata(PATH_TO_METADATA)["DOMRIA API"]).get_latest_data()
 
 
-def test_olx_handler_amount_of_urls():
+def test_olx_handler_amount_of_urls(set_database):
     with patch("service_api.services.olx.handlers.OLXOutputConverter.make_url") as mock_request, \
             patch("service_api.services.olx.handlers.OlxParser.main_logic") as mock_parser:
         mock_parser.main_logic.return_value = 1

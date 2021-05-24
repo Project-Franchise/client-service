@@ -3,7 +3,7 @@ Module with data LoadersFactory and order generator
 """
 from collections import defaultdict
 from copy import deepcopy
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
 from service_api import LOGGER
@@ -111,16 +111,15 @@ class CoreDataLoadersFactory:
         all_entities, input_entities = set(self.__METADATA), set(entities)
         return sorted(all_entities & input_entities), sorted(input_entities - all_entities)
 
-    def load(self, entities_to_load: List) -> Dict[str, Any]:
+    def load(self, entities_to_load: List) -> None:
         """
         Calls mapped loader classes for keys in params dict input
         :params: dict[str, List] str - name of entity to load (func get_available_entities)
                                  List - args for Loader classes
-        :return: dict[str, Any] str - name of entities from input
-                                Any - json-like status info about fetching data to db
+        :return: None
         """
 
-        can_be_loaded, unknown = self.divide_input_entities(entities_to_load)
+        can_be_loaded, *_ = self.divide_input_entities(entities_to_load)
 
         try:
             ordered_entities = FetchingOrderGenerator(
@@ -129,12 +128,10 @@ class CoreDataLoadersFactory:
             LOGGER.critical(error.args, error.desc)
             raise MetaDataError(desc="Metadata that is used: {}".format(PATH_TO_CORE_DB_METADATA)) from error
 
-        statuses = {key: {"status": "Unknown entity"} for key in unknown}
         for entity in ordered_entities:
-            LOGGER.debug(entity)
+            LOGGER.debug("Start of loading: %s", entity)
             try:
-                statuses[entity] = {"status": "SUCCESSFUL",
-                                    "data": self.__METADATA[entity]["loader"]().load(entities_to_load[entity])}
+                self.__METADATA[entity]["loader"]().load(entities_to_load[entity])
             except ObjectNotFoundException as error:
                 error_message = error.desc or error.args[0]
             except ResponseNotOkException as error:
@@ -144,10 +141,9 @@ class CoreDataLoadersFactory:
             except ValidationError as error:
                 error_message = error.messages
             else:
+                LOGGER.debug("Loading SUCCESS")
                 continue
-            statuses[entity] = {"status": "FAILED", "data": error_message}
-
-        return statuses
+            LOGGER.debug("Loading FAILED (error: %s", error_message)
 
 
 class RealtyFetcher:

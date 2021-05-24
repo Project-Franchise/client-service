@@ -86,10 +86,11 @@ def fill_db_with_core_data(columns, load_all) -> None:
     entities.update(columns)
     factory = CoreDataLoadersFactory()
     try:
-        loading_statuses = factory.load(entities)
-        LOGGER.debug(loading_statuses)
+        factory.load(entities)
+        message = "Loading finished!"
     except MetaDataError:
-        LOGGER.debug("FAILED")
+        message = "Loading FAILED"
+    LOGGER.debug(message)
 
 
 @cli.command("hi")

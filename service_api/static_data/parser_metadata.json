@@ -156,11 +156,7 @@
           "operation_type": {
             "class": "css-862oeo",
             "html_tag": "a",
-            "types": [
-              "Продаж",
-              "Довгострокова оренда",
-              "Подобова оренда житла"
-            ]
+            "types": ["Продаж", "Довгострокова оренда", "Подобова оренда житла"]
           },
           "original_id": {
             "class": "css-7oa68k-Text eu5v0x0",
@@ -172,11 +168,21 @@
     },
     "entities": {
       "category": {
-        "flats": "kvartiry-komnaty",
-        "houses": "doma",
-        "commercial": "kommercheskaya-nedvizhimost",
-        "areas": "zemlya",
-        "garages": "garazhy-parkovki"
+        "flats": {
+          "own_id": "kvartiry-komnaty"
+        },
+        "houses": {
+          "own_id": "doma"
+        },
+        "commercial": {
+          "own_id": "kommercheskaya-nedvizhimost"
+        },
+        "areas": {
+          "own_id": "zemlya"
+        },
+        "garages": {
+          "own_id": "garazhy-parkovki"
+        }
       },
       "realty_type": {
         "flat": "kvartira",
@@ -231,7 +237,7 @@
         "Чернівецька": 18
       }
     },
-    "sufixes":{
+    "sufixes": {
       "kvartiry-komnaty": "kvartir-komnat",
       "doma": "domov",
       "kommercheskaya-nedvizhimost": "kommercheskoy-nedvizhimosti",

@@ -1,0 +1,71 @@
+{
+  "services": [
+    {
+      "id": 1,
+      "name": "DOMRIA API"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "flats",
+      "self_id": 1
+    }
+  ],
+  "realty_types": [
+    {
+      "id": 1,
+      "name": "Квартира",
+      "self_id": 1,
+      "category_id": 1
+    }
+  ],
+  "operation_types": [
+    {
+      "id": 1,
+      "name": "Продаж",
+      "self_id": 1
+    }
+  ],
+  "states": [
+    {
+      "id": 3,
+      "name": "Дніпропетровська",
+      "self_id": 3
+    }
+  ],
+  "cities":[
+    {
+      "id": 53,
+      "name": "Дніпро",
+      "state_id": 3,
+      "self_id": 53
+    }
+  ],
+  "realty_details_data": [],
+  "realty_data": [],
+  "state_alias": [
+    {
+      "alias": "Дніпропетровська",
+      "entity_id": 3
+    }
+  ],
+  "realty_type_alias": [
+    {
+    "alias": "Квартира",
+    "entity_id": 1
+    }
+  ],
+  "operation_type_alias": [
+    {
+      "alias": "Продажа",
+      "entity_id": 1
+    }
+  ],
+  "city_alias": [
+    {
+      "alias": "Дніпро",
+      "entity_id": 53
+    }
+  ]
+}

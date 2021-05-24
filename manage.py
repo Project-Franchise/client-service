@@ -113,17 +113,25 @@ def clear_db() -> None:
 
 
 @cli.command("resetDB")
-def reset_db() -> None:
+@click.option("--drop-only", is_flag=True, default=False, help="drops all tables only")
+@click.option("--create-only", is_flag=True, default=False, help="create all tables only")
+def reset_db(drop_only, create_only) -> None:
     """
     Drops all tables inherited from Base
     and recreates them
     """
+    if not(drop_only or create_only):
+        # by default input params are false so need to inver them
+        drop_only, create_only = True, True
+
     if input("Are you sure? (y/n)\n").lower() == "y":
-        LOGGER.info("Dropping db...")
-        Base.metadata.drop_all(engine)
-        LOGGER.info("Tables droped!")
-        Base.metadata.create_all(engine)
-        LOGGER.info("Tables created!")
+        if drop_only:
+            LOGGER.info("Dropping db...")
+            Base.metadata.drop_all(engine)
+            LOGGER.info("Tables droped!")
+        if create_only:
+            Base.metadata.create_all(engine)
+            LOGGER.info("Tables created!")
 
 
 if __name__ == "__main__":

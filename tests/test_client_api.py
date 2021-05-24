@@ -35,21 +35,24 @@ def open_testing_data(path: str) -> Dict:
     return testing_data
 
 
+@pytest.fixture(scope="module")
 def fill_db_with_test_data():
     """
     Function for filling testing database
     """
-    ready_objects = []
-    model_convertors = get_model_convertors()
+    def fill_db():
+        ready_objects = []
+        model_convertors = get_model_convertors()
 
-    testing_data = open_testing_data(PATH_TO_TEST_DATA)
-    for convertor, obj_container in zip(model_convertors, testing_data):
-        ready_objects.extend(convertor.convert_to_model(testing_data[obj_container]))
+        testing_data = open_testing_data(PATH_TO_TEST_DATA)
+        for convertor, obj_container in zip(model_convertors, testing_data):
+            ready_objects.extend(convertor.convert_to_model(testing_data[obj_container]))
 
-    with session_scope() as session:
-        session.add_all(ready_objects)
-        session.commit()
-        ready_objects.clear()
+        with session_scope() as session:
+            session.add_all(ready_objects)
+            session.commit()
+            ready_objects.clear()
+    return fill_db
 
 
 def filter_test_data(filters: Dict) -> List[Dict]:
@@ -68,26 +71,21 @@ def filter_test_data(filters: Dict) -> List[Dict]:
     return filtered_data
 
 
-def setup_function():
+@pytest.fixture(scope="module")
+def database(fill_db_with_test_data):
     """
-    Create all table and instances in DB
+    Create all tables in test db and fill with test data
     """
-    # sql_session.begin()
     Base.metadata.create_all(engine)
     fill_db_with_test_data()
-
-
-def teardown_function():
-    """
-    Closes sql_session if its open and drop database
-    """
+    yield
     with session_scope() as session:
         session.close()
         Base.metadata.drop_all(engine)
 
 
 @pytest.mark.parametrize("state_id", [1, 2, 3, 4, 5])
-def test_get_state_by_id(state_id):
+def test_get_state_by_id(state_id, database):
     """
     Checking the db response of state model by id
     """
@@ -102,7 +100,7 @@ def test_get_state_by_id(state_id):
     assert response_code == expected_code
 
 
-def test_get_states():
+def test_get_states(database):
     """
     Checking the db response of all state models
     """
@@ -118,7 +116,7 @@ def test_get_states():
     assert response_code == expected_code
 
 
-def test_get_realty_types():
+def test_get_realty_types(database):
     """
     Checking the db response of all realty_types
     """
@@ -134,7 +132,7 @@ def test_get_realty_types():
 
 
 @pytest.mark.parametrize("realty_type_id", [1, 2, 3, 4])
-def test_get_realty_type_by_id(realty_type_id):
+def test_get_realty_type_by_id(realty_type_id, database):
     """
     Checking the db response of realty_type model by id
     """
@@ -149,7 +147,7 @@ def test_get_realty_type_by_id(realty_type_id):
     assert response_code == expected_code
 
 
-def test_get_operation_types():
+def test_get_operation_types(database):
     """
     Checking the db response of all operation_types
     """
@@ -164,7 +162,7 @@ def test_get_operation_types():
 
 
 @pytest.mark.parametrize("operation_type_id", [1, 2, 3])
-def test_get_operation_type_by_id(operation_type_id):
+def test_get_operation_type_by_id(operation_type_id, database):
     """
     Checking the db response of operation type model by id
     """
@@ -197,7 +195,7 @@ def test_get_operation_type_by_id(operation_type_id):
         "state_id": "1000"
       }, BadRequestException),
      ])
-def test_get_city_validate_exception(arguments, expected_exception):
+def test_get_city_validate_exception(arguments, expected_exception, database):
     """
     Test route for getting city with validation method for exception
     """
@@ -247,7 +245,7 @@ def test_get_city_validate_exception(arguments, expected_exception):
         "name": "TestCityName10",
         "self_id": 310
      }])
-def test_get_city_by_id(filters):
+def test_get_city_by_id(filters, database):
     """
     Test route for getting city by id
     """
@@ -265,7 +263,7 @@ def test_get_city_by_id(filters):
         assert response_code == expected_code
 
 
-def test_get_cities():
+def test_get_cities(database):
     """
     Checking the db response of all cities
     """
@@ -352,7 +350,7 @@ def test_get_cities():
           "operation_type_id": 1
       }, BadRequestException),
      ])
-def test_filter_validation_for_getting_realty(filters, expected_exception):
+def test_filter_validation_for_getting_realty(filters, expected_exception, database):
     """
     Test route for getting realties from database with validation method for exception
     """
@@ -422,7 +420,7 @@ def test_filter_validation_for_getting_realty(filters, expected_exception):
         "operation_type_id": 1
      },
      ])
-def test_for_getting_realties(filters):
+def test_for_getting_realties(filters, database):
     """
     Test route for getting realties from database
     """
@@ -436,7 +434,7 @@ def test_for_getting_realties(filters):
 
 
 @patch("service_api.client_api.resources.get_latest_data_from_grabbing")
-def test_for_getting_latest_realty(mock_grabbing_request):
+def test_for_getting_latest_realty(mock_grabbing_request, database):
     """
     Test route for getting latest realty from database
     """

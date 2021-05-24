@@ -7,7 +7,8 @@ from typing import Dict
 
 import click
 
-from service_api import Base, session_scope, flask_app, LOGGER
+
+from service_api import Base, session_scope, flask_app, LOGGER, engine
 from service_api.exceptions import MetaDataError
 from service_api.utils.db import CoreDataLoadersFactory
 
@@ -109,6 +110,20 @@ def clear_db() -> None:
             session.query(table).delete()
             LOGGER.debug("%s cleared!", table)
     LOGGER.debug("ALL table cleared")
+
+
+@cli.command("resetDB")
+def reset_db() -> None:
+    """
+    Drops all tables inherited from Base
+    and recreates them
+    """
+    if input("Are you sure? (y/n)\n").lower() == "y":
+        LOGGER.info("Dropping db...")
+        Base.metadata.drop_all(engine)
+        LOGGER.info("Tables droped!")
+        Base.metadata.create_all(engine)
+        LOGGER.info("Tables created!")
 
 
 if __name__ == "__main__":

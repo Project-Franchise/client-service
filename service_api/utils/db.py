@@ -12,7 +12,7 @@ from ..constants import (PATH_TO_CORE_DB_METADATA, PATH_TO_METADATA, PATH_TO_PAR
 from ..exceptions import (CycleReferenceException, LimitBoundError, MetaDataError, ObjectNotFoundException,
                           ResponseNotOkException)
 from ..services import services_handlers
-from ..utils import loaders, open_metadata
+from ..utils import chunkify, loaders, open_metadata
 
 
 class FetchingOrderGenerator:
@@ -167,8 +167,11 @@ class RealtyFetcher:
         """
         self.filters = filters or self.filters
         realties = []
-        for service_name in self.metadata:
+        for service_name, per_page in zip(self.metadata,
+                                          chunkify(self.filters["additional"]["page_ads_number"], len(self.metadata))):
             realty_service_metadata = self.metadata[service_name]
+
+            self.filters["additional"]["page_ads_number"] = per_page
 
             if limit_data:
                 page_numbers_limit = realty_service_metadata["limits"]["page_numbers_limit_le"]

@@ -18,6 +18,6 @@ def init_driver(link):
         options = Options()
         options.headless = True
         DRIVER = webdriver.Remote(os.environ.get('SELENIUM_URL'), options=options)
-        DRIVER.get(link)
+    DRIVER.get(link)
 
     return DRIVER

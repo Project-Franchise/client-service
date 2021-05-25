@@ -122,6 +122,7 @@ class RealtyResource(Resource):
         filters = request.get_json()
         if not filters:
             raise BadRequestException("No filters provided")
+        LOGGER.info(filters)
         latest = filters.pop("latest", False)
         if not isinstance(latest, bool):
             raise BadRequestException("Latest field is not bool")

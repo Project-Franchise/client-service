@@ -310,11 +310,11 @@ class OlxParser:
 
             if tag.startswith(self.parser_metadata["tags"]["floor"]):
                 position = tag.find(":")
-                result["floor"] = int(tag[position + 2:])
+                result["floor"] = int(float(tag[position + 2:]))
 
             elif tag.startswith(self.parser_metadata["tags"]["floors_number"]):
                 position = tag.find(":")
-                result["floors_number"] = int(tag[position + 2:])
+                result["floors_number"] = int(float(tag[position + 2:]))
 
             elif tag.startswith(self.parser_metadata["tags"]["square"]):
                 square = re.search(": (.*?) м", tag).group(1)

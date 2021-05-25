@@ -7,7 +7,8 @@ from typing import Dict
 
 import click
 
-from service_api import Base, session_scope, flask_app, LOGGER
+
+from service_api import Base, session_scope, flask_app, LOGGER, engine
 from service_api.exceptions import MetaDataError
 from service_api.utils.db import CoreDataLoadersFactory
 
@@ -85,10 +86,11 @@ def fill_db_with_core_data(columns, load_all) -> None:
     entities.update(columns)
     factory = CoreDataLoadersFactory()
     try:
-        loading_statuses = factory.load(entities)
-        LOGGER.debug(loading_statuses)
+        factory.load(entities)
+        message = "Loading finished!"
     except MetaDataError:
-        LOGGER.debug("FAILED")
+        message = "Loading FAILED"
+    LOGGER.debug(message)
 
 
 @cli.command("hi")
@@ -109,6 +111,28 @@ def clear_db() -> None:
             session.query(table).delete()
             LOGGER.debug("%s cleared!", table)
     LOGGER.debug("ALL table cleared")
+
+
+@cli.command("resetDB")
+@click.option("--drop-only", is_flag=True, default=False, help="drops all tables only")
+@click.option("--create-only", is_flag=True, default=False, help="create all tables only")
+def reset_db(drop_only, create_only) -> None:
+    """
+    Drops all tables inherited from Base
+    and recreates them
+    """
+    if not(drop_only or create_only):
+        # by default input params are false so need to inver them
+        drop_only, create_only = True, True
+
+    if input("Are you sure? (y/n)\n").lower() == "y":
+        if drop_only:
+            LOGGER.info("Dropping db...")
+            Base.metadata.drop_all(engine)
+            LOGGER.info("Tables droped!")
+        if create_only:
+            Base.metadata.create_all(engine)
+            LOGGER.info("Tables created!")
 
 
 if __name__ == "__main__":

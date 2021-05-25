@@ -156,3 +156,10 @@ def send_request(method: str, url: str, request_session: Session = None, *args, 
     from ..services.limitation import LimitationSystem
     LimitationSystem().mark_token_after_request(response.url)
     return response
+
+
+def chunkify(number, pieces):
+    """
+    Devide number on almost equal pieces
+    """
+    return [number//pieces]*(pieces-1) + [sum(divmod(number, pieces))]

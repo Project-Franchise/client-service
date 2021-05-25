@@ -2,6 +2,7 @@
 Fixtures for testing converters
 """
 import json
+import os
 from typing import Dict, List
 
 import pytest
@@ -16,7 +17,8 @@ from tests.convertors import ServiceModelConvertor, OperationTypeModelConvertor,
     RealtyTypeAliasModelConvertor, CityXRefServiceModelConvertor, StateXRefServiceModelConvertor, \
     OperationTypeXRefServiceModelConvertor, RealtyTypeXRefServiceModelConvertor
 
-PATH_TO_TEST_DATA = r"tests\static_data\services_test_data\domria_test_data\test_db_data.json"
+path_to_domria_test_data = ["tests", "static_data", "services_test_data", "domria_test_data"]
+PATH_TO_TEST_DATA = os.sep.join([*path_to_domria_test_data, "test_db_data.json"])
 
 
 @pytest.fixture(scope="class")

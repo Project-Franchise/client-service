@@ -2,4 +2,5 @@
 Config module for pytest
 """
 
-pytest_plugins = ["limitation_fixtures"]
+
+pytest_plugins = ["handlers_fixtures", "limitation_fixtures"]

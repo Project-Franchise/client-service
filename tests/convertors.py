@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 from typing import List, Dict
 
 from service_api.models import State, RealtyType, OperationType, City, Category, Realty, RealtyDetails, Service, \
-    StateAlias, RealtyTypeAlias, OperationTypeAlias, CityAlias
+    StateAlias, RealtyTypeAlias, OperationTypeAlias, CityAlias, CityXRefService, StateXRefService, \
+    OperationTypeXRefService, RealtyTypeXRefService
 
 
 class AbstractModelConvertor(ABC):
@@ -138,6 +139,53 @@ class CityAliasModelConvertor(AbstractModelConvertor):
         city_alias_data, *_ = args
         return [CityAlias(**city_alias) for city_alias in city_alias_data]
 
+
+class CityXRefServiceModelConvertor(AbstractModelConvertor):
+    """
+    StateAlias Model Convertor
+    """
+    def convert_to_model(self, *args):
+        """
+        Converts container of deserialized objects to the CityXRefService models
+        """
+        city_xref_service_data, *_ = args
+        return [CityXRefService(**city_xref_service) for city_xref_service in city_xref_service_data]
+
+
+class StateXRefServiceModelConvertor(AbstractModelConvertor):
+    """
+    StateAlias Model Convertor
+    """
+    def convert_to_model(self, *args):
+        """
+        Converts container of deserialized objects to the StateXRefService models
+        """
+        state_xref_service_data, *_ = args
+        return [StateXRefService(**state_xref_service) for state_xref_service in state_xref_service_data]
+
+
+class OperationTypeXRefServiceModelConvertor(AbstractModelConvertor):
+    """
+    StateAlias Model Convertor
+    """
+    def convert_to_model(self, *args):
+        """
+        Converts container of deserialized objects to the OperationTypeXRefService models
+        """
+        op_type_xref_service_data, *_ = args
+        return [OperationTypeXRefService(**op_type_xref_service) for op_type_xref_service in op_type_xref_service_data]
+
+
+class RealtyTypeXRefServiceModelConvertor(AbstractModelConvertor):
+    """
+    StateAlias Model Convertor
+    """
+    def convert_to_model(self, *args):
+        """
+        Converts container of deserialized objects to the RealtyTypeXRefService models
+        """
+        rt_xref_service_data, *_ = args
+        return [RealtyTypeXRefService(**rt_xref_service) for rt_xref_service in rt_xref_service_data]
 
 
 class RealtyDetailsModelConvertor(AbstractModelConvertor):

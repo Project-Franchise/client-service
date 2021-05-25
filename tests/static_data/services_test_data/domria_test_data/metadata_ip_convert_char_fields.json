@@ -1,7 +1,30 @@
 {
   "models": {
+    "realty":{
+         "fields":{
+            "city_id":{
+               "request_key":"city_id",
+               "condition":"&",
+               "model":"CityXRefService"
+            },
+            "state_id":{
+               "request_key":"state_id",
+               "condition":"&",
+               "model":"StateXRefService"
+            },
+            "realty_type_id":{
+               "request_key":"realty_type",
+               "condition":"&",
+               "model":"RealtyTypeXRefService"
+            },
+            "operation_type_id":{
+               "request_key":"operation_type",
+               "condition":"&",
+               "model":"OperationTypeXRefService"
+            }
+         }
+      },
     "realty_details": {
-      "models": "RealtyDetails",
       "fields": {
         "floor": {
           "response_key": "floor",

@@ -1,42 +1,25 @@
 """
 Client Api testing module
 """
-import json
+import os
 from typing import Dict, List
 from unittest.mock import patch
 
 import pytest
 
-from constants import PATH_TO_TEST_DATA
 from convertors import get_model_convertors, get_realty_template
-from service_api import Base, engine, flask_app, session_scope, LOGGER
+from service_api import Base, engine, flask_app, session_scope
 from service_api.client_api.resources import StateResource, StatesResource, \
     CityResource, CitiesResource, RealtyTypeResource, RealtyTypesResource, \
     OperationTypeResource, OperationTypesResource, RealtyResource
 from service_api.errors import BadRequestException
-from service_api.exceptions import LoadDataError
 
-
-def open_testing_data(path: str) -> Dict:
-    """
-    Open file with testing data and return content
-    :param path: path to test data
-    :return: dict with test data
-    """
-    try:
-        with open(path, encoding="utf-8") as data_file:
-            testing_data = json.load(data_file)
-    except json.JSONDecodeError as error:
-        LOGGER.error(error)
-        raise LoadDataError from error
-    except FileNotFoundError as error:
-        LOGGER.error("Invalid testing data path, or test_data.json file does not exist")
-        raise LoadDataError from error
-    return testing_data
+path_to_tests_static_data = ["tests", "static_data"]
+PATH_TO_TEST_DATA = os.sep.join([*path_to_tests_static_data, "test_data.json"])
 
 
 @pytest.fixture(scope="module")
-def fill_db_with_test_data():
+def fill_db_with_test_data(open_testing_data):
     """
     Function for filling testing database
     """
@@ -55,7 +38,7 @@ def fill_db_with_test_data():
     return fill_db
 
 
-def filter_test_data(filters: Dict) -> List[Dict]:
+def filter_test_data(filters: Dict, open_testing_data) -> List[Dict]:
     """
     Filter test data due to given filters
     :param filters: dict with data for filtration
@@ -420,7 +403,7 @@ def test_filter_validation_for_getting_realty(filters, expected_exception, datab
         "operation_type_id": 1
      },
      ])
-def test_for_getting_realties(filters, database):
+def test_for_getting_realties(filters, database, open_testing_data):
     """
     Test route for getting realties from database
     """
@@ -429,7 +412,7 @@ def test_for_getting_realties(filters, database):
             mock_request.return_value = filters
             mock_request.called_once()
             actual = RealtyResource().post()
-            expected = filter_test_data(filters)
+            expected = filter_test_data(filters, open_testing_data)
             assert expected.sort(key=lambda x: x.get("id")) == actual.sort(key=lambda x: x.get("id"))
 
 

@@ -17,6 +17,7 @@ PATH_TO_BUILD_NEW_DICT_DATA = os.sep.join([*path_to_domria_test_data, "ip_build_
 PATH_TO_CONVERT_FIELD_DATA = os.sep.join([*path_to_domria_test_data, "ip_convert_char_fields_test_data.json"])
 PATH_TO_CONVERT_FIELD_METADATA = os.sep.join([*path_to_domria_test_data, "metadata_ip_convert_char_fields.json"])
 PATH_TO_CACHED_CHARACTERISTICS = os.sep.join([*path_to_domria_test_data, "cached_characteristics.json"])
+PATH_TO_REALTY_FILTERS = os.sep.join([*path_to_domria_test_data, "realty_filters.json"])
 
 
 def get_converters_data(path: str):
@@ -90,3 +91,19 @@ class TestDomRiaInputConverter:
             new_filters = converter.convert_characteristic_fields(test_data["input_char_filters"])
 
             assert test_data["output_char_filters"] == new_filters
+
+    @pytest.mark.parametrize("test_data", get_converters_data(PATH_TO_REALTY_FILTERS))
+    def test_convert_named_field(self, test_data, open_testing_data):
+        """
+        Check if InputConverter return valid converted fields
+        """
+        mock_body = MagicMock()
+        post_body = {"characteristics": {}, "realty_filters": {}, "additional": {}}
+        mock_body.__getitem__.side_effect = post_body.__getitem__
+        service_metadata = open_testing_data(PATH_TO_CONVERT_FIELD_METADATA)
+        service_name = "DOMRIA API"
+
+        converter = DomRiaInputConverter(mock_body, service_metadata, service_name)
+        new_params = converter.convert_named_field(test_data["realty_filters"])
+
+        assert test_data["expected_params"] == new_params

@@ -13,7 +13,8 @@ from service_api.utils import open_metadata
 from tests.convertors import ServiceModelConvertor, OperationTypeModelConvertor, RealtyDetailsModelConvertor, \
     CategoryModelConvertor, StateModelConvertor, RealtyModelConvertor, RealtyTypeModelConvertor, CityModelConvertor, \
     AbstractModelConvertor, StateAliasModelConvertor, CityAliasModelConvertor, OperationTypeAliasModelConvertor, \
-    RealtyTypeAliasModelConvertor
+    RealtyTypeAliasModelConvertor, CityXRefServiceModelConvertor, StateXRefServiceModelConvertor, \
+    OperationTypeXRefServiceModelConvertor, RealtyTypeXRefServiceModelConvertor
 
 PATH_TO_TEST_DATA = r"tests\static_data\services_test_data\domria_test_data\test_db_data.json"
 
@@ -56,7 +57,9 @@ def get_model_convertors() -> List[AbstractModelConvertor]:
     return [ServiceModelConvertor(), CategoryModelConvertor(), RealtyTypeModelConvertor(),
             OperationTypeModelConvertor(), StateModelConvertor(), CityModelConvertor(),
             RealtyDetailsModelConvertor(), RealtyModelConvertor(), StateAliasModelConvertor(),
-            RealtyTypeAliasModelConvertor(), OperationTypeAliasModelConvertor(), CityAliasModelConvertor()]
+            RealtyTypeAliasModelConvertor(), OperationTypeAliasModelConvertor(), CityAliasModelConvertor(),
+            OperationTypeXRefServiceModelConvertor(), RealtyTypeXRefServiceModelConvertor(),
+            StateXRefServiceModelConvertor(), CityXRefServiceModelConvertor()]
 
 
 @pytest.fixture(scope="class")

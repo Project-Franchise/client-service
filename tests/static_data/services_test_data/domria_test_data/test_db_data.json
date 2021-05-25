@@ -109,5 +109,43 @@
       "alias": "Одеса",
       "entity_id": 324
     }
+  ],
+  "op_type_xref_service": [
+    {
+      "entity_id": 1,
+      "service_id": 1,
+      "original_id": 1
+    }
+  ],
+  "realty_type_xref_service": [
+    {
+      "entity_id": 1,
+      "service_id": 1,
+      "original_id": 2
+    }
+  ],
+  "state_xref_service": [
+    {
+      "entity_id": 14,
+      "service_id": 1,
+      "original_id": 12
+    },
+    {
+      "entity_id": 1,
+      "service_id": 1,
+      "original_id": 1
+    }
+  ],
+  "city_xref_service": [
+    {
+      "entity_id": 324,
+      "service_id": 1,
+      "original_id": 12
+    },
+    {
+      "entity_id": 4,
+      "service_id": 1,
+      "original_id": 1
+    }
   ]
 }

@@ -1,0 +1,62 @@
+[
+  {
+    "expected_params": {
+      "operation_type": "1",
+      "realty_type": "2"
+    },
+    "realty_filters": {
+      "operation_type_id": 1,
+      "realty_type_id": 1
+    }
+  },
+  {
+    "expected_params": {
+      "operation_type": "1",
+      "realty_type": "2"
+    },
+    "realty_filters": {
+      "operation_type_id": 1,
+      "realty_type_id": 1
+    }
+  },
+  {
+    "expected_params": {
+      "city_id": "1",
+      "operation_type": "1",
+      "realty_type": "2"
+    },
+    "realty_filters": {
+      "city_id": 4,
+      "operation_type_id": 1,
+      "realty_type_id": 1
+    }
+  },
+  {
+    "expected_params": {
+      "city_id": "1",
+      "operation_type": "1",
+      "realty_type": "2",
+      "state_id": "1"
+    },
+    "realty_filters": {
+      "city_id": 4,
+      "operation_type_id": 1,
+      "realty_type_id": 1,
+      "state_id": 1
+    }
+  },
+  {
+    "expected_params": {
+      "city_id": "12",
+      "operation_type": "1",
+      "realty_type": "2",
+      "state_id": "12"
+    },
+    "realty_filters": {
+      "city_id": 324,
+      "operation_type_id": 1,
+      "realty_type_id": 1,
+      "state_id": 14
+    }
+  }
+]

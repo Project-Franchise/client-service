@@ -149,7 +149,7 @@ class DomRiaInputConverter(AbstractInputConverter):
 
         return params
 
-    def build_new_dict(self, params: dict, realty_details_metadata) -> dict:
+    def build_new_dict(self, params: Dict, realty_details_metadata) -> Dict:
         """
         Method, that forms dictionary with parameters for the request
         """

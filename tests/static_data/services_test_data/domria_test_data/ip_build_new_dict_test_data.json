@@ -1,0 +1,173 @@
+[
+    {
+        "new_params": {
+            "characteristic[234][from]": 35000,
+            "characteristic[234][to]": 40000,
+            "lang_id": 4
+        },
+        "params": {
+            "234": {
+                "name": "price",
+                "values": {
+                    "ge": 35000,
+                    "le": 40000
+                }
+            }
+        },
+        "realty_details_metadata": {
+            "fields": {
+                "floor": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floor"
+                },
+                "floors_number": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floors_count"
+                },
+                "original_url": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "beautiful_url"
+                },
+                "price": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "price"
+                },
+                "published_at": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "publishing_date"
+                },
+                "square": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "total_square_meters"
+                }
+            },
+            "models": "RealtyDetails"
+        }
+    },
+    {
+        "new_params": {
+            "characteristic[234][from]": 41000,
+            "characteristic[234][to]": 45000,
+            "lang_id": 4
+        },
+        "params": {
+            "234": {
+                "name": "price",
+                "values": {
+                    "ge": 41000,
+                    "le": 45000
+                }
+            }
+        },
+        "realty_details_metadata": {
+            "fields": {
+                "floor": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floor"
+                },
+                "floors_number": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floors_count"
+                },
+                "original_url": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "beautiful_url"
+                },
+                "price": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "price"
+                },
+                "published_at": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "publishing_date"
+                },
+                "square": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "total_square_meters"
+                }
+            },
+            "models": "RealtyDetails"
+        }
+    },
+    {
+        "new_params": {
+            "characteristic[234][from]": 46000,
+            "characteristic[234][to]": 48000,
+            "lang_id": 4
+        },
+        "params": {
+            "234": {
+                "name": "price",
+                "values": {
+                    "ge": 46000,
+                    "le": 48000
+                }
+            }
+        },
+        "realty_details_metadata": {
+            "fields": {
+                "floor": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floor"
+                },
+                "floors_number": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "floors_count"
+                },
+                "original_url": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "beautiful_url"
+                },
+                "price": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "price"
+                },
+                "published_at": {
+                    "eq": "characteristic[{value}]",
+                    "ge": null,
+                    "le": null,
+                    "response_key": "publishing_date"
+                },
+                "square": {
+                    "eq": null,
+                    "ge": "characteristic[{value_from}][from]",
+                    "le": "characteristic[{value_to}][to]",
+                    "response_key": "total_square_meters"
+                }
+            },
+            "models": "RealtyDetails"
+        }
+    }
+]

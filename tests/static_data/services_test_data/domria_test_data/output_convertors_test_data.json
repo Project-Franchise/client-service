@@ -1,0 +1,2390 @@
+[
+    {
+        "expected_realty_data": {
+            "city_id": 51,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 3
+        },
+        "expected_realty_details": {
+            "floor": 1,
+            "floors_number": 2,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-dnepr-tsentralnyy-komsomolskaya-ulitsa-19803470.html",
+            "price": 25000,
+            "published_at": "2021-05-23 12:29:38",
+            "square": 25
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 31000,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/3/310/31000/31000.jpg?v=1603920489862",
+                "name": "BALANCE",
+                "state_id": 11,
+                "user_id": 3356372
+            },
+            "agency_id": 31000,
+            "beautiful_url": "realty-prodaja-kvartira-dnepr-tsentralnyy-komsomolskaya-ulitsa-19803470.html",
+            "building_number_str": "64",
+            "call_price": 25,
+            "characteristics_values": {
+                "118": 108,
+                "1437": 1434,
+                "1650": 1648,
+                "209": 1,
+                "214": 25,
+                "216": 18,
+                "218": 5,
+                "227": 1,
+                "228": 2,
+                "234": 25000,
+                "242": 239,
+                "247": 252,
+                "443": 442
+            },
+            "city_id": 11,
+            "city_name": "\u0414\u043d\u0435\u043f\u0440",
+            "city_name_uk": "\u0414\u043d\u0456\u043f\u0440\u043e",
+            "created_at": "2021-05-23 12:29:32",
+            "created_at_ts": 1621762172,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "date_end": "2021-06-23 12:29:38",
+            "date_end_ts": 1624440578,
+            "description": "\u041f\u0440\u043e\u0434\u0430\u043c \u0443\u044e\u0442\u043d\u0443\u044e 1 \u043a \u043a\u0432\u0430\u0440\u0442\u0438\u0440\u0443 \u0441 \u0440\u0435\u043c\u043e\u043d\u0442\u043e\u043c \n\u041e\u0442\u0434\u0435\u043b\u044c\u043d\u044b\u0439 \u0432\u0445\u043e\u0434,\u0432\u044b\u0445\u043e\u0434 \u0432 \u043f\u0430\u0440\u043a \u0413\u043b\u043e\u0431\u044b,\u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u043f\u0440\u0438\u0441\u0442\u0440\u043e\u0439\u043a\u0438(\u0435\u0441\u0442\u044c \u0437\u0435\u043c\u043b\u044f)",
+            "district_id": 15169,
+            "district_name": "\u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u044b\u0439",
+            "district_name_uk": "\u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 1,
+            "floors_count": 2,
+            "import_id": 106997349636,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exclusive": 0,
+            "is_show_building_no": 1,
+            "kitchen_square_meters": 5,
+            "latitude": 0,
+            "living_square_meters": 18,
+            "longitude": 0,
+            "main_photo": "dom/photo/14640/1464092/146409210/146409210.jpg",
+            "metro_station_brunch": 0,
+            "metro_station_id": 58,
+            "metro_station_name": "\u0412\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430\u044f",
+            "metro_station_name_uk": "\u0412\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430",
+            "moderation_date_ts": 1621762181,
+            "photos": {
+                "146409210": {
+                    "file": "dom/photo/14640/1464092/146409210/146409210.jpg",
+                    "id": 146409210,
+                    "ordering": 5
+                },
+                "146409211": {
+                    "file": "dom/photo/14640/1464092/146409211/146409211.jpg",
+                    "id": 146409211,
+                    "ordering": 6
+                },
+                "146409212": {
+                    "file": "dom/photo/14640/1464092/146409212/146409212.jpg",
+                    "id": 146409212,
+                    "ordering": 7
+                },
+                "146409299": {
+                    "file": "dom/photo/14640/1464092/146409299/146409299.jpg",
+                    "id": 146409299,
+                    "ordering": 8
+                }
+            },
+            "photos_count": 4,
+            "price": 25000,
+            "priceArr": {
+                "1": "25 000",
+                "2": "20 455",
+                "3": "688 705"
+            },
+            "price_item": 1000,
+            "price_total": 25000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "ps_auto_republish": 0,
+            "ps_delete_comments": 1,
+            "publishing_date": "2021-05-23 12:29:38",
+            "publishing_date_ts": 1621762178,
+            "quality": 45,
+            "realtorVerified": true,
+            "realty_id": 19803470,
+            "realty_sale_type": 1,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1621762320,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 11,
+            "state_name": "\u0414\u043d\u0435\u043f\u0440\u043e\u043f\u0435\u0442\u0440\u043e\u0432\u0441\u043a\u0430\u044f",
+            "state_name_uk": "\u0414\u043d\u0456\u043f\u0440\u043e\u043f\u0435\u0442\u0440\u043e\u0432\u0441\u044c\u043a\u0430",
+            "street_id": 29964,
+            "street_name": "\u0432\u0443\u043b. \u041a\u043e\u043c\u0441\u043e\u043c\u043e\u043b\u044c\u0441\u043a\u0430\u044f \u0443\u043b\u0438\u0446\u0430",
+            "street_name_uk": "\u0432\u0443\u043b. \u041a\u043e\u043c\u0441\u043e\u043c\u043e\u043b\u044c\u0441\u044c\u043a\u0430",
+            "total_square_meters": 25,
+            "updated_at_ts": 1621766068,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/941/94152/9415210/9415210.jpg?v=1616681963",
+                "name": "\u041e\u043b\u044c\u0433\u0430"
+            },
+            "user_id": 9415210,
+            "user_ip": 0,
+            "user_package_id": 0,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "web_id": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 324,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 14
+        },
+        "expected_realty_details": {
+            "floor": 3,
+            "floors_number": 19,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-odessa-kievskiy-jemchujnaya-ulitsa-19803408.html",
+            "price": 29900,
+            "published_at": "2021-05-23 12:22:58",
+            "square": 40.16
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 29027,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/290/29027/29027.jpg?v=1616773276367",
+                "name": " \u0410\u041d \u0421\u043b\u043e\u043d",
+                "state_id": 12,
+                "user_id": 8551787
+            },
+            "agency_id": 29027,
+            "beautiful_url": "realty-prodaja-kvartira-odessa-kievskiy-jemchujnaya-ulitsa-19803408.html",
+            "building_number_str": "",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 113,
+                "1437": 1434,
+                "1650": 1648,
+                "209": 1,
+                "214": 40.16,
+                "227": 3,
+                "228": 19,
+                "234": 29900,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442
+            },
+            "city_id": 12,
+            "city_name": "\u041e\u0434\u0435\u0441\u0441\u0430",
+            "city_name_uk": "\u041e\u0434\u0435\u0441\u0430",
+            "complete_time": 1012.604,
+            "created_at": "2021-05-23 12:22:40",
+            "created_at_ts": 1621761760,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-06-23 12:22:58",
+            "date_end_ts": 1624440178,
+            "description": "\u0421\u0443\u043f\u0435\u0440 \u043f\u0440\u0435\u0434\u043b\u043e\u0436\u0435\u043d\u0438\u0435 ! \u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430 \u0432 53 \u0416\u0435\u043c\u0447\u0443\u0436\u0438\u043d\u0435 \u0437\u0430 29.9 \u0442\u044b\u0441.\n\u0441\u0434\u0430\u0447\u0430 \u0432 \u043d\u0430\u0447\u0430\u043b\u0435 \u043b\u0435\u0442\u0430 2021\u0433.\n\u041e\u0431\u0449\u0430\u044f \u043f\u043b\u043e\u0449\u0430\u0434\u044c 40 \u043a\u0432.\u043c., \u041f\u0440\u043e\u0441\u0442\u043e\u0440\u043d\u0430\u044f \u043a\u0443\u0445\u043d\u044f 12 \u043a\u0432.\u043c.\n\u0435\u0441\u0442\u044c \u0432\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u044c \u0441\u0434\u0435\u043b\u0430\u0442\u044c \u0441\u0432\u043e\u044e \u0438\u043d\u0434\u0438\u0432\u0438\u0434\u0443\u0430\u043b\u044c\u043d\u0443\u044e \u043f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u043a\u0443.\n\u0412 \u043a\u0432\u0430\u0440\u0442\u0438\u0440\u0435 \u0431\u043e\u043b\u044c\u0448\u0438\u0435 \u043e\u043a\u043d\u0430, \u0447\u0442\u043e \u0434\u0430\u0435\u0442 \u043c\u043d\u043e\u0433\u043e \u0435\u0441\u0442\u0435\u0441\u0442\u0432\u0435\u043d\u043d\u043e\u0433\u043e \u0441\u0432\u0435\u0442\u0430.\n\u0411\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u044c \u0434\u043e\u043c\u0430 \u043e\u0431\u0435\u0441\u043f\u0435\u0447\u0438\u0432\u0430\u0435\u0442 \u043a\u0440\u0443\u0433\u043b\u043e\u0441\u0443\u0442\u043e\u0447\u043d\u0430\u044f  \u043e\u0445\u0440\u0430\u043d\u0430 (\u0432\u0438\u0434\u0435\u043e\u043d\u0430\u0431\u043b\u044e\u0434\u0435\u043d\u0438\u0435 \u043d\u0430 \u043a\u0430\u0436\u0434\u043e\u043c \u044d\u0442\u0430\u0436\u0435).\n\u0411\u043e\u043b\u044c\u0448\u043e\u0439 \u0432\u044b\u0431\u043e\u0440 \u0441\u0443\u043f\u0435\u0440\u043c\u0430\u0440\u043a\u0435\u0442\u043e\u0432, \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u043e\u0432, \u0444\u0438\u0442\u043d\u0435\u0441-\u0437\u0430\u043b\u044b \n",
+            "description_uk": "",
+            "district_id": 15536,
+            "district_name": "\u041a\u0438\u0435\u0432\u0441\u043a\u0438\u0439",
+            "district_name_uk": "\u041a\u0438\u0457\u0432\u0441\u044c\u043a\u0438\u0439",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 3,
+            "floors_count": 19,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 0,
+            "latitude": 46.3561357,
+            "location": "46.3561357,30.7055437",
+            "longitude": 30.7055437,
+            "main_photo": "dom/photo/14640/1464086/146408605/146408605.jpg",
+            "moderation_date_ts": 1621762375,
+            "photos": {
+                "146408605": {
+                    "file": "dom/photo/14640/1464086/146408605/146408605.jpg",
+                    "id": 146408605,
+                    "is_main": 1,
+                    "ordering": 4
+                },
+                "146408606": {
+                    "file": "dom/photo/14640/1464086/146408606/146408606.jpg",
+                    "id": 146408606,
+                    "ordering": 5
+                },
+                "146408607": {
+                    "file": "dom/photo/14640/1464086/146408607/146408607.jpg",
+                    "id": 146408607,
+                    "ordering": 6
+                }
+            },
+            "photos_count": 3,
+            "price": 29900,
+            "priceArr": {
+                "1": "29 900",
+                "2": "24 464",
+                "3": "823 691"
+            },
+            "price_item": 745,
+            "price_total": 29900,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:22:58",
+            "publishing_date_ts": 1621761778,
+            "quality": 50,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 19803408,
+            "realty_sale_type": 1,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 12,
+            "state_name": "\u041e\u0434\u0435\u0441\u0441\u043a\u0430\u044f",
+            "state_name_uk": "\u041e\u0434\u0435\u0441\u044c\u043a\u0430",
+            "street_id": 32484,
+            "street_name": "\u0432\u0443\u043b. \u0416\u0435\u043c\u0447\u0443\u0436\u043d\u0430\u044f \u0443\u043b\u0438\u0446\u0430",
+            "street_name_uk": "\u0432\u0443\u043b. \u041f\u0435\u0440\u043b\u0438\u043d\u043d\u0430",
+            "total_square_meters": 40.16,
+            "updated_at_ts": 1621762375,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/855/85517/8551787/8551787.jpg?v=1603205048",
+                "name": "\u0410\u043d\u043d\u0430"
+            },
+            "user_id": 8551787,
+            "user_package_id": 232,
+            "wall_type": "\u043c\u043e\u043d\u043e\u043b\u0438\u0442",
+            "wall_type_uk": "\u043c\u043e\u043d\u043e\u043b\u0456\u0442",
+            "web_id": "60b945b70b6d8df0",
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 3,
+            "floors_number": 12,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-vinnitsa-zamoste-emiovkoe-oe-19602437.html",
+            "price": 30000,
+            "published_at": "2021-05-23 12:20:10",
+            "square": 47
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_title": 0,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-prodaja-kvartira-vinnitsa-zamoste-emiovkoe-oe-19602437.html",
+            "building_number_str": "94\u0435",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 108,
+                "1357": 1353,
+                "1437": 1434,
+                "1571": 1571,
+                "1579": 1579,
+                "1583": 1583,
+                "1650": 1649,
+                "209": 1,
+                "214": 47,
+                "216": 20,
+                "218": 15,
+                "227": 3,
+                "228": 12,
+                "234": 30000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442,
+                "467": 467,
+                "475": 472,
+                "480": 476,
+                "505": 2.8,
+                "516": 511,
+                "629": 626,
+                "709": 704,
+                "777": 777,
+                "778": 778,
+                "791": 791,
+                "806": 802,
+                "808": 808,
+                "830": 830,
+                "879": 873,
+                "892": 890,
+                "907": 902,
+                "941": 942
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 186.671,
+            "created_at": "2021-04-18 22:33:39",
+            "created_at_ts": 1618774419,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:10",
+            "date_end_ts": 1629710410,
+            "description": "",
+            "description_uk": "2-\u0411\u0430\u043b\u043a\u043e\u043d\u0430.\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 \u041a\u043e\u043c\u0444\u043e\u0440\u0442!\u0427\u043e\u0440\u043d\u043e\u0432\u0430,\u0430\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u0435 \u043e\u043f\u0430\u043b\u0435\u043d\u043d\u044f.\u0417\u0430\u043a\u0440\u0438\u0442\u0438\u0439 \u0434\u0432\u0456\u0440,\u043a\u0430\u043c\u0435\u0440\u0438 \u0432\u0456\u0434\u0435\u043e\u043d\u0430\u0433\u043b\u044f\u0434\u0443.\u0411\u0443\u0434\u0438\u043d\u043e\u043a \u0437\u0434\u0430\u043d\u0438\u0439.\u041f\u0435\u0440\u0435\u0443\u0441\u0442\u0443\u043f\u043a\u0430!\u041f\u0440\u043e\u0434\u0430\u0436 \u0422 \u0415 \u0420 \u041c \u0406 \u041d \u041e \u0412 \u0418 \u0419!",
+            "district_id": 17021,
+            "district_name": "\u0417\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0417\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 3,
+            "floors_count": 12,
+            "inspected": 1,
+            "inspected_at": "2021-04-18 22:37:12",
+            "inspected_at_ts": 1618774632,
+            "inspected_till_ts": 1626637032,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 1,
+            "kitchen_square_meters": 15,
+            "latitude": 49.2198622,
+            "levels": 0,
+            "living_square_meters": 20,
+            "location": "49.2198622,28.5626322",
+            "longitude": 28.5626322,
+            "main_photo": "dom/photo/14339/1433999/143399909/143399909.jpg",
+            "moderation_date_ts": 1621519530,
+            "photos": {
+                "143399801": {
+                    "file": "dom/photo/14339/1433998/143399801/143399801.jpg",
+                    "id": 143399801,
+                    "ordering": 18
+                },
+                "143399810": {
+                    "file": "dom/photo/14339/1433998/143399810/143399810.jpg",
+                    "id": 143399810,
+                    "ordering": 19
+                },
+                "143399819": {
+                    "file": "dom/photo/14339/1433998/143399819/143399819.jpg",
+                    "id": 143399819,
+                    "ordering": 20
+                },
+                "143399826": {
+                    "file": "dom/photo/14339/1433998/143399826/143399826.jpg",
+                    "id": 143399826,
+                    "ordering": 21
+                },
+                "143399840": {
+                    "file": "dom/photo/14339/1433998/143399840/143399840.jpg",
+                    "id": 143399840,
+                    "ordering": 22
+                },
+                "143399844": {
+                    "file": "dom/photo/14339/1433998/143399844/143399844.jpg",
+                    "id": 143399844,
+                    "ordering": 23
+                },
+                "143399849": {
+                    "file": "dom/photo/14339/1433998/143399849/143399849.jpg",
+                    "id": 143399849,
+                    "ordering": 24
+                },
+                "143399859": {
+                    "file": "dom/photo/14339/1433998/143399859/143399859.jpg",
+                    "id": 143399859,
+                    "ordering": 25
+                },
+                "143399864": {
+                    "file": "dom/photo/14339/1433998/143399864/143399864.jpg",
+                    "id": 143399864,
+                    "ordering": 26
+                },
+                "143399872": {
+                    "file": "dom/photo/14339/1433998/143399872/143399872.jpg",
+                    "id": 143399872,
+                    "ordering": 27
+                },
+                "143399879": {
+                    "file": "dom/photo/14339/1433998/143399879/143399879.jpg",
+                    "id": 143399879,
+                    "ordering": 28
+                },
+                "143399889": {
+                    "file": "dom/photo/14339/1433998/143399889/143399889.jpg",
+                    "id": 143399889,
+                    "ordering": 29
+                },
+                "143399894": {
+                    "file": "dom/photo/14339/1433998/143399894/143399894.jpg",
+                    "id": 143399894,
+                    "ordering": 30
+                },
+                "143399901": {
+                    "file": "dom/photo/14339/1433999/143399901/143399901.jpg",
+                    "id": 143399901,
+                    "ordering": 31
+                },
+                "143399909": {
+                    "file": "dom/photo/14339/1433999/143399909/143399909.jpg",
+                    "id": 143399909,
+                    "is_main": 1,
+                    "ordering": 32
+                },
+                "143399913": {
+                    "file": "dom/photo/14339/1433999/143399913/143399913.jpg",
+                    "id": 143399913,
+                    "ordering": 33
+                },
+                "143399921": {
+                    "file": "dom/photo/14339/1433999/143399921/143399921.jpg",
+                    "id": 143399921,
+                    "ordering": 34
+                }
+            },
+            "photos_count": 17,
+            "price": 30000,
+            "priceArr": {
+                "1": "30 000",
+                "2": "24 545",
+                "3": "826 446"
+            },
+            "price_item": 638,
+            "price_total": 30000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:10",
+            "publishing_date_ts": 1621761610,
+            "quality": 67,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 19602437,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1621519526,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 47,
+            "updated_at_ts": 1621761610,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "682ce07f46d47f2e",
+            "with_panoramas": 1,
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 3,
+            "floors_number": 12,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-vinnitsa-zamoste-emiovkoe-oe-19602408.html",
+            "price": 29000,
+            "published_at": "2021-05-23 12:20:08",
+            "square": 50
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-prodaja-kvartira-vinnitsa-zamoste-emiovkoe-oe-19602408.html",
+            "building_number_str": "",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 108,
+                "1357": 1353,
+                "1437": 1434,
+                "1571": 1571,
+                "1579": 1579,
+                "1583": 1583,
+                "1650": 1649,
+                "209": 1,
+                "214": 50,
+                "216": 17,
+                "218": 16,
+                "227": 3,
+                "228": 12,
+                "234": 29000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442,
+                "467": 467,
+                "475": 472,
+                "505": 2.8,
+                "516": 511,
+                "629": 626,
+                "709": 704,
+                "777": 777,
+                "778": 778,
+                "791": 791,
+                "806": 802,
+                "808": 808,
+                "830": 830,
+                "879": 873,
+                "892": 890,
+                "907": 902,
+                "941": 942
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 98.846,
+            "created_at": "2021-04-18 22:16:40",
+            "created_at_ts": 1618773400,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:08",
+            "date_end_ts": 1629710408,
+            "description": "",
+            "description_uk": "",
+            "district_id": 17021,
+            "district_name": "\u0417\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0417\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 3,
+            "floors_count": 12,
+            "inspected": 1,
+            "inspected_at": "2021-04-18 22:20:27",
+            "inspected_at_ts": 1618773627,
+            "inspected_till_ts": 1626636027,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 0,
+            "kitchen_square_meters": 16,
+            "latitude": 49.2198622,
+            "levels": 0,
+            "living_square_meters": 17,
+            "location": "49.2198622,28.5626322",
+            "longitude": 28.5626322,
+            "main_photo": "dom/photo/14339/1433961/143396189/143396189.jpg",
+            "moderation_date_ts": 1618773534,
+            "photos": {
+                "143396068": {
+                    "file": "dom/photo/14339/1433960/143396068/143396068.jpg",
+                    "id": 143396068,
+                    "ordering": 1
+                },
+                "143396125": {
+                    "file": "dom/photo/14339/1433961/143396125/143396125.jpg",
+                    "id": 143396125,
+                    "ordering": 6
+                },
+                "143396129": {
+                    "file": "dom/photo/14339/1433961/143396129/143396129.jpg",
+                    "id": 143396129,
+                    "ordering": 7
+                },
+                "143396140": {
+                    "file": "dom/photo/14339/1433961/143396140/143396140.jpg",
+                    "id": 143396140,
+                    "ordering": 8
+                },
+                "143396147": {
+                    "file": "dom/photo/14339/1433961/143396147/143396147.jpg",
+                    "id": 143396147,
+                    "ordering": 9
+                },
+                "143396156": {
+                    "file": "dom/photo/14339/1433961/143396156/143396156.jpg",
+                    "id": 143396156,
+                    "ordering": 10
+                },
+                "143396165": {
+                    "file": "dom/photo/14339/1433961/143396165/143396165.jpg",
+                    "id": 143396165,
+                    "ordering": 11
+                },
+                "143396169": {
+                    "file": "dom/photo/14339/1433961/143396169/143396169.jpg",
+                    "id": 143396169,
+                    "ordering": 12
+                },
+                "143396171": {
+                    "file": "dom/photo/14339/1433961/143396171/143396171.jpg",
+                    "id": 143396171,
+                    "ordering": 13
+                },
+                "143396180": {
+                    "file": "dom/photo/14339/1433961/143396180/143396180.jpg",
+                    "id": 143396180,
+                    "ordering": 14
+                },
+                "143396189": {
+                    "file": "dom/photo/14339/1433961/143396189/143396189.jpg",
+                    "id": 143396189,
+                    "is_main": 1,
+                    "ordering": 15
+                },
+                "143396198": {
+                    "file": "dom/photo/14339/1433961/143396198/143396198.jpg",
+                    "id": 143396198,
+                    "ordering": 16
+                },
+                "143396207": {
+                    "file": "dom/photo/14339/1433962/143396207/143396207.jpg",
+                    "id": 143396207,
+                    "ordering": 17
+                },
+                "143396265": {
+                    "file": "dom/photo/14339/1433962/143396265/143396265.jpg",
+                    "id": 143396265,
+                    "ordering": 16
+                },
+                "143396273": {
+                    "file": "dom/photo/14339/1433962/143396273/143396273.jpg",
+                    "id": 143396273,
+                    "ordering": 17
+                }
+            },
+            "photos_count": 15,
+            "price": 29000,
+            "priceArr": {
+                "1": "29 000",
+                "2": "23 727",
+                "3": "798 898"
+            },
+            "price_item": 580,
+            "price_total": 29000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:08",
+            "publishing_date_ts": 1621761608,
+            "quality": 63,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 19602408,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 50,
+            "updated_at_ts": 1621761608,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "682ce07f46d47f2e",
+            "with_panoramas": 1,
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 3,
+            "floors_number": 8,
+            "original_url": "https://dom.ria.com/uk//realty-perevireno-prodaja-kvartira-vinnitsa-barskoe-shosse-bakoe-oe-19409876.html",
+            "price": 29000,
+            "published_at": "2021-05-23 12:20:07",
+            "square": 46
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_title": 0,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-perevireno-prodaja-kvartira-vinnitsa-barskoe-shosse-bakoe-oe-19409876.html",
+            "building_number_str": "",
+            "call_price": 40,
+            "characteristics_values": {
+                "1020": 1022,
+                "1166": 1160,
+                "1169": 1168,
+                "1178": 1170,
+                "118": 108,
+                "1181": 1180,
+                "1190": 1182,
+                "1193": 1192,
+                "1202": 1194,
+                "1206": 1204,
+                "1215": 1207,
+                "1219": 1216,
+                "1228": 1220,
+                "1232": 1229,
+                "1268": 1260,
+                "1272": 1269,
+                "1357": 1353,
+                "1437": 1434,
+                "1515": 1511,
+                "1524": 1516,
+                "1555": 1552,
+                "1559": 1557,
+                "1563": 1561,
+                "1567": 1565,
+                "1571": 1571,
+                "1650": 1653,
+                "209": 1,
+                "214": 46,
+                "216": 19,
+                "218": 13,
+                "227": 3,
+                "228": 8,
+                "234": 29000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442,
+                "475": 472,
+                "480": 476,
+                "516": 511,
+                "629": 626,
+                "709": 704,
+                "907": 902
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 58.217,
+            "created_at": "2021-03-21 21:00:45",
+            "created_at_ts": 1616353245,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:07",
+            "date_end_ts": 1629710407,
+            "description": "1\u043a. \u0416\u041a \u0411\u0430\u0440\u0441\u043a\u0438\u0439. \u0414\u043e\u043c \u043f\u043e\u0441\u0442\u0440\u043e\u0435\u043d, \u0441\u0434\u0430\u0447\u0430 \u043b\u0435\u0442\u043e. \u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430 \u0432\u043e \u0432\u0442\u043e\u0440\u043e\u043c \u0434\u0432\u043e\u0440\u0435. \u041e\u043a\u043d\u0430 \u0432 \u0441\u0442\u043e\u0440\u043e\u043d\u0443 \u042d\u043f\u0438\u0446\u0435\u043d\u0442\u0440\u0430. \u041a\u0430\u0437\u0430\u0442\u044c\u0441\u044f \u0432 \u044d\u043a\u0441\u043f\u043b\u0443\u0430\u0442\u0430\u0446\u0438\u044e \u0431\u0443\u0434\u0435\u0442 \u0447\u0438\u0441\u0442\u043e\u0432\u0430\u044f \u043e\u0442\u0434\u0435\u043b\u043a\u0430 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0435 (\u0441\u0442\u044f\u0436\u043a\u0430, \u0440\u0430\u0437\u0432\u043e\u0434\u043a\u0430, \u043e\u0442\u043e\u043f\u043b\u0435\u043d\u0438\u0435, \u044d\u043b\u0435\u043a\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043e, \u0448\u0442\u0443\u043a\u0430\u0442\u0443\u0440\u043a\u0430, \u0448\u043f\u0430\u043a\u043b\u0435\u0432\u043a\u0430).",
+            "description_uk": "1 \u043a. \u0416\u041a \u0411\u0430\u0440\u0441\u044c\u043a\u0438\u0439. \u0411\u0443\u0434\u0438\u043d\u043e\u043a \u043f\u043e\u0431\u0443\u0434\u043e\u0432\u0430\u043d\u0438\u0439, \u0437\u0434\u0430\u0447\u0430 \u043b\u0456\u0442\u043e. \u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430 \u0432 \u0434\u0440\u0443\u0433\u043e\u043c\u0443 \u0434\u0432\u043e\u0440\u0456. \u0412\u0456\u043a\u043d\u0430 \u0432 \u0441\u0442\u043e\u0440\u043e\u043d\u0443 \u0415\u043f\u0456\u0446\u0435\u043d\u0442\u0440\u0443. \u0417\u0434\u0430\u0432\u0430\u0442\u0438\u0441\u044f \u0432 \u0435\u043a\u0441\u043f\u043b\u0443\u0430\u0442\u0430\u0446\u0456\u044e \u0431\u0443\u0434\u0435 \u043f\u0456\u0434 \u0447\u0438\u0441\u0442\u043e\u0432\u0435 \u043e\u0437\u0434\u043e\u0431\u043b\u0435\u043d\u043d\u044f \u0432\u0430\u0440\u0456\u0430\u043d\u0442\u0456 (\u0441\u0442\u044f\u0436\u043a\u0430, \u0440\u043e\u0437\u0432\u043e\u0434\u043a\u0430, \u043e\u043f\u0430\u043b\u0435\u043d\u043d\u044f, \u0435\u043b\u0435\u043a\u0442\u0440\u0438\u043a\u0443, \u0448\u0442\u0443\u043a\u0430\u0442\u0443\u0440\u043a\u0430, \u0448\u043f\u0430\u043a\u043b\u0456\u0432\u043a\u0430).",
+            "district_id": 15110,
+            "district_name": "\u0411\u0430\u0440\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "district_name_uk": "\u0411\u0430\u0440\u0441\u044c\u043a\u0435 \u0448\u043e\u0441\u0435",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 3,
+            "floors_count": 8,
+            "inspected": 1,
+            "inspected_at": "2021-03-23 16:49:15",
+            "inspected_at_ts": 1616510955,
+            "inspected_till_ts": 1624456156,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 0,
+            "kitchen_square_meters": 13,
+            "latitude": 49.236469406039,
+            "levels": 12,
+            "levels_expired": "2021-05-24 00:28:48",
+            "levels_expired_ts": 1621805328,
+            "living_square_meters": 19,
+            "location": "49.236469406039,28.393236404256",
+            "longitude": 28.393236404256,
+            "main_photo": "dom/photo/13861/1386198/138619841/138619841.jpg",
+            "moderation_date_ts": 1616511172,
+            "photos": {
+                "138444694": {
+                    "file": "dom/photo/13844/1384446/138444694/138444694.jpg",
+                    "id": 138444694,
+                    "ordering": 15
+                },
+                "138444695": {
+                    "file": "dom/photo/13844/1384446/138444695/138444695.jpg",
+                    "id": 138444695,
+                    "ordering": 17
+                },
+                "138444697": {
+                    "file": "dom/photo/13844/1384446/138444697/138444697.jpg",
+                    "id": 138444697,
+                    "ordering": 18
+                },
+                "138444700": {
+                    "file": "dom/photo/13844/1384447/138444700/138444700.jpg",
+                    "id": 138444700,
+                    "ordering": 16
+                },
+                "138445175": {
+                    "file": "dom/photo/13844/1384451/138445175/138445175.jpg",
+                    "id": 138445175,
+                    "ordering": 19
+                },
+                "138445180": {
+                    "file": "dom/photo/13844/1384451/138445180/138445180.jpg",
+                    "id": 138445180,
+                    "ordering": 9
+                },
+                "138445181": {
+                    "file": "dom/photo/13844/1384451/138445181/138445181.jpg",
+                    "id": 138445181,
+                    "ordering": 20
+                },
+                "138445199": {
+                    "file": "dom/photo/13844/1384451/138445199/138445199.jpg",
+                    "id": 138445199,
+                    "ordering": 21
+                },
+                "138445211": {
+                    "file": "dom/photo/13844/1384452/138445211/138445211.jpg",
+                    "id": 138445211,
+                    "ordering": 22
+                },
+                "138619838": {
+                    "file": "dom/photo/13861/1386198/138619838/138619838.jpg",
+                    "id": 138619838,
+                    "ordering": 1
+                },
+                "138619841": {
+                    "file": "dom/photo/13861/1386198/138619841/138619841.jpg",
+                    "id": 138619841,
+                    "is_main": 1,
+                    "ordering": 3
+                },
+                "138619842": {
+                    "file": "dom/photo/13861/1386198/138619842/138619842.jpg",
+                    "id": 138619842,
+                    "ordering": 4
+                },
+                "138619844": {
+                    "file": "dom/photo/13861/1386198/138619844/138619844.jpg",
+                    "id": 138619844,
+                    "ordering": 2
+                },
+                "138619848": {
+                    "file": "dom/photo/13861/1386198/138619848/138619848.jpg",
+                    "id": 138619848,
+                    "ordering": 5
+                },
+                "138619853": {
+                    "file": "dom/photo/13861/1386198/138619853/138619853.jpg",
+                    "id": 138619853,
+                    "ordering": 6
+                },
+                "138619857": {
+                    "file": "dom/photo/13861/1386198/138619857/138619857.jpg",
+                    "id": 138619857,
+                    "ordering": 7
+                },
+                "138619859": {
+                    "file": "dom/photo/13861/1386198/138619859/138619859.jpg",
+                    "id": 138619859,
+                    "ordering": 8
+                },
+                "138619863": {
+                    "file": "dom/photo/13861/1386198/138619863/138619863.jpg",
+                    "id": 138619863,
+                    "ordering": 10
+                },
+                "138619868": {
+                    "file": "dom/photo/13861/1386198/138619868/138619868.jpg",
+                    "id": 138619868,
+                    "ordering": 13
+                },
+                "138619879": {
+                    "file": "dom/photo/13861/1386198/138619879/138619879.jpg",
+                    "id": 138619879,
+                    "ordering": 11
+                },
+                "138619887": {
+                    "file": "dom/photo/13861/1386198/138619887/138619887.jpg",
+                    "id": 138619887,
+                    "ordering": 12
+                }
+            },
+            "photos_count": 21,
+            "price": 29000,
+            "priceArr": {
+                "1": "29 000",
+                "2": "23 727",
+                "3": "798 898"
+            },
+            "price_item": 630,
+            "price_total": 29000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:07",
+            "publishing_date_ts": 1621761607,
+            "quality": 79,
+            "radius_location": 1,
+            "realtorVerified": false,
+            "realty_id": 19409876,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1616510653,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 18,
+            "street_name": "\u0448\u043e\u0441\u0435 \u0411\u0430\u0440\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u0411\u0430\u0440\u0441\u044c\u043a\u0435",
+            "total_square_meters": 46,
+            "updated_at_ts": 1621761607,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 4048,
+            "user_newbuild_name": "\u0416\u041a \u0411\u0430\u0440\u0441\u043a\u0438\u0439",
+            "user_newbuild_name_uk": "\u0416\u041a \u0411\u0430\u0440\u0441\u044c\u043a\u0438\u0439",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "with_panoramas": 1,
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 3,
+            "floors_number": 10,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19553356.html",
+            "price": 27000,
+            "published_at": "2021-05-23 12:20:05",
+            "square": 46
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19553356.html",
+            "building_number_str": "94",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 108,
+                "1437": 1434,
+                "1650": 1649,
+                "209": 1,
+                "214": 46,
+                "216": 19,
+                "218": 14,
+                "227": 3,
+                "228": 10,
+                "234": 27000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 76.653,
+            "created_at": "2021-04-11 00:16:16",
+            "created_at_ts": 1618089376,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:05",
+            "date_end_ts": 1629710405,
+            "description": "",
+            "description_uk": "2-\u0411\u0430\u043b\u043a\u043e\u043d\u0430!\u041b\u0443\u0447\u0448\u0430\u044f \u0446\u0435\u043d\u0430 \u0438 \u043f\u043b\u0430\u043d\u0438\u0440\u043e\u0432\u043a\u0430!\u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 \u041a\u043e\u043c\u0444\u043e\u0440\u0442!\n3-\u0439 \u044d\u0442\u0430\u0436!\u041f\u0440\u043e\u0434\u0430\u0436\u0430 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u043e \u044f\u0432\u043b\u044f\u0435\u0442\u0441\u044f \u0441\u0440\u043e\u0447\u043d\u043e\u0439!\n\u0427\u0435\u0440\u043d\u043e\u0432\u0430\u044f,\u0430\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u043e\u0435 \u043e\u0442\u043e\u043f\u043b\u0435\u043d\u0438\u0435,\u043c\u0435\u0442\u0430\u043b\u043e\u043f\u043b\u0430\u0441\u0442\u0438\u043a\u043e\u0432\u044b\u0435 \u0431\u0430\u043b\u043a\u043e\u043d\u044b,\u0434\u0432\u0443\u0445\u043a\u043e\u043d\u0442\u0443\u0440\u043d\u044b\u0439 \u043a\u043e\u0442\u0435\u043b \u0444\u0438\u0440\u043c\u044b Ariston,\u0441\u0447\u0435\u0442\u0447\u0438\u043a\u0438 \u043d\u0430 \u0433\u0430\u0437,\u0432\u043e\u0434\u0443 \u0438 \u044d\u043b\u0435\u043a\u0442\u0440\u0438\u0447\u0435\u0441\u0442\u0432\u043e!\u041d\u0435 \u0443\u0433\u043b\u043e\u0432\u0430\u044f.",
+            "district_id": 17021,
+            "district_name": "\u0417\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0417\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 3,
+            "floors_count": 10,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 1,
+            "kitchen_square_meters": 14,
+            "latitude": 49.220328423962,
+            "levels": 0,
+            "living_square_meters": 19,
+            "location": "49.220328423962,28.560305383679",
+            "longitude": 28.560305383679,
+            "main_photo": "dom/photo/14167/1416719/141671956/141671956.jpg",
+            "moderation_date_ts": 1618089842,
+            "photos": {
+                "141671956": {
+                    "file": "dom/photo/14167/1416719/141671956/141671956.jpg",
+                    "id": 141671956,
+                    "is_main": 1,
+                    "ordering": 30
+                },
+                "141671993": {
+                    "file": "dom/photo/14167/1416719/141671993/141671993.jpg",
+                    "id": 141671993,
+                    "ordering": 31
+                },
+                "141671994": {
+                    "file": "dom/photo/14167/1416719/141671994/141671994.jpg",
+                    "id": 141671994,
+                    "ordering": 32
+                },
+                "141671996": {
+                    "file": "dom/photo/14167/1416719/141671996/141671996.jpg",
+                    "id": 141671996,
+                    "ordering": 33
+                },
+                "141671997": {
+                    "file": "dom/photo/14167/1416719/141671997/141671997.jpg",
+                    "id": 141671997,
+                    "ordering": 34
+                },
+                "141671998": {
+                    "file": "dom/photo/14167/1416719/141671998/141671998.jpg",
+                    "id": 141671998,
+                    "ordering": 35
+                },
+                "141671999": {
+                    "file": "dom/photo/14167/1416719/141671999/141671999.jpg",
+                    "id": 141671999,
+                    "ordering": 36
+                },
+                "141672001": {
+                    "file": "dom/photo/14167/1416720/141672001/141672001.jpg",
+                    "id": 141672001,
+                    "ordering": 37
+                },
+                "141672002": {
+                    "file": "dom/photo/14167/1416720/141672002/141672002.jpg",
+                    "id": 141672002,
+                    "ordering": 38
+                },
+                "141672003": {
+                    "file": "dom/photo/14167/1416720/141672003/141672003.jpg",
+                    "id": 141672003,
+                    "ordering": 39
+                },
+                "141672006": {
+                    "file": "dom/photo/14167/1416720/141672006/141672006.jpg",
+                    "id": 141672006,
+                    "ordering": 40
+                },
+                "141672011": {
+                    "file": "dom/photo/14167/1416720/141672011/141672011.jpg",
+                    "id": 141672011,
+                    "ordering": 41
+                },
+                "141672016": {
+                    "file": "dom/photo/14167/1416720/141672016/141672016.jpg",
+                    "id": 141672016,
+                    "ordering": 42
+                },
+                "141672027": {
+                    "file": "dom/photo/14167/1416720/141672027/141672027.jpg",
+                    "id": 141672027,
+                    "ordering": 43
+                },
+                "141672075": {
+                    "file": "dom/photo/14167/1416720/141672075/141672075.jpg",
+                    "id": 141672075,
+                    "ordering": 44
+                },
+                "141672076": {
+                    "file": "dom/photo/14167/1416720/141672076/141672076.jpg",
+                    "id": 141672076,
+                    "ordering": 45
+                },
+                "141672077": {
+                    "file": "dom/photo/14167/1416720/141672077/141672077.jpg",
+                    "id": 141672077,
+                    "ordering": 46
+                },
+                "141672079": {
+                    "file": "dom/photo/14167/1416720/141672079/141672079.jpg",
+                    "id": 141672079,
+                    "ordering": 47
+                },
+                "141672082": {
+                    "file": "dom/photo/14167/1416720/141672082/141672082.jpg",
+                    "id": 141672082,
+                    "ordering": 48
+                },
+                "141672085": {
+                    "file": "dom/photo/14167/1416720/141672085/141672085.jpg",
+                    "id": 141672085,
+                    "ordering": 49
+                },
+                "141672087": {
+                    "file": "dom/photo/14167/1416720/141672087/141672087.jpg",
+                    "id": 141672087,
+                    "ordering": 50
+                },
+                "141672088": {
+                    "file": "dom/photo/14167/1416720/141672088/141672088.jpg",
+                    "id": 141672088,
+                    "ordering": 51
+                },
+                "141672093": {
+                    "file": "dom/photo/14167/1416720/141672093/141672093.jpg",
+                    "id": 141672093,
+                    "ordering": 52
+                },
+                "141672094": {
+                    "file": "dom/photo/14167/1416720/141672094/141672094.jpg",
+                    "id": 141672094,
+                    "ordering": 53
+                },
+                "141672096": {
+                    "file": "dom/photo/14167/1416720/141672096/141672096.jpg",
+                    "id": 141672096,
+                    "ordering": 54
+                },
+                "141672097": {
+                    "file": "dom/photo/14167/1416720/141672097/141672097.jpg",
+                    "id": 141672097,
+                    "ordering": 55
+                },
+                "141672103": {
+                    "file": "dom/photo/14167/1416721/141672103/141672103.jpg",
+                    "id": 141672103,
+                    "ordering": 56
+                },
+                "141672104": {
+                    "file": "dom/photo/14167/1416721/141672104/141672104.jpg",
+                    "id": 141672104,
+                    "ordering": 57
+                },
+                "141672105": {
+                    "file": "dom/photo/14167/1416721/141672105/141672105.jpg",
+                    "id": 141672105,
+                    "ordering": 58
+                }
+            },
+            "photos_count": 29,
+            "price": 27000,
+            "priceArr": {
+                "1": "27 000",
+                "2": "22 091",
+                "3": "743 802"
+            },
+            "price_item": 587,
+            "price_total": 27000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:05",
+            "publishing_date_ts": 1621761605,
+            "quality": 67,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 19553356,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 46,
+            "updated_at_ts": 1621761605,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 5,
+            "floors_number": 10,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19456198.html",
+            "price": 26500,
+            "published_at": "2021-05-23 12:20:04",
+            "square": 40
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_title": 0,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19456198.html",
+            "building_number_str": "94",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 108,
+                "1437": 1434,
+                "1650": 1649,
+                "209": 1,
+                "214": 40,
+                "216": 22,
+                "218": 10,
+                "227": 5,
+                "228": 10,
+                "234": 26500,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 61.903,
+            "created_at": "2021-03-27 11:45:43",
+            "created_at_ts": 1616838343,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:04",
+            "date_end_ts": 1629710404,
+            "description": "",
+            "description_uk": "1\u043a.\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 \u041a\u043e\u043c\u0444\u043e\u0440\u0442!\u0411\u0443\u0434\u0438\u043d\u043e\u043a \u043f\u043e\u0432\u043d\u0456\u0441\u0442\u044e \u0437\u0434\u0430\u043d\u0438\u0439!\n\u041f\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0456 \u0432\u0441\u0456 \u043a\u043e\u043c\u0443\u043d\u0456\u043a\u0430\u0446\u0456\u0457!\u0412\u0456\u043a\u043d\u0430 \u0432\u0438\u0445\u043e\u0434\u044f\u0442\u044c \u0443 \u0434\u0432\u0456\u0440!\n\u0427\u043e\u0440\u043d\u043e\u0432\u0430,\u0430\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u0435 \u043e\u043f\u0430\u043b\u0435\u043d\u043d\u044f!\u0417\u0430\u043a\u0440\u0438\u0442\u0438\u0439 \u0434\u0432\u0456\u0440 \u043f\u0456\u0434 \u043e\u0445\u043e\u0440\u043e\u043d\u043e\u044e.\n\u0423 \u0434\u0432\u043e\u0440\u0456 \u0434\u0438\u0442\u044f\u0447\u0438\u0439 \u0441\u0430\u0434\u043e\u0447\u043e\u043a,\u0441\u0443\u043f\u0435\u0440\u043c\u0430\u0440\u043a\u0435\u0442\u0438,\u0441\u043f\u043e\u0440\u0442\u0438\u0432\u043d\u0456 \u0437\u0430\u043b\u0438,\u043a\u0430\u0432`\u044f\u0440\u043d\u0456.\n\u0422\u0435\u043b\u0435\u0444\u043e\u043d\u0443\u0439\u0442\u0435 \u0454 \u0440\u0456\u0437\u043d\u0456 \u0432\u0430\u0440\u0456\u0430\u043d\u0442\u0438 1\u0442\u04302 \u043a\u0456\u043c\u043d\u0430\u0442\u043d\u0438\u0445 \u043a\u0432\u0430\u0440\u0442\u0438\u0440.\n",
+            "district_id": 17021,
+            "district_name": "\u0417\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0417\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 5,
+            "floors_count": 10,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 1,
+            "kitchen_square_meters": 10,
+            "latitude": 49.220328423962,
+            "levels": 0,
+            "living_square_meters": 22,
+            "location": "49.220328423962,28.560305383679",
+            "longitude": 28.560305383679,
+            "main_photo": "dom/photo/13910/1391051/139105153/139105153.jpg",
+            "moderation_date_ts": 1616838674,
+            "photos": {
+                "139105153": {
+                    "file": "dom/photo/13910/1391051/139105153/139105153.jpg",
+                    "id": 139105153,
+                    "is_main": 1,
+                    "ordering": 15
+                },
+                "139105159": {
+                    "file": "dom/photo/13910/1391051/139105159/139105159.jpg",
+                    "id": 139105159,
+                    "ordering": 16
+                },
+                "139105164": {
+                    "file": "dom/photo/13910/1391051/139105164/139105164.jpg",
+                    "id": 139105164,
+                    "ordering": 17
+                },
+                "139105172": {
+                    "file": "dom/photo/13910/1391051/139105172/139105172.jpg",
+                    "id": 139105172,
+                    "ordering": 18
+                },
+                "139105178": {
+                    "file": "dom/photo/13910/1391051/139105178/139105178.jpg",
+                    "id": 139105178,
+                    "ordering": 19
+                },
+                "139105184": {
+                    "file": "dom/photo/13910/1391051/139105184/139105184.jpg",
+                    "id": 139105184,
+                    "ordering": 20
+                },
+                "139105231": {
+                    "file": "dom/photo/13910/1391052/139105231/139105231.jpg",
+                    "id": 139105231,
+                    "ordering": 21
+                },
+                "139105252": {
+                    "file": "dom/photo/13910/1391052/139105252/139105252.jpg",
+                    "id": 139105252,
+                    "ordering": 22
+                },
+                "139105279": {
+                    "file": "dom/photo/13910/1391052/139105279/139105279.jpg",
+                    "id": 139105279,
+                    "ordering": 23
+                },
+                "139105300": {
+                    "file": "dom/photo/13910/1391053/139105300/139105300.jpg",
+                    "id": 139105300,
+                    "ordering": 24
+                },
+                "139105302": {
+                    "file": "dom/photo/13910/1391053/139105302/139105302.jpg",
+                    "id": 139105302,
+                    "ordering": 25
+                },
+                "139105304": {
+                    "file": "dom/photo/13910/1391053/139105304/139105304.jpg",
+                    "id": 139105304,
+                    "ordering": 26
+                },
+                "139105305": {
+                    "file": "dom/photo/13910/1391053/139105305/139105305.jpg",
+                    "id": 139105305,
+                    "ordering": 27
+                },
+                "139105317": {
+                    "file": "dom/photo/13910/1391053/139105317/139105317.jpg",
+                    "id": 139105317,
+                    "ordering": 28
+                }
+            },
+            "photos_count": 14,
+            "price": 26500,
+            "priceArr": {
+                "1": "26 500",
+                "2": "21 682",
+                "3": "730 028"
+            },
+            "price_item": 663,
+            "price_total": 26500,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:04",
+            "publishing_date_ts": 1621761604,
+            "quality": 67,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 19456198,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 40,
+            "updated_at_ts": 1621761604,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 8,
+            "floors_number": 10,
+            "original_url": "https://dom.ria.com/uk//realty-perevireno-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19190283.html",
+            "price": 29500,
+            "published_at": "2021-05-23 12:20:03",
+            "square": 53
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_title": 0,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-perevireno-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19190283.html",
+            "building_number_str": "",
+            "call_price": 40,
+            "characteristics_values": {
+                "1001": 1001,
+                "1002": 1002,
+                "1003": 1003,
+                "1017": 1017,
+                "1020": 1022,
+                "1141": 1137,
+                "1166": 1161,
+                "1169": 1168,
+                "1178": 1171,
+                "118": 108,
+                "1181": 1180,
+                "1190": 1183,
+                "1193": 1192,
+                "1202": 1194,
+                "1206": 1204,
+                "1215": 1207,
+                "1219": 1216,
+                "1228": 1220,
+                "1232": 1229,
+                "1268": 1260,
+                "1272": 1269,
+                "1357": 1353,
+                "1437": 1434,
+                "1515": 1510,
+                "1524": 1518,
+                "1555": 1552,
+                "1559": 1557,
+                "1563": 1561,
+                "1567": 1565,
+                "1571": 1571,
+                "1577": 1577,
+                "1583": 1583,
+                "1650": 1649,
+                "209": 1,
+                "214": 53,
+                "216": 32,
+                "218": 15,
+                "227": 8,
+                "228": 10,
+                "234": 29500,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442,
+                "475": 472,
+                "480": 476,
+                "516": 511,
+                "629": 626,
+                "709": 704,
+                "778": 778,
+                "791": 791,
+                "806": 802,
+                "830": 830,
+                "879": 873,
+                "892": 890,
+                "894": 1426,
+                "907": 902,
+                "941": 942
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 48.299,
+            "created_at": "2021-02-22 00:23:07",
+            "created_at_ts": 1613946187,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:03",
+            "date_end_ts": 1629710403,
+            "description": "",
+            "description_uk": "\u0420\u0435\u0437\u0435\u0440\u0432!\u0412 \u043a\u0456\u043c\u043d\u0430\u0442\u0456 2 \u0432\u0456\u043a\u043d\u0430,\u0434\u0456\u043b\u0438\u0442\u044c\u0441\u044f \u043d\u0430 2-\u0445 \u043a\u0456\u043c\u043d\u0430\u0442\u043d\u0443.\n\u0421\u0435\u043a\u0446\u0456\u044f \u211618.",
+            "district_id": 16225,
+            "district_name": "\u0414\u0430\u043b\u044c\u043d\u0435\u0435 \u0437\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0414\u0430\u043b\u044c\u043d\u0454 \u0437\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 8,
+            "floors_count": 10,
+            "inspected": 1,
+            "inspected_at": "2021-02-23 14:00:43",
+            "inspected_at_ts": 1614081643,
+            "inspected_till_ts": 1621767643,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 0,
+            "kitchen_square_meters": 15,
+            "latitude": 49.220717342041,
+            "levels": 0,
+            "living_square_meters": 32,
+            "location": "49.220717342041,28.560380485532",
+            "longitude": 28.560380485532,
+            "main_photo": "dom/photo/13545/1354567/135456742/135456742.jpg",
+            "moderation_date_ts": 1615844217,
+            "photos": {
+                "135456742": {
+                    "file": "dom/photo/13545/1354567/135456742/135456742.jpg",
+                    "id": 135456742,
+                    "is_main": 1,
+                    "ordering": 1
+                },
+                "135456743": {
+                    "file": "dom/photo/13545/1354567/135456743/135456743.jpg",
+                    "id": 135456743,
+                    "ordering": 2
+                },
+                "135456744": {
+                    "file": "dom/photo/13545/1354567/135456744/135456744.jpg",
+                    "id": 135456744,
+                    "ordering": 3
+                },
+                "135456745": {
+                    "file": "dom/photo/13545/1354567/135456745/135456745.jpg",
+                    "id": 135456745,
+                    "ordering": 4
+                },
+                "135456746": {
+                    "file": "dom/photo/13545/1354567/135456746/135456746.jpg",
+                    "id": 135456746,
+                    "ordering": 5
+                },
+                "135456747": {
+                    "file": "dom/photo/13545/1354567/135456747/135456747.jpg",
+                    "id": 135456747,
+                    "ordering": 6
+                },
+                "135456767": {
+                    "file": "dom/photo/13545/1354567/135456767/135456767.jpg",
+                    "id": 135456767,
+                    "ordering": 22
+                },
+                "135456768": {
+                    "file": "dom/photo/13545/1354567/135456768/135456768.jpg",
+                    "id": 135456768,
+                    "ordering": 23
+                },
+                "135456769": {
+                    "file": "dom/photo/13545/1354567/135456769/135456769.jpg",
+                    "id": 135456769,
+                    "ordering": 24
+                },
+                "135658094": {
+                    "file": "dom/photo/13565/1356580/135658094/135658094.jpg",
+                    "id": 135658094,
+                    "ordering": 7
+                },
+                "135658096": {
+                    "file": "dom/photo/13565/1356580/135658096/135658096.jpg",
+                    "id": 135658096,
+                    "ordering": 8
+                },
+                "135658097": {
+                    "file": "dom/photo/13565/1356580/135658097/135658097.jpg",
+                    "id": 135658097,
+                    "ordering": 9
+                },
+                "135658099": {
+                    "file": "dom/photo/13565/1356580/135658099/135658099.jpg",
+                    "id": 135658099,
+                    "ordering": 10
+                },
+                "135658100": {
+                    "file": "dom/photo/13565/1356581/135658100/135658100.jpg",
+                    "id": 135658100,
+                    "ordering": 11
+                },
+                "135658105": {
+                    "file": "dom/photo/13565/1356581/135658105/135658105.jpg",
+                    "id": 135658105,
+                    "ordering": 12
+                },
+                "135658107": {
+                    "file": "dom/photo/13565/1356581/135658107/135658107.jpg",
+                    "id": 135658107,
+                    "ordering": 13
+                },
+                "135658109": {
+                    "file": "dom/photo/13565/1356581/135658109/135658109.jpg",
+                    "id": 135658109,
+                    "ordering": 14
+                },
+                "135658111": {
+                    "file": "dom/photo/13565/1356581/135658111/135658111.jpg",
+                    "id": 135658111,
+                    "ordering": 15
+                },
+                "135658113": {
+                    "file": "dom/photo/13565/1356581/135658113/135658113.jpg",
+                    "id": 135658113,
+                    "ordering": 16
+                },
+                "135658114": {
+                    "file": "dom/photo/13565/1356581/135658114/135658114.jpg",
+                    "id": 135658114,
+                    "ordering": 17
+                },
+                "135658116": {
+                    "file": "dom/photo/13565/1356581/135658116/135658116.jpg",
+                    "id": 135658116,
+                    "ordering": 18
+                },
+                "135658118": {
+                    "file": "dom/photo/13565/1356581/135658118/135658118.jpg",
+                    "id": 135658118,
+                    "ordering": 19
+                },
+                "135658121": {
+                    "file": "dom/photo/13565/1356581/135658121/135658121.jpg",
+                    "id": 135658121,
+                    "ordering": 21
+                },
+                "135658125": {
+                    "file": "dom/photo/13565/1356581/135658125/135658125.jpg",
+                    "id": 135658125,
+                    "ordering": 20
+                }
+            },
+            "photos_count": 24,
+            "price": 29500,
+            "priceArr": {
+                "1": "29 500",
+                "2": "24 136",
+                "3": "812 672"
+            },
+            "price_item": 557,
+            "price_total": 29500,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:03",
+            "publishing_date_ts": 1621761603,
+            "quality": 70,
+            "radius_location": 1,
+            "realtorVerified": false,
+            "realty_id": 19190283,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1615835099,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 53,
+            "updated_at_ts": 1621761603,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "with_panoramas": 1,
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 5,
+            "floors_number": 10,
+            "original_url": "https://dom.ria.com/uk//realty-perevireno-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19190295.html",
+            "price": 28000,
+            "published_at": "2021-05-23 12:20:03",
+            "square": 49
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_title": 0,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-perevireno-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-19190295.html",
+            "building_number_str": "",
+            "call_price": 40,
+            "characteristics_values": {
+                "1001": 1001,
+                "1002": 1002,
+                "1003": 1003,
+                "1017": 1017,
+                "1020": 1022,
+                "1141": 1137,
+                "1166": 1161,
+                "1169": 1168,
+                "1178": 1171,
+                "118": 108,
+                "1181": 1180,
+                "1190": 1183,
+                "1193": 1192,
+                "1202": 1194,
+                "1206": 1204,
+                "1215": 1207,
+                "1219": 1216,
+                "1228": 1220,
+                "1232": 1229,
+                "1268": 1260,
+                "1272": 1269,
+                "1357": 1353,
+                "1437": 1434,
+                "1515": 1510,
+                "1524": 1518,
+                "1555": 1552,
+                "1559": 1557,
+                "1563": 1561,
+                "1567": 1565,
+                "1571": 1571,
+                "1577": 1577,
+                "1583": 1583,
+                "1650": 1649,
+                "209": 1,
+                "214": 49,
+                "216": 18,
+                "218": 18,
+                "227": 5,
+                "228": 10,
+                "234": 28000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442,
+                "475": 472,
+                "480": 476,
+                "516": 511,
+                "629": 626,
+                "709": 704,
+                "778": 778,
+                "791": 791,
+                "806": 802,
+                "830": 830,
+                "879": 873,
+                "892": 890,
+                "894": 1426,
+                "907": 902,
+                "941": 942
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 268.307,
+            "created_at": "2021-02-22 00:34:42",
+            "created_at_ts": 1613946882,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:03",
+            "date_end_ts": 1629710403,
+            "description": "",
+            "description_uk": "\u0411\u0443\u0434\u0438\u043d\u043e\u043a \u043f\u043e\u0431\u0443\u0434\u043e\u0432\u0430\u043d\u0438\u0439!\u0427\u043e\u0440\u043d\u043e\u0432\u0430,\u0430\u0432\u0442\u043e\u043d\u043e\u043c\u043d\u0435 \u043e\u043f\u0430\u043b\u0435\u043d\u043d\u044f!11\u0441\u0435\u043a\u0446\u0456\u044f 49\u043c.\u043a\u0432 5 \u043f\u043e\u0432\u0435\u0440\u0445",
+            "district_id": 16225,
+            "district_name": "\u0414\u0430\u043b\u044c\u043d\u0435\u0435 \u0437\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0414\u0430\u043b\u044c\u043d\u0454 \u0437\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 5,
+            "floors_count": 10,
+            "inspected": 1,
+            "inspected_at": "2021-02-23 14:10:42",
+            "inspected_at_ts": 1614082242,
+            "inspected_till_ts": 1621768242,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 0,
+            "kitchen_square_meters": 18,
+            "latitude": 49.220521131501,
+            "levels": 12,
+            "levels_expired": "2021-05-24 00:28:46",
+            "levels_expired_ts": 1621805326,
+            "living_square_meters": 18,
+            "location": "49.220521131501,28.560251739499",
+            "longitude": 28.560251739499,
+            "main_photo": "dom/photo/13545/1354568/135456884/135456884.jpg",
+            "moderation_date_ts": 1620969589,
+            "photos": {
+                "135456884": {
+                    "file": "dom/photo/13545/1354568/135456884/135456884.jpg",
+                    "id": 135456884,
+                    "is_main": 1,
+                    "ordering": 2
+                },
+                "135456885": {
+                    "file": "dom/photo/13545/1354568/135456885/135456885.jpg",
+                    "id": 135456885,
+                    "ordering": 3
+                },
+                "135456887": {
+                    "file": "dom/photo/13545/1354568/135456887/135456887.jpg",
+                    "id": 135456887,
+                    "ordering": 4
+                },
+                "135456889": {
+                    "file": "dom/photo/13545/1354568/135456889/135456889.jpg",
+                    "id": 135456889,
+                    "ordering": 5
+                },
+                "135456891": {
+                    "file": "dom/photo/13545/1354568/135456891/135456891.jpg",
+                    "id": 135456891,
+                    "ordering": 6
+                },
+                "135456893": {
+                    "file": "dom/photo/13545/1354568/135456893/135456893.jpg",
+                    "id": 135456893,
+                    "ordering": 7
+                },
+                "135456894": {
+                    "file": "dom/photo/13545/1354568/135456894/135456894.jpg",
+                    "id": 135456894,
+                    "ordering": 8
+                },
+                "135456896": {
+                    "file": "dom/photo/13545/1354568/135456896/135456896.jpg",
+                    "id": 135456896,
+                    "ordering": 9
+                },
+                "135456908": {
+                    "file": "dom/photo/13545/1354569/135456908/135456908.jpg",
+                    "id": 135456908,
+                    "ordering": 11
+                },
+                "135456909": {
+                    "file": "dom/photo/13545/1354569/135456909/135456909.jpg",
+                    "id": 135456909,
+                    "ordering": 12
+                },
+                "135611835": {
+                    "file": "dom/photo/13561/1356118/135611835/135611835.jpg",
+                    "id": 135611835,
+                    "ordering": 28
+                },
+                "135611838": {
+                    "file": "dom/photo/13561/1356118/135611838/135611838.jpg",
+                    "id": 135611838,
+                    "ordering": 27
+                },
+                "135611841": {
+                    "file": "dom/photo/13561/1356118/135611841/135611841.jpg",
+                    "id": 135611841,
+                    "ordering": 30
+                },
+                "135611843": {
+                    "file": "dom/photo/13561/1356118/135611843/135611843.jpg",
+                    "id": 135611843,
+                    "ordering": 29
+                },
+                "135611847": {
+                    "file": "dom/photo/13561/1356118/135611847/135611847.jpg",
+                    "id": 135611847,
+                    "ordering": 31
+                },
+                "135659812": {
+                    "file": "dom/photo/13565/1356598/135659812/135659812.jpg",
+                    "id": 135659812,
+                    "ordering": 13
+                },
+                "135659817": {
+                    "file": "dom/photo/13565/1356598/135659817/135659817.jpg",
+                    "id": 135659817,
+                    "ordering": 14
+                },
+                "135659819": {
+                    "file": "dom/photo/13565/1356598/135659819/135659819.jpg",
+                    "id": 135659819,
+                    "ordering": 15
+                },
+                "135659827": {
+                    "file": "dom/photo/13565/1356598/135659827/135659827.jpg",
+                    "id": 135659827,
+                    "ordering": 16
+                },
+                "135659834": {
+                    "file": "dom/photo/13565/1356598/135659834/135659834.jpg",
+                    "id": 135659834,
+                    "ordering": 17
+                },
+                "135659839": {
+                    "file": "dom/photo/13565/1356598/135659839/135659839.jpg",
+                    "id": 135659839,
+                    "ordering": 18
+                },
+                "135659847": {
+                    "file": "dom/photo/13565/1356598/135659847/135659847.jpg",
+                    "id": 135659847,
+                    "ordering": 19
+                },
+                "135659850": {
+                    "file": "dom/photo/13565/1356598/135659850/135659850.jpg",
+                    "id": 135659850,
+                    "ordering": 20
+                },
+                "135659856": {
+                    "file": "dom/photo/13565/1356598/135659856/135659856.jpg",
+                    "id": 135659856,
+                    "ordering": 21
+                },
+                "135659859": {
+                    "file": "dom/photo/13565/1356598/135659859/135659859.jpg",
+                    "id": 135659859,
+                    "ordering": 22
+                },
+                "135659860": {
+                    "file": "dom/photo/13565/1356598/135659860/135659860.jpg",
+                    "id": 135659860,
+                    "ordering": 23
+                },
+                "135659863": {
+                    "file": "dom/photo/13565/1356598/135659863/135659863.jpg",
+                    "id": 135659863,
+                    "ordering": 24
+                },
+                "135659871": {
+                    "file": "dom/photo/13565/1356598/135659871/135659871.jpg",
+                    "id": 135659871,
+                    "ordering": 25
+                },
+                "135659874": {
+                    "file": "dom/photo/13565/1356598/135659874/135659874.jpg",
+                    "id": 135659874,
+                    "ordering": 26
+                }
+            },
+            "photos_count": 29,
+            "price": 28000,
+            "priceArr": {
+                "1": "28 000",
+                "2": "22 909",
+                "3": "771 350"
+            },
+            "price_item": 571,
+            "price_total": 28000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:03",
+            "publishing_date_ts": 1621761603,
+            "quality": 70,
+            "radius_location": 1,
+            "realtorVerified": false,
+            "realty_id": 19190295,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1620969584,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 49,
+            "updated_at_ts": 1621761603,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "with_panoramas": 1,
+            "youtube_link": ""
+        }
+    },
+    {
+        "expected_realty_data": {
+            "city_id": 4,
+            "operation_type_id": 1,
+            "realty_type_id": 1,
+            "service_id": 1,
+            "state_id": 1
+        },
+        "expected_realty_details": {
+            "floor": 5,
+            "floors_number": 10,
+            "original_url": "https://dom.ria.com/uk//realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-18888294.html",
+            "price": 26000,
+            "published_at": "2021-05-23 12:20:03",
+            "square": 45
+        },
+        "response": {
+            "advert_publish_type": 1,
+            "advert_type_id": 1,
+            "advert_type_name": "\u043f\u0440\u043e\u0434\u0430\u0436\u0430",
+            "advert_type_name_uk": "\u043f\u0440\u043e\u0434\u0430\u0436",
+            "agency": {
+                "agency_id": 23133,
+                "agency_type": 1,
+                "good_partner": "",
+                "logo": "dom/agence/2/231/23133/23133.jpg?v=1459254132",
+                "name": "\u041f\u043e\u0434\u0456\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043a\u0432\u0430\u0440\u0442\u0430\u041b",
+                "state_id": 1,
+                "user_id": 1497535
+            },
+            "agency_id": 23133,
+            "beautiful_url": "realty-prodaja-kvartira-vinnitsa-zamoste-nemirovskoe-shosse-18888294.html",
+            "building_number_str": "94",
+            "call_price": 40,
+            "characteristics_values": {
+                "118": 108,
+                "1437": 1434,
+                "1650": 1649,
+                "209": 1,
+                "214": 45,
+                "216": 19,
+                "218": 14,
+                "227": 5,
+                "228": 10,
+                "234": 26000,
+                "242": 239,
+                "247": 252,
+                "265": 257,
+                "443": 442
+            },
+            "city_id": 1,
+            "city_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u0430",
+            "city_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044f",
+            "complete_time": 1835.099,
+            "created_at": "2020-12-22 22:49:51",
+            "created_at_ts": 1608670191,
+            "currency_type": "$",
+            "currency_type_id": 1,
+            "currency_type_uk": "$",
+            "date_end": "2021-08-23 12:20:03",
+            "date_end_ts": 1629710403,
+            "description": "",
+            "description_uk": "\u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort!11\u0441\u0435\u043a\u0446\u0456\u044f!\u0412\u0456\u043a\u043d\u0430 \u0443 \u0434\u0432\u0456\u0440!\u041f\u0435\u0440\u0435\u0443\u0441\u0442\u0443\u043f\u043a\u0430 \u0434\u043e\u0433\u043e\u0432\u043e\u0440\u0443!\u041f\u0440\u043e\u0434\u0430\u0436 \u0422\u0415\u0420\u041c\u0406\u041d\u041e\u0412\u0418\u0419!\n\u0417\u0434\u0430\u0447\u0430 \u0431\u0443\u0434\u0438\u043d\u043a\u0443 \u0432 \u0435\u043a\u0441\u043f\u043b\u0443\u0430\u0442\u0430\u0446\u0456\u044e \u0434\u043e \u043a\u0456\u043d\u0446\u044f \u0440\u043e\u043a\u0443!",
+            "district_id": 17021,
+            "district_name": "\u0417\u0430\u043c\u043e\u0441\u0442\u044c\u0435",
+            "district_name_uk": "\u0417\u0430\u043c\u043e\u0441\u0442\u044f",
+            "district_type_id": 1,
+            "district_type_name": "\u0420\u0430\u0439\u043e\u043d",
+            "floor": 5,
+            "floors_count": 10,
+            "isBinotel": 1,
+            "isNotepad": false,
+            "is_calltracking": 1,
+            "is_commercial": 1,
+            "is_developer": 0,
+            "is_exchange": "\u043d\u0435\u0442",
+            "is_exchange_uk": "\u043d\u0456",
+            "is_exclusive": 0,
+            "is_show_building_no": 1,
+            "kitchen_square_meters": 14,
+            "latitude": 49.219932495205,
+            "levels": 0,
+            "living_square_meters": 19,
+            "location": "49.219932495205,28.562612083432",
+            "longitude": 28.562612083432,
+            "main_photo": "dom/photo/13208/1320854/132085482/132085482.jpg",
+            "moderation_date_ts": 1612938675,
+            "photos": {
+                "132085482": {
+                    "file": "dom/photo/13208/1320854/132085482/132085482.jpg",
+                    "id": 132085482,
+                    "is_main": 1,
+                    "ordering": 5
+                },
+                "132085493": {
+                    "file": "dom/photo/13208/1320854/132085493/132085493.jpg",
+                    "id": 132085493,
+                    "ordering": 6
+                },
+                "132085495": {
+                    "file": "dom/photo/13208/1320854/132085495/132085495.jpg",
+                    "id": 132085495,
+                    "ordering": 7
+                },
+                "132085507": {
+                    "file": "dom/photo/13208/1320855/132085507/132085507.jpg",
+                    "id": 132085507,
+                    "ordering": 8
+                }
+            },
+            "photos_count": 4,
+            "price": 26000,
+            "priceArr": {
+                "1": "26 000",
+                "2": "21 273",
+                "3": "716 253"
+            },
+            "price_item": 578,
+            "price_total": 26000,
+            "price_type": "\u0437\u0430 \u043e\u0431\u044a\u0435\u043a\u0442",
+            "price_type_uk": "\u0437\u0430 \u043e\u0431'\u0454\u043a\u0442",
+            "publishing_date": "2021-05-23 12:20:03",
+            "publishing_date_ts": 1621761603,
+            "quality": 48,
+            "radius_location": 0,
+            "realtorVerified": false,
+            "realty_id": 18888294,
+            "realty_sale_type": 2,
+            "realty_type_id": 2,
+            "realty_type_name": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_name_uk": "\u041a\u0432\u0430\u0440\u0442\u0438\u0440\u0430",
+            "realty_type_parent_id": 1,
+            "realty_type_parent_name": "\u0416\u0438\u043b\u044c\u0435",
+            "realty_type_parent_name_uk": "\u0416\u0438\u0442\u043b\u043e",
+            "return_on_moderation_date_ts": 1612938670,
+            "rooms_count": 1,
+            "secondaryUtp": [],
+            "state_id": 1,
+            "state_name": "\u0412\u0438\u043d\u043d\u0438\u0446\u043a\u0430\u044f",
+            "state_name_uk": "\u0412\u0456\u043d\u043d\u0438\u0446\u044c\u043a\u0430",
+            "street_id": 383,
+            "street_name": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u043e\u0432\u0441\u043a\u043e\u0435 \u0448\u043e\u0441\u0441\u0435",
+            "street_name_uk": "\u0448\u043e\u0441\u0435 \u041d\u0435\u043c\u0438\u0440\u0456\u0432\u0441\u044c\u043a\u0435",
+            "total_square_meters": 45,
+            "updated_at_ts": 1621761603,
+            "user": {
+                "good_partner_top": "",
+                "image": "avatars/all/149/14975/1497535/1497535.jpg?v=1611343203",
+                "name": "\u041e\u043b\u0435\u0433"
+            },
+            "user_id": 1497535,
+            "user_ip": 0,
+            "user_newbuild_id": 6116,
+            "user_newbuild_name": "\u0416\u041a \u0421\u0435\u043c\u0435\u0439\u043d\u044b\u0439 Comfort",
+            "user_newbuild_name_uk": "\u0416\u041a \u0421\u0456\u043c\u0435\u0439\u043d\u0438\u0439 Comfort",
+            "user_package_id": 232,
+            "wall_type": "\u043a\u0438\u0440\u043f\u0438\u0447",
+            "wall_type_uk": "\u0446\u0435\u0433\u043b\u0430",
+            "web_id": "5f1c7c6f7f07bdfe",
+            "youtube_link": ""
+        }
+    }
+]

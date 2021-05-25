@@ -1,0 +1,160 @@
+[
+  {
+    "input_char_filters": {
+      "price": {
+        "ge": 50000,
+        "le": 55000
+      }
+    },
+    "output_char_filters": {
+      "characteristic[234][from]": 50000,
+      "characteristic[234][to]": 55000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "floor": {
+        "ge": 2,
+        "le": 5
+      },
+      "price": {
+        "ge": 50000,
+        "le": 55000
+      }
+    },
+    "output_char_filters": {
+      "characteristic[227]": {
+        "name": "floor",
+        "values": {
+          "ge": 2,
+          "le": 5
+        }
+      },
+      "characteristic[234][from]": 50000,
+      "characteristic[234][to]": 55000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "floor": {
+        "ge": 3,
+        "le": 12
+      },
+      "price": {
+        "ge": 60000,
+        "le": 75000
+      }
+    },
+    "output_char_filters": {
+      "characteristic[227]": {
+        "name": "floor",
+        "values": {
+          "ge": 3,
+          "le": 12
+        }
+      },
+      "characteristic[234][from]": 60000,
+      "characteristic[234][to]": 75000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "floor": {
+        "ge": 4,
+        "le": 7
+      },
+      "price": {
+        "ge": 10000,
+        "le": 100000
+      }
+    },
+    "output_char_filters": {
+      "characteristic[227]": {
+        "name": "floor",
+        "values": {
+          "ge": 4,
+          "le": 7
+        }
+      },
+      "characteristic[234][from]": 10000,
+      "characteristic[234][to]": 100000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "floor": {
+        "ge": 3,
+        "le": 5
+      },
+      "price": {
+        "ge": 66000,
+        "le": 77000
+      }
+    },
+    "output_char_filters": {
+      "characteristic[227]": {
+        "name": "floor",
+        "values": {
+          "ge": 3,
+          "le": 5
+        }
+      },
+      "characteristic[234][from]": 66000,
+      "characteristic[234][to]": 77000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "floor": {
+        "ge": 3,
+        "le": 5
+      },
+      "price": {
+        "ge": 66000,
+        "le": 77000
+      },
+      "square": {
+        "ge": 50,
+        "le": 200
+      }
+    },
+    "output_char_filters": {
+      "characteristic[214][from]": 50,
+      "characteristic[214][to]": 200,
+      "characteristic[227]": {
+        "name": "floor",
+        "values": {
+          "ge": 3,
+          "le": 5
+        }
+      },
+      "characteristic[234][from]": 66000,
+      "characteristic[234][to]": 77000,
+      "lang_id": 4
+    }
+  },
+  {
+    "input_char_filters": {
+      "price": {
+        "ge": 66000,
+        "le": 77000
+      },
+      "square": {
+        "ge": 50,
+        "le": 200
+      }
+    },
+    "output_char_filters": {
+      "characteristic[214][from]": 50,
+      "characteristic[214][to]": 200,
+      "characteristic[234][from]": 66000,
+      "characteristic[234][to]": 77000,
+      "lang_id": 4
+    }
+  }
+]

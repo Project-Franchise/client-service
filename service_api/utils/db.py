@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 
 from marshmallow.exceptions import ValidationError
 from service_api import LOGGER
+from selenium.common.exceptions import WebDriverException
 
 from ..constants import (PATH_TO_CORE_DB_METADATA, PATH_TO_METADATA, PATH_TO_PARSER_METADATA)
 from ..exceptions import (CycleReferenceException, LimitBoundError, MetaDataError, ObjectNotFoundException,
@@ -189,6 +190,9 @@ class RealtyFetcher:
             try:
                 response = request_to_service.get_latest_data()
             except LimitBoundError as error:
+                LOGGER.warning(error.args[0])
+                continue
+            except WebDriverException as error:
                 LOGGER.warning(error.args[0])
                 continue
 
